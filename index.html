@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Angle Arena · Boys vs Girls</title>
+  <!-- Font & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
@@ -32,6 +33,7 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 1px 3px rgba(255,255,255,0.1);
       border: 1px solid rgba(255,215,0,0.2);
     }
+    /* scoreboard row */
     .scoreboard {
       display: flex;
       justify-content: space-between;
@@ -82,15 +84,7 @@
     .score-value.boys-score { color: #7bb3ff; text-shadow: 0 0 12px #3d9eff; }
     .score-value.girls-score { color: #ff8ec4; text-shadow: 0 0 12px #ff4f9e; }
 
-    .question-progress {
-      font-size: 1rem;
-      color: #b9d0f0;
-      background: #0e1d2b;
-      padding: 4px 20px;
-      border-radius: 40px;
-      font-weight: 600;
-    }
-
+    /* main grid */
     .game-grid {
       display: flex;
       gap: 15px;
@@ -103,23 +97,11 @@
       padding: 18px 12px 20px;
       backdrop-filter: blur(2px);
       border: 1px solid #566b84;
-      transition: all 0.3s;
+      transition: all 0.2s;
       box-shadow: 0 8px 0 #111d2b;
-      position: relative;
     }
     .team-zone.boys-zone { border-top: 6px solid #3d9eff; }
     .team-zone.girls-zone { border-top: 6px solid #ff7eb3; }
-    
-    .team-zone.team-winner {
-      border-color: #ffd700;
-      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-    }
-    
-    .team-zone.team-locked {
-      opacity: 0.7;
-      filter: grayscale(0.3);
-    }
-    
     .zone-title {
       font-size: 1.6rem;
       font-weight: 700;
@@ -133,6 +115,7 @@
     .zone-title.boys-title { color: #9ac7ff; }
     .zone-title.girls-title { color: #ffb3d1; }
 
+    /* question & diagram */
     .question-area {
       background: #1c2a3b;
       border-radius: 28px;
@@ -158,23 +141,26 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 180px;
+      min-height: 120px;
       border: 2px solid #b9cfec;
     }
-    .diagram-container svg {
+    .diagram-container img {
       max-width: 100%;
       max-height: 170px;
-      border-radius: 8px;
+      object-fit: contain;
+      border-radius: 16px;
       background: white;
+      padding: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
     .diagram-placeholder {
       font-size: 1.2rem;
       color: #2b4a6b;
       font-weight: 600;
       padding: 10px;
-      text-align: center;
     }
 
+    /* choices */
     .choices {
       display: flex;
       flex-direction: column;
@@ -195,7 +181,6 @@
       cursor: pointer;
       letter-spacing: 0.5px;
       border: 1px solid #6f8aa8;
-      position: relative;
     }
     .choice-btn:active {
       transform: translateY(4px);
@@ -210,21 +195,10 @@
       background: #2a9d8f;
       border-color: #b8f2e6;
       box-shadow: 0 0 20px #2a9d8faa;
-      animation: pulse-green 0.5s ease-in-out;
     }
     .choice-btn.wrong-reveal {
       background: #b13e4b;
       border-color: #ffb3b3;
-      animation: pulse-red 0.5s ease-in-out;
-    }
-    
-    @keyframes pulse-green {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); background: #35b5a5; }
-    }
-    @keyframes pulse-red {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); background: #d14552; }
     }
 
     .action-row {
@@ -295,6 +269,7 @@
       font-family: 'Fredoka One', cursive;
     }
 
+    /* status */
     .turn-indicator {
       text-align: center;
       margin-top: 8px;
@@ -302,102 +277,30 @@
       color: #bdd4f0;
       background: #142433;
       border-radius: 40px;
-      padding: 8px;
-      font-size: 1rem;
-      min-height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 6px;
+      font-size: 0.9rem;
     }
-    .turn-indicator.team-correct {
-      background: #1a5a4a;
-      color: #8fffd6;
-      border: 1px solid #2a9d8f;
-    }
-    .turn-indicator.team-wrong {
-      background: #5a2a2a;
-      color: #ffb3b3;
-      border: 1px solid #b13e4b;
-    }
-    .turn-indicator.team-waiting {
-      background: #1a2a4a;
-      color: #8fcbff;
-      border: 1px solid #3d9eff;
-      animation: pulse-blue 1s ease-in-out infinite;
-    }
-    
-    @keyframes pulse-blue {
-      0%, 100% { opacity: 0.7; }
-      50% { opacity: 1; background: #1a3a6a; }
-    }
-
     .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    .timer-display {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #ff6b6b;
-      background: #1a0a0a;
-      padding: 0 20px;
-      border-radius: 40px;
-      border: 2px solid #ff4444;
-      min-width: 60px;
-      text-align: center;
-      font-family: 'Fredoka One', cursive;
-    }
-    .timer-display.urgent {
-      animation: blink-red 0.5s ease-in-out infinite;
-    }
-    @keyframes blink-red {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    /* Protractor specific styles */
-    .protractor-label {
-      font-size: 12px;
-      font-weight: bold;
-      fill: #333;
-    }
-    .protractor-arrow {
-      fill: #e74c3c;
-      font-weight: bold;
-      font-size: 16px;
-    }
-    .protractor-degree {
-      fill: #2c3e50;
-      font-size: 10px;
-    }
-    .angle-label {
-      fill: #2980b9;
-      font-weight: bold;
-      font-size: 14px;
-    }
 
     @media (max-width: 850px) {
       .scoreboard { flex-direction: column; align-items: stretch; gap: 10px; }
       .team-score { justify-content: center; }
     }
+    /* hidden helper */
     .hidden { display: none; }
   </style>
 </head>
 <body>
 <div class="game-wrapper" id="app">
+  <!-- Scoreboard -->
   <div class="scoreboard">
-    <div class="team-score">
-      <span class="team-badge boys">⚔️ BOYS</span>
-      <span class="score-value boys-score" id="boysTotal">0</span>
-    </div>
-    <div style="display:flex; gap:15px; align-items:center;">
-      <span class="question-progress" id="questionProgress">Q1/15</span>
-      <span class="timer-display" id="timerDisplay">15s</span>
-    </div>
-    <div class="team-score">
-      <span class="team-badge girls">🌸 GIRLS</span>
-      <span class="score-value girls-score" id="girlsTotal">0</span>
-    </div>
+    <div class="team-score"><span class="team-badge boys">⚔️ BOYS</span><span class="score-value boys-score" id="boysTotal">0</span></div>
+    <div style="font-size:1.1rem; color:#b9d0f0; background:#0e1d2b; padding:4px 20px; border-radius:40px;">⏳ 15s / 20s / 30s</div>
+    <div class="team-score"><span class="team-badge girls">🌸 GIRLS</span><span class="score-value girls-score" id="girlsTotal">0</span></div>
   </div>
 
   <div class="game-grid">
+    <!-- BOYS ZONE -->
     <div class="team-zone boys-zone" id="boysZone">
       <div class="zone-title boys-title">⚡ BOYS</div>
       <div class="question-area" id="boysQuestionArea">
@@ -413,6 +316,7 @@
       <div class="turn-indicator" id="boysStatus">✅ ready</div>
     </div>
 
+    <!-- GIRLS ZONE -->
     <div class="team-zone girls-zone" id="girlsZone">
       <div class="zone-title girls-title">🌸 GIRLS</div>
       <div class="question-area" id="girlsQuestionArea">
@@ -432,180 +336,308 @@
 
 <script>
   (function() {
-    // SVG Diagram generators for each question
-    const diagramGenerators = {
-      // Q1-Q3: Protractor parts
-      Q1: function() {
-        return `<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="130" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <!-- Protractor semi-circle -->
-          <path d="M 30 110 A 80 80 0 0 1 210 110" stroke="#2c3e50" stroke-width="2" fill="none"/>
-          <path d="M 30 110 L 210 110" stroke="#2c3e50" stroke-width="2"/>
-          <!-- Degree marks -->
-          <line x1="55" y1="110" x2="55" y2="95" stroke="#2c3e50" stroke-width="1"/>
-          <line x1="85" y1="110" x2="85" y2="90" stroke="#2c3e50" stroke-width="1.5"/>
-          <line x1="120" y1="110" x2="120" y2="85" stroke="#2c3e50" stroke-width="2"/>
-          <line x1="155" y1="110" x2="155" y2="90" stroke="#2c3e50" stroke-width="1.5"/>
-          <line x1="185" y1="110" x2="185" y2="95" stroke="#2c3e50" stroke-width="1"/>
-          <!-- Center mark (arrow pointing to center) -->
-          <circle cx="120" cy="110" r="4" fill="#e74c3c"/>
-          <text x="120" y="130" font-size="12" fill="#e74c3c" text-anchor="middle" font-weight="bold">▲ Center Mark</text>
-          <text x="120" y="145" font-size="9" fill="#666" text-anchor="middle">(indicated by arrow)</text>
-          <!-- Arrow pointing to center -->
-          <polygon points="140,95 145,110 135,110" fill="#e74c3c"/>
-        </svg>`;
-      },
-      Q2: function() {
-        return `<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="130" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <path d="M 30 110 A 80 80 0 0 1 210 110" stroke="#2c3e50" stroke-width="2" fill="none"/>
-          <path d="M 30 110 L 210 110" stroke="#2c3e50" stroke-width="2"/>
-          <!-- Degree marks with one highlighted -->
-          <line x1="55" y1="110" x2="55" y2="95" stroke="#2c3e50" stroke-width="1"/>
-          <line x1="85" y1="110" x2="85" y2="90" stroke="#2c3e50" stroke-width="1.5"/>
-          <line x1="120" y1="110" x2="120" y2="85" stroke="#2c3e50" stroke-width="2"/>
-          <line x1="155" y1="110" x2="155" y2="90" stroke="#2c3e50" stroke-width="1.5"/>
-          <line x1="185" y1="110" x2="185" y2="95" stroke="#2c3e50" stroke-width="1"/>
-          <!-- Arrow pointing to a degree mark (at 155) -->
-          <polygon points="175,80 170,95 180,95" fill="#e74c3c"/>
-          <text x="155" y="75" font-size="12" fill="#e74c3c" text-anchor="middle" font-weight="bold">▲ Degree Mark</text>
-          <text x="155" y="68" font-size="9" fill="#666" text-anchor="middle">(indicated by arrow)</text>
-          <text x="155" y="100" font-size="10" fill="#333" text-anchor="middle">155°</text>
-        </svg>`;
-      },
-      Q3: function() {
-        return `<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="130" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <path d="M 30 110 A 80 80 0 0 1 210 110" stroke="#2c3e50" stroke-width="2" fill="none"/>
-          <path d="M 30 110 L 210 110" stroke="#2c3e50" stroke-width="2"/>
-          <!-- Zero edges highlighted -->
-          <path d="M 30 110 L 30 85" stroke="#e74c3c" stroke-width="3"/>
-          <path d="M 210 110 L 210 85" stroke="#e74c3c" stroke-width="3"/>
-          <text x="30" y="80" font-size="12" fill="#e74c3c" text-anchor="middle" font-weight="bold">▲ Zero Edge</text>
-          <text x="210" y="80" font-size="12" fill="#e74c3c" text-anchor="middle" font-weight="bold">▲ Zero Edge</text>
-          <text x="120" y="140" font-size="10" fill="#666" text-anchor="middle">Zero edges (indicated by arrows)</text>
-        </svg>`;
-      },
-      // Q4: Angle PQR
-      Q4: function() {
-        return `<svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="160" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <!-- Angle with points P, Q, R -->
-          <line x1="60" y1="140" x2="140" y2="40" stroke="#2c3e50" stroke-width="2"/>
-          <line x1="60" y1="140" x2="220" y2="140" stroke="#2c3e50" stroke-width="2"/>
-          <!-- Arc for angle -->
-          <path d="M 100 120 A 50 50 0 0 1 140 90" stroke="#e74c3c" stroke-width="2" fill="none"/>
-          <text x="120" y="100" font-size="14" fill="#e74c3c" font-weight="bold">θ</text>
-          <!-- Labels -->
-          <text x="130" y="30" font-size="16" fill="#2980b9" font-weight="bold">P</text>
-          <text x="50" y="155" font-size="16" fill="#2980b9" font-weight="bold">Q</text>
-          <text x="225" y="155" font-size="16" fill="#2980b9" font-weight="bold">R</text>
-          <text x="140" y="165" font-size="11" fill="#666">∠PQR (vertex at Q)</text>
-        </svg>`;
-      },
-      // Q5: Vertex (Point N)
-      Q5: function() {
-        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <!-- Intersecting lines -->
-          <line x1="50" y1="130" x2="240" y2="30" stroke="#2c3e50" stroke-width="2"/>
-          <line x1="50" y1="30" x2="240" y2="130" stroke="#2c3e50" stroke-width="2"/>
-          <!-- Vertex point N -->
-          <circle cx="140" cy="80" r="5" fill="#e74c3c"/>
-          <text x="140" y="100" font-size="16" fill="#e74c3c" text-anchor="middle" font-weight="bold">N</text>
-          <text x="140" y="115" font-size="11" fill="#666" text-anchor="middle">(Vertex)</text>
-          <!-- Arrow pointing to vertex -->
-          <polygon points="160,75 165,90 155,90" fill="#e74c3c"/>
-        </svg>`;
-      },
-      // Q6: Arms (rays)
-      Q6: function() {
-        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <!-- Angle arms as rays -->
-          <line x1="80" y1="120" x2="160" y2="40" stroke="#2c3e50" stroke-width="2"/>
-          <line x1="80" y1="120" x2="230" y2="120" stroke="#2c3e50" stroke-width="2"/>
-          <!-- Labels -->
-          <text x="155" y="35" font-size="15" fill="#2980b9" font-weight="bold">C</text>
-          <text x="70" y="135" font-size="15" fill="#2980b9" font-weight="bold">H</text>
-          <text x="235" y="135" font-size="15" fill="#2980b9" font-weight="bold">K</text>
-          <!-- Ray indicators (arrows) -->
-          <polygon points="155,42 160,55 150,55" fill="#2c3e50"/>
-          <polygon points="225,122 230,135 220,135" fill="#2c3e50"/>
-          <text x="140" y="150" font-size="11" fill="#666">Ray CH and Ray CK</text>
-        </svg>`;
-      },
-      // Q7: Acute angle
-      Q7: function() {
-        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <line x1="60" y1="130" x2="210" y2="130" stroke="#2c3e50" stroke-width="2"/>
-          <line x1="60" y1="130" x2="200" y2="40" stroke="#2c3e50" stroke-width="2"/>
-          <path d="M 90 120 A 40 40 0 0 1 140 95" stroke="#e74c3c" stroke-width="2" fill="none"/>
-          <text x="115" y="100" font-size="14" fill="#e74c3c" font-weight="bold">45°</text>
-          <text x="140" y="150" font-size="12" fill="#666">Acute angle (less than 90°)</text>
-        </svg>`;
-      },
-      // Q8: Right angle
-      Q8: function() {
-        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <line x1="60" y1="130" x2="210" y2="130" stroke="#2c3e50" stroke-width="2"/>
-          <line x1="60" y1="130" x2="60" y2="30" stroke="#2c3e50" stroke-width="2"/>
-          <!-- Right angle square -->
-          <rect x="60" y="110" width="20" height="20" fill="none" stroke="#e74c3c" stroke-width="2"/>
-          <text x="80" y="100" font-size="14" fill="#e74c3c" font-weight="bold">90°</text>
-          <text x="140" y="150" font-size="12" fill="#666">Right angle (exactly 90°)</text>
-        </svg>`;
-      },
-      // Q9: Obtuse angle SUN = 150°
-      Q9: function() {
-        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <!-- S-U-N angle -->
-          <line x1="60" y1="130" x2="210" y2="130" stroke="#2c3e50" stroke-width="2"/>
-          <line x1="60" y1="130" x2="180" y2="30" stroke="#2c3e50" stroke-width="2"/>
-          <!-- Arc -->
-          <path d="M 90 120 A 50 50 0 0 1 130 80" stroke="#e74c3c" stroke-width="2" fill="none"/>
-          <text x="115" y="95" font-size="14" fill="#e74c3c" font-weight="bold">150°</text>
-          <!-- Labels -->
-          <text x="195" y="125" font-size="15" fill="#2980b9" font-weight="bold">S</text>
-          <text x="50" y="145" font-size="15" fill="#2980b9" font-weight="bold">U</text>
-          <text x="185" y="25" font-size="15" fill="#2980b9" font-weight="bold">N</text>
-          <text x="140" y="155" font-size="11" fill="#666">∠SUN = 150° (Obtuse)</text>
-        </svg>`;
-      },
-      // Q10: Straight angle
-      Q10: function() {
-        return `<svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="120" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <line x1="30" y1="70" x2="270" y2="70" stroke="#2c3e50" stroke-width="3"/>
-          <!-- Straight angle arc -->
-          <path d="M 50 70 A 20 20 0 0 1 250 70" stroke="#e74c3c" stroke-width="2" fill="none"/>
-          <text x="150" y="100" font-size="14" fill="#e74c3c" text-anchor="middle" font-weight="bold">180°</text>
-          <text x="150" y="115" font-size="12" fill="#666" text-anchor="middle">Straight angle (exactly 180°)</text>
-        </svg>`;
-      },
-      // Q11: Acute angles count
-      Q11: function() {
-        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <!-- Shape with multiple angles -->
-          <polygon points="80,120 150,50 220,120 80,120" stroke="#2c3e50" stroke-width="2" fill="none"/>
-          <polygon points="80,120 150,50 150,120" stroke="#e74c3c" stroke-width="2" fill="none"/>
-          <!-- Acute angle markers -->
-          <path d="M 100 110 A 25 25 0 0 1 125 90" stroke="#e74c3c" stroke-width="1.5" fill="none"/>
-          <path d="M 115 110 A 25 25 0 0 1 130 85" stroke="#e74c3c" stroke-width="1.5" fill="none"/>
-          <text x="125" y="100" font-size="11" fill="#e74c3c" font-weight="bold">2 acute</text>
-          <text x="140" y="145" font-size="11" fill="#666">Two acute angles (both &lt; 90°)</text>
-        </svg>`;
-      },
-      // Q12: Right angles count
-      Q12: function() {
-        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
-          <!-- Grid with right angles -->
-          <rect x="50" y="40" width="200" height="90" stroke="#2c3e50" stroke-width="2" fill="none"/>
-          <line x1="100" y1="40" x2="100" y2="130" stroke="#2c3e50" stroke-width="1.5"/>
-          <line x1="150" y1="40" x2="150" y2="130" stroke="#2c3e50" stroke-width="1.5"/>
-          <line x1="200" y1="40" x2="200" y2="130" stroke="#
+    // ---------- QUESTIONS DATA (all 15, using images from attachments) ----------
+    const questions = [
+      { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
+      { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 15 },
+      { q: "3) Name the part of protractor indicated by the arrow.", img: "Q3.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 2, time: 15 },
+      { q: "4) Name the angle.", img: "Q4.jpg", choices: ["a) angle PQR", "b) angle RPQ", "c) angle QRP"], correct: 0, time: 15 },
+      { q: "5) Name the vertex.", img: "Q5.jpg", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], correct: 2, time: 15 },
+      { q: "6) Name the arms.", img: "Q6.jpg", choices: ["a) line segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 15 },
+      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", img: "Q7.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 15 },
+      { q: "8) What type of angle is 90°?", img: "Q8.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 1, time: 15 },
+      { q: "9) What type of angle is ∠SUN = 150° ?", img: "Q9.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 2, time: 20 },
+      { q: "10) ……. is an angle measures exactly 180°.", img: "Q10.jpg", choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 20 },
+      { q: "11) Look at the figure. How many acute angles?", img: "Q11.jpg", choices: ["a) 1", "b) 2", "c) 3"], correct: 1, time: 20 },
+      { q: "12) Look at the figure. How many right angles?", img: "Q12.jpg", choices: ["a) 3", "b) 12", "c) 14"], correct: 1, time: 20 },
+      { q: "13) Measure and read the angle shown.", img: "Q13.jpg", choices: ["a) 50°", "b) 105°", "c) 165°"], correct: 1, time: 30 },
+      { q: "14) Find angle b̂.", img: "Q14.jpg", choices: ["a) 30°", "b) 42°", "c) 52°"], correct: 1, time: 30 },
+      { q: "15) Find angle â.", img: "Q15.jpg", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 30 }
+    ];
+
+    // ---------- GAME STATE ----------
+    let currentIndex = 0;
+    // team states
+    const teams = {
+      boys: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false },
+      girls: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false }
+    };
+    let boysTotal = 0, girlsTotal = 0;
+
+    // DOM refs
+    const boysQtext = document.getElementById('boysQtext');
+    const girlsQtext = document.getElementById('girlsQtext');
+    const boysDiagram = document.getElementById('boysDiagram');
+    const girlsDiagram = document.getElementById('girlsDiagram');
+    const boysChoices = document.getElementById('boysChoices');
+    const girlsChoices = document.getElementById('girlsChoices');
+    const boysStatus = document.getElementById('boysStatus');
+    const girlsStatus = document.getElementById('girlsStatus');
+    const boysRollBtn = document.getElementById('boysRollBtn');
+    const girlsRollBtn = document.getElementById('girlsRollBtn');
+    const boysRollDisplay = document.getElementById('boysRollDisplay');
+    const girlsRollDisplay = document.getElementById('girlsRollDisplay');
+    const boysNextBtn = document.getElementById('boysNextBtn');
+    const girlsNextBtn = document.getElementById('girlsNextBtn');
+    const boysTotalSpan = document.getElementById('boysTotal');
+    const girlsTotalSpan = document.getElementById('girlsTotal');
+
+    // sound fx (simple web audio)
+    function playSound(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        if (type === 'correct') {
+          osc.frequency.value = 880;
+          gain.gain.value = 0.15;
+          osc.start();
+          setTimeout(() => { osc.frequency.value = 1100; }, 100);
+          setTimeout(() => { osc.stop(); }, 300);
+        } else if (type === 'wrong') {
+          osc.frequency.value = 300;
+          gain.gain.value = 0.2;
+          osc.start();
+          setTimeout(() => { osc.frequency.value = 200; }, 150);
+          setTimeout(() => { osc.stop(); }, 400);
+        } else if (type === 'tick') {
+          osc.frequency.value = 700;
+          gain.gain.value = 0.08;
+          osc.start();
+          setTimeout(() => { osc.stop(); }, 60);
+        } else if (type === 'victory') {
+          osc.frequency.value = 523;
+          gain.gain.value = 0.12;
+          osc.start();
+          setTimeout(() => { osc.frequency.value = 659; }, 120);
+          setTimeout(() => { osc.frequency.value = 784; }, 240);
+          setTimeout(() => { osc.stop(); }, 400);
+        } else { // roll stop
+          osc.frequency.value = 440;
+          gain.gain.value = 0.1;
+          osc.start();
+          setTimeout(() => { osc.stop(); }, 150);
+        }
+      } catch(e) {}
+    }
+
+    // render question for both teams
+    function renderQuestion(index) {
+      const q = questions[index];
+      if (!q) return;
+      // update text & diagram (using placeholder images)
+      boysQtext.textContent = q.q;
+      girlsQtext.textContent = q.q;
+      // diagram
+      const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:170px;">` : `<div class="diagram-placeholder">📐 ${q.img || 'diagram'}</div>`;
+      boysDiagram.innerHTML = imgHtml;
+      girlsDiagram.innerHTML = imgHtml;
+
+      // choices
+      renderChoices('boys', q.choices, q.correct);
+      renderChoices('girls', q.choices, q.correct);
+
+      // reset team states for this question
+      teams.boys.answered = false;
+      teams.girls.answered = false;
+      teams.boys.lock = false;
+      teams.girls.lock = false;
+      teams.boys.choiceLocked = false;
+      teams.girls.choiceLocked = false;
+      boysStatus.textContent = '⏳ tap answer';
+      girlsStatus.textContent = '⏳ tap answer';
+      boysRollBtn.disabled = true;
+      girlsRollBtn.disabled = true;
+      boysNextBtn.disabled = true;
+      girlsNextBtn.disabled = true;
+      // reset roll display
+      boysRollDisplay.textContent = '0';
+      girlsRollDisplay.textContent = '0';
+      teams.boys.rollActive = false;
+      teams.girls.rollActive = false;
+      if (teams.boys.rollInterval) clearInterval(teams.boys.rollInterval);
+      if (teams.girls.rollInterval) clearInterval(teams.girls.rollInterval);
+    }
+
+    function renderChoices(team, choiceTexts, correctIdx) {
+      const container = team === 'boys' ? boysChoices : girlsChoices;
+      container.innerHTML = '';
+      choiceTexts.forEach((text, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = text;
+        btn.dataset.idx = idx;
+        btn.dataset.correct = correctIdx;
+        btn.addEventListener('click', (e) => handleChoice(team, idx, correctIdx, btn));
+        container.appendChild(btn);
+      });
+    }
+
+    function handleChoice(team, idx, correctIdx, btnEl) {
+      const state = teams[team];
+      if (state.lock || state.answered) return;
+      // check if other team already answered correctly (global lock)
+      const other = team === 'boys' ? 'girls' : 'boys';
+      if (teams[other].answered && teams[other].lock) {
+        // other team got it first, block
+        state.lock = true;
+        return;
+      }
+      // lock this team answer
+      state.lock = true;
+      state.answered = true;
+      const isCorrect = (idx === correctIdx);
+      // reveal correct/wrong
+      const allBtns = team === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
+      allBtns.forEach(b => b.classList.add('disabled'));
+      if (isCorrect) {
+        btnEl.classList.add('correct-reveal');
+        playSound('correct');
+        // victory sound for team
+        setTimeout(() => playSound('victory'), 200);
+        // enable roll for this team
+        if (team === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 correct! roll score'; }
+        else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 correct! roll score'; }
+        // lock other team from answering
+        teams[other].lock = true;
+        teams[other].answered = true;
+        const otherBtns = other === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
+        otherBtns.forEach(b => b.classList.add('disabled'));
+        if (other === 'boys') boysStatus.textContent = '⛔ opponent answered';
+        else girlsStatus.textContent = '⛔ opponent answered';
+        // enable roll for correct team only
+      } else {
+        btnEl.classList.add('wrong-reveal');
+        playSound('wrong');
+        // wrong answer: team cannot roll, but other team may still answer if not locked
+        state.lock = true; // but not answered correctly
+        // check if other team already correct? if not, they can still answer
+        if (!teams[other].answered) {
+          // other team can still try
+          if (other === 'boys') boysStatus.textContent = '❌ wrong, other can answer';
+          else girlsStatus.textContent = '❌ wrong, other can answer';
+        } else {
+          // both wrong or other correct already
+        }
+        // if other team already answered correctly, they get roll
+        if (teams[other].answered && teams[other].lock) {
+          // enable roll for other
+          if (other === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 opponent correct! roll'; }
+          else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 opponent correct! roll'; }
+        }
+      }
+    }
+
+    // ---------- ROLL SCORE (slot machine) ----------
+    function initRoll(team) {
+      const state = teams[team];
+      if (state.rollActive) return;
+      state.rollActive = true;
+      const display = team === 'boys' ? boysRollDisplay : girlsRollDisplay;
+      const btn = team === 'boys' ? boysRollBtn : girlsRollBtn;
+      btn.disabled = true;
+      // possible scores (including bias 50000 for difficult)
+      const pool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000];
+      let interval = setInterval(() => {
+        const val = pool[Math.floor(Math.random() * pool.length)];
+        display.textContent = val;
+        state.rollValue = val;
+        playSound('tick');
+      }, 120);
+      state.rollInterval = interval;
+      // click again to stop
+      btn.textContent = '⏹️ STOP';
+      btn.disabled = false;
+      btn.onclick = function stopRoll() {
+        if (!state.rollActive) return;
+        clearInterval(state.rollInterval);
+        state.rollActive = false;
+        const finalVal = parseInt(display.textContent) || 0;
+        // add to score
+        if (team === 'boys') { boysTotal += finalVal; boysTotalSpan.textContent = boysTotal; }
+        else { girlsTotal += finalVal; girlsTotalSpan.textContent = girlsTotal; }
+        playSound('roll stop');
+        // update status
+        if (team === 'boys') { boysStatus.textContent = `➕ ${finalVal} added`; boysRollBtn.disabled = true; }
+        else { girlsStatus.textContent = `➕ ${finalVal} added`; girlsRollBtn.disabled = true; }
+        btn.textContent = '🎲 ROLL SCORE';
+        btn.onclick = null;
+        // enable next for both
+        boysNextBtn.disabled = false;
+        girlsNextBtn.disabled = false;
+        // if other team hasn't rolled yet, they can still roll if correct
+        const other = team === 'boys' ? 'girls' : 'boys';
+        if (teams[other].answered && teams[other].lock && !teams[other].rollActive) {
+          // other team correct but not rolled? enable their roll
+          if (other === 'boys' && boysRollBtn.disabled) { boysRollBtn.disabled = false; boysStatus.textContent = '🎲 roll now!'; }
+          else if (other === 'girls' && girlsRollBtn.disabled) { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎲 roll now!'; }
+        }
+        // reset button text
+        if (team === 'boys') boysRollBtn.textContent = '🎲 ROLL SCORE';
+        else girlsRollBtn.textContent = '🎲 ROLL SCORE';
+      };
+    }
+
+    // attach roll events
+    boysRollBtn.addEventListener('click', function(e) {
+      if (teams.boys.rollActive) {
+        // stop already handled by onclick override
+        return;
+      }
+      if (!teams.boys.answered || teams.boys.lock === false) return;
+      initRoll('boys');
+    });
+    girlsRollBtn.addEventListener('click', function(e) {
+      if (teams.girls.rollActive) return;
+      if (!teams.girls.answered || teams.girls.lock === false) return;
+      initRoll('girls');
+    });
+
+    // next button logic
+    function goNext() {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion(currentIndex);
+        // enable choices
+        boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+        girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+        boysRollBtn.disabled = true;
+        girlsRollBtn.disabled = true;
+        boysNextBtn.disabled = true;
+        girlsNextBtn.disabled = true;
+        boysStatus.textContent = '⏳ tap answer';
+        girlsStatus.textContent = '⏳ tap answer';
+        // reset roll display
+        boysRollDisplay.textContent = '0';
+        girlsRollDisplay.textContent = '0';
+      } else {
+        // game over
+        boysStatus.textContent = '🏁 GAME OVER';
+        girlsStatus.textContent = '🏁 GAME OVER';
+        boysNextBtn.disabled = true;
+        girlsNextBtn.disabled = true;
+        playSound('victory');
+      }
+    }
+    boysNextBtn.addEventListener('click', goNext);
+    girlsNextBtn.addEventListener('click', goNext);
+
+    // ---------- INIT ----------
+    renderQuestion(0);
+    // enable choices initially
+    boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+    girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+    boysNextBtn.disabled = true;
+    girlsNextBtn.disabled = true;
+    boysRollBtn.disabled = true;
+    girlsRollBtn.disabled = true;
+
+    // extra: if other team correct and roll not used, enable roll after first roll
+    // already handled in stopRoll
+
+  })();
+</script>
+</body>
+</html>
