@@ -1,704 +1,642 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-  <title>🎯 Angle Arena – Team Battle</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angle Arena · Boys vs Girls</title>
   <!-- Font & Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
-
     body {
-      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-      background: linear-gradient(145deg, #0b1a2e 0%, #1a2f44 100%);
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(145deg, #0b1a2e 0%, #1b2f47 100%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 16px;
-      margin: 0;
     }
-
-    /* main game card */
-    .game-container {
-      max-width: 1400px;
+    .game-wrapper {
+      max-width: 1300px;
       width: 100%;
       background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(2px);
-      border-radius: 64px 64px 48px 48px;
-      padding: 24px 28px 34px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 215, 0, 0.2);
-      border: 2px solid rgba(255, 215, 0, 0.3);
-      position: relative;
-      transition: all 0.2s;
+      backdrop-filter: blur(4px);
+      border-radius: 60px 60px 40px 40px;
+      padding: 20px 25px 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 1px 3px rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,215,0,0.2);
     }
-
-    /* gamified background (non‑overlapping) */
-    .game-container::before {
-      content: "⚡📐🎲";
-      position: absolute;
-      font-size: 120px;
-      opacity: 0.06;
-      top: -20px;
-      right: 20px;
-      transform: rotate(10deg);
-      pointer-events: none;
-      white-space: nowrap;
-      letter-spacing: 30px;
-      color: #ffd966;
-      z-index: 0;
-    }
-    .game-container::after {
-      content: "🔺🔻📏";
-      position: absolute;
-      font-size: 100px;
-      opacity: 0.05;
-      bottom: 10px;
-      left: 10px;
-      transform: rotate(-8deg);
-      pointer-events: none;
-      white-space: nowrap;
-      letter-spacing: 20px;
-      color: #80cbc4;
-      z-index: 0;
-    }
-
     /* scoreboard row */
     .scoreboard {
       display: flex;
       justify-content: space-between;
-      align-items: stretch;
-      gap: 16px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 2;
-    }
-
-    .team-card {
-      flex: 1 1 220px;
+      align-items: center;
+      margin-bottom: 20px;
       background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
-      border-radius: 60px;
-      padding: 16px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 8px 0 rgba(0,0,0,0.4);
-      border: 1px solid rgba(255,255,255,0.15);
-      transition: 0.2s;
-      min-width: 170px;
-    }
-
-    .team-boys { background: linear-gradient(135deg, #1e3c72, #2a5298); border-left: 6px solid #4fc3f7; }
-    .team-girls { background: linear-gradient(135deg, #6a1b4d, #9c27b0); border-left: 6px solid #f48fb1; }
-
-    .team-label {
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: #fff;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .team-label i { font-size: 1.6rem; }
-
-    .team-score {
-      background: #0f0f1f;
-      padding: 6px 18px;
-      border-radius: 40px;
-      font-size: 2.0rem;
-      font-weight: 800;
-      color: #ffe484;
-      text-shadow: 0 0 10px #f9a825;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 1px;
-      min-width: 90px;
-      text-align: center;
-    }
-
-    .reset-btn {
-      background: #c62828;
-      border: none;
-      color: white;
-      padding: 12px 28px;
-      border-radius: 60px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      box-shadow: 0 6px 0 #8e0000;
-      transition: 0.08s linear;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border: 1px solid #ff8a80;
-    }
-    .reset-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #8e0000; }
-
-    /* main question area */
-    .question-panel {
-      background: rgba(10, 20, 35, 0.8);
+      border-radius: 80px;
+      padding: 8px 25px 8px 25px;
       backdrop-filter: blur(6px);
-      border-radius: 60px;
-      padding: 24px 20px 20px;
-      margin-bottom: 24px;
-      border: 2px solid rgba(255, 215, 0, 0.25);
-      box-shadow: inset 0 0 30px rgba(0,0,0,0.6);
-      position: relative;
-      z-index: 2;
+      border: 1px solid #f7d44a;
+      box-shadow: 0 0 15px #f7b32b55;
     }
-
-    .question-header {
+    .team-score {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
+      gap: 20px;
+      font-weight: 700;
     }
-
-    .q-text {
-      font-size: 1.6rem;
-      font-weight: 600;
-      color: #f0f4ff;
-      text-shadow: 0 2px 0 #0a1a2a;
-      padding: 0 10px;
-      flex: 2 1 300px;
+    .team-badge {
+      background: #202f44;
+      padding: 6px 24px 6px 18px;
+      border-radius: 40px;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+      color: #ffd966;
+      box-shadow: inset 0 -2px 0 #f0b54a;
     }
-    .q-text i { color: #ffd54f; margin-right: 12px; }
-
-    .timer-box {
-      background: #1a2a3a;
-      padding: 10px 22px;
-      border-radius: 60px;
-      font-size: 2.0rem;
-      font-weight: 800;
-      color: #76ff03;
-      font-family: 'Courier New', monospace;
-      border: 1px solid #76ff03;
-      box-shadow: 0 0 16px #76ff0366;
+    .team-badge.boys {
+      background: #1b3b6b;
+      border-left: 6px solid #3d9eff;
+    }
+    .team-badge.girls {
+      background: #6b2f5c;
+      border-left: 6px solid #ff7eb3;
+    }
+    .score-value {
+      font-size: 2.3rem;
+      font-family: 'Fredoka One', cursive;
+      background: #0a141f;
+      padding: 0 25px;
+      border-radius: 50px;
+      color: #fae67a;
+      text-shadow: 0 0 10px #fabc2c;
+      min-width: 110px;
+      text-align: center;
       letter-spacing: 2px;
     }
+    .score-value.boys-score { color: #7bb3ff; text-shadow: 0 0 12px #3d9eff; }
+    .score-value.girls-score { color: #ff8ec4; text-shadow: 0 0 12px #ff4f9e; }
 
-    /* diagram mockup (images) */
-    .diagram-area {
+    /* main grid */
+    .game-grid {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .team-zone {
+      flex: 1 1 280px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 40px;
+      padding: 18px 12px 20px;
+      backdrop-filter: blur(2px);
+      border: 1px solid #566b84;
+      transition: all 0.2s;
+      box-shadow: 0 8px 0 #111d2b;
+    }
+    .team-zone.boys-zone { border-top: 6px solid #3d9eff; }
+    .team-zone.girls-zone { border-top: 6px solid #ff7eb3; }
+    .zone-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      text-align: center;
+      color: #e0eefe;
+      letter-spacing: 2px;
+      padding-bottom: 6px;
+      border-bottom: 2px dashed #456a8f;
+      margin-bottom: 15px;
+    }
+    .zone-title.boys-title { color: #9ac7ff; }
+    .zone-title.girls-title { color: #ffb3d1; }
+
+    /* question & diagram */
+    .question-area {
+      background: #1c2a3b;
+      border-radius: 28px;
+      padding: 18px 12px 12px;
+      margin-bottom: 20px;
+      box-shadow: inset 0 -4px 0 #0e1a26;
+    }
+    .q-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #f0f7ff;
+      background: #14212f;
+      padding: 12px 14px;
+      border-radius: 40px;
+      text-align: center;
+      margin-bottom: 12px;
+      border: 1px solid #4b6f8f;
+    }
+    .diagram-container {
+      background: #f2f6fc;
+      border-radius: 24px;
+      padding: 12px 6px;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 6px 0 12px;
-      background: rgba(0,0,0,0.25);
-      border-radius: 48px;
-      padding: 8px 8px;
-      min-height: 180px;
-      border: 1px dashed rgba(255,255,255,0.2);
+      min-height: 120px;
+      border: 2px solid #b9cfec;
+    }
+    .diagram-container img {
+      max-width: 100%;
+      max-height: 170px;
+      object-fit: contain;
+      border-radius: 16px;
+      background: white;
+      padding: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
     .diagram-placeholder {
-      font-size: 5.0rem;
-      opacity: 0.7;
-      color: #b0bec5;
-      filter: drop-shadow(0 4px 6px #00000066);
-      letter-spacing: 14px;
-      font-weight: 300;
-    }
-    .diagram-img {
-      max-width: 100%;
-      max-height: 240px;
-      border-radius: 32px;
-      background: #1a2633;
-      padding: 4px 8px;
-      border: 2px solid #ffb30055;
-      object-fit: contain;
-      width: auto;
-      height: auto;
+      font-size: 1.2rem;
+      color: #2b4a6b;
+      font-weight: 600;
+      padding: 10px;
     }
 
-    /* choices grid */
-    .choices-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin: 16px 0 8px;
-    }
-
-    .choice-btn {
-      background: #1c2e44;
-      border: 3px solid #3a5a7a;
-      border-radius: 60px;
-      padding: 18px 6px;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #e6eeff;
-      cursor: pointer;
-      transition: all 0.06s linear;
-      box-shadow: 0 7px 0 #0f1a2a;
-      text-align: center;
+    /* choices */
+    .choices {
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
       gap: 10px;
-      flex-wrap: wrap;
-      letter-spacing: 0.5px;
+      margin: 16px 0 12px;
     }
-    .choice-btn:active { transform: translateY(5px); box-shadow: 0 2px 0 #0f1a2a; }
+    .choice-btn {
+      background: #2f4057;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f0faff;
+      text-align: center;
+      box-shadow: 0 5px 0 #121e2b;
+      transition: all 0.08s linear;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      border: 1px solid #6f8aa8;
+    }
+    .choice-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #121e2b;
+    }
     .choice-btn.disabled {
       opacity: 0.5;
-      filter: grayscale(0.6);
       pointer-events: none;
-      transform: scale(0.97);
+      filter: grayscale(0.6);
     }
-    .choice-btn.correct-reveal { background: #2e7d32; border-color: #76ff03; box-shadow: 0 0 20px #76ff03; }
-    .choice-btn.wrong-reveal { background: #b71c1c; border-color: #ff1744; }
-    .choice-btn .letter { background: #00000055; padding: 0 14px; border-radius: 40px; }
+    .choice-btn.correct-reveal {
+      background: #2a9d8f;
+      border-color: #b8f2e6;
+      box-shadow: 0 0 20px #2a9d8faa;
+    }
+    .choice-btn.wrong-reveal {
+      background: #b13e4b;
+      border-color: #ffb3b3;
+    }
 
-    /* action row: next & roll */
     .action-row {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      margin: 20px 0 10px;
-    }
-
-    .roll-score-area {
-      display: flex;
       align-items: center;
-      gap: 14px;
-      background: #0f1f2f;
-      padding: 6px 18px 6px 14px;
-      border-radius: 80px;
-      border: 1px solid #fdd835;
+      margin-top: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
-    .roll-btn {
-      background: #f9a825;
+    .roll-score-btn {
+      background: #f5b042;
       border: none;
-      border-radius: 60px;
-      padding: 14px 30px;
+      border-radius: 40px;
+      padding: 12px 18px;
       font-weight: 800;
-      font-size: 1.3rem;
-      color: #1a1a2e;
-      box-shadow: 0 7px 0 #b37b1e;
-      transition: 0.05s linear;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .roll-btn:active { transform: translateY(5px); box-shadow: 0 2px 0 #b37b1e; }
-    .roll-btn:disabled { opacity: 0.4; transform: translateY(4px); box-shadow: 0 2px 0 #b37b1e; pointer-events: none; }
-
-    .slot-display {
-      background: #0a0f18;
-      padding: 8px 24px;
-      border-radius: 60px;
-      font-size: 2.4rem;
-      font-weight: 800;
-      font-family: 'Courier New', monospace;
-      color: #ffd54f;
-      min-width: 130px;
-      text-align: center;
-      border: 1px solid #fdd835;
-      letter-spacing: 2px;
-    }
-
-    .next-btn {
-      background: #2a6f97;
-      border: none;
-      padding: 14px 42px;
-      border-radius: 60px;
-      font-weight: 700;
-      font-size: 1.4rem;
-      color: white;
-      box-shadow: 0 7px 0 #154360;
-      transition: 0.05s linear;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .next-btn:active { transform: translateY(5px); box-shadow: 0 2px 0 #154360; }
-    .next-btn:disabled { opacity: 0.4; transform: translateY(4px); box-shadow: 0 2px 0 #154360; pointer-events: none; }
-
-    .status-msg {
-      text-align: center;
       font-size: 1.2rem;
-      font-weight: 500;
-      color: #c9d6e8;
-      min-height: 2.2rem;
-      margin: 6px 0 0;
+      color: #1a1f2b;
+      box-shadow: 0 5px 0 #9e6d28;
+      flex: 1;
+      transition: 0.06s linear;
+      cursor: pointer;
+      text-shadow: 0 1px 0 #ffe18f;
+      border: 1px solid #ffe28b;
+    }
+    .roll-score-btn:active {
+      transform: translateY(5px);
+      box-shadow: 0 0 0 #9e6d28;
+    }
+    .roll-score-btn:disabled {
+      opacity: 0.5;
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #6e4d1e;
+      pointer-events: none;
+    }
+    .next-btn {
+      background: #48a0d6;
+      border: none;
+      border-radius: 40px;
+      padding: 12px 22px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #0d1f2e;
+      box-shadow: 0 5px 0 #1f5a7a;
+      cursor: pointer;
+      transition: 0.06s linear;
+      border: 1px solid #8fcbff;
+      flex: 1;
+    }
+    .next-btn:active {
+      transform: translateY(5px);
+      box-shadow: 0 0 0 #1f5a7a;
+    }
+    .next-btn:disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .roll-display {
+      background: #0b1a28;
+      border-radius: 40px;
+      padding: 6px 20px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ffd966;
+      min-width: 110px;
+      text-align: center;
+      border: 1px solid #f7c948;
+      font-family: 'Fredoka One', cursive;
     }
 
-    /* responsiveness */
-    @media (max-width: 750px) {
-      .game-container { padding: 16px; }
-      .q-text { font-size: 1.3rem; }
-      .choice-btn { font-size: 1.2rem; padding: 14px 4px; }
-      .team-score { font-size: 1.6rem; min-width: 70px; }
+    /* status */
+    .turn-indicator {
+      text-align: center;
+      margin-top: 8px;
+      font-weight: 600;
+      color: #bdd4f0;
+      background: #142433;
+      border-radius: 40px;
+      padding: 6px;
+      font-size: 0.9rem;
     }
-    @media (max-width: 500px) {
-      .choices-grid { grid-template-columns: 1fr; gap: 8px; }
-      .roll-score-area { flex-wrap: wrap; justify-content: center; }
+    .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    @media (max-width: 850px) {
+      .scoreboard { flex-direction: column; align-items: stretch; gap: 10px; }
+      .team-score { justify-content: center; }
     }
+    /* hidden helper */
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-<div class="game-container" id="app">
-  <!-- scoreboard -->
+<div class="game-wrapper" id="app">
+  <!-- Scoreboard -->
   <div class="scoreboard">
-    <div class="team-card team-boys">
-      <span class="team-label"><i class="fas fa-mars"></i> Boys</span>
-      <span class="team-score" id="scoreBoys">0</span>
-    </div>
-    <button class="reset-btn" id="resetGame"><i class="fas fa-undo-alt"></i> Reset</button>
-    <div class="team-card team-girls">
-      <span class="team-label"><i class="fas fa-venus"></i> Girls</span>
-      <span class="team-score" id="scoreGirls">0</span>
-    </div>
+    <div class="team-score"><span class="team-badge boys">⚔️ BOYS</span><span class="score-value boys-score" id="boysTotal">0</span></div>
+    <div style="font-size:1.1rem; color:#b9d0f0; background:#0e1d2b; padding:4px 20px; border-radius:40px;">⏳ 15s / 20s / 30s</div>
+    <div class="team-score"><span class="team-badge girls">🌸 GIRLS</span><span class="score-value girls-score" id="girlsTotal">0</span></div>
   </div>
 
-  <!-- question panel -->
-  <div class="question-panel">
-    <div class="question-header">
-      <div class="q-text" id="questionText"><i class="fas fa-angle-double-right"></i> Question</div>
-      <div class="timer-box" id="timerDisplay">⏳ 20</div>
-    </div>
-
-    <!-- diagram area (image or placeholder) -->
-    <div class="diagram-area" id="diagramArea">
-      <div class="diagram-placeholder" id="diagramPlaceholder">📐 🔺</div>
-      <img id="diagramImg" class="diagram-img" style="display:none;" alt="diagram" />
-    </div>
-
-    <!-- choices -->
-    <div class="choices-grid" id="choicesContainer">
-      <button class="choice-btn" data-choice="a"><span class="letter">A</span> <span id="choiceA">90°</span></button>
-      <button class="choice-btn" data-choice="b"><span class="letter">B</span> <span id="choiceB">180°</span></button>
-      <button class="choice-btn" data-choice="c"><span class="letter">C</span> <span id="choiceC">270°</span></button>
-    </div>
-
-    <!-- action row -->
-    <div class="action-row">
-      <div class="roll-score-area">
-        <button class="roll-btn" id="rollBtn"><i class="fas fa-dice"></i> Roll Score</button>
-        <span class="slot-display" id="slotDisplay">🎲</span>
+  <div class="game-grid">
+    <!-- BOYS ZONE -->
+    <div class="team-zone boys-zone" id="boysZone">
+      <div class="zone-title boys-title">⚡ BOYS</div>
+      <div class="question-area" id="boysQuestionArea">
+        <div class="q-text" id="boysQtext">Question loads here</div>
+        <div class="diagram-container" id="boysDiagram"><div class="diagram-placeholder">📐 Diagram</div></div>
       </div>
-      <button class="next-btn" id="nextBtn"><i class="fas fa-forward"></i> Next</button>
+      <div class="choices" id="boysChoices"></div>
+      <div class="action-row">
+        <button class="roll-score-btn" id="boysRollBtn">🎲 ROLL SCORE</button>
+        <span class="roll-display" id="boysRollDisplay">0</span>
+        <button class="next-btn" id="boysNextBtn">⏩ NEXT</button>
+      </div>
+      <div class="turn-indicator" id="boysStatus">✅ ready</div>
     </div>
-    <div class="status-msg" id="statusMsg">💡 Tap answer, then roll score!</div>
+
+    <!-- GIRLS ZONE -->
+    <div class="team-zone girls-zone" id="girlsZone">
+      <div class="zone-title girls-title">🌸 GIRLS</div>
+      <div class="question-area" id="girlsQuestionArea">
+        <div class="q-text" id="girlsQtext">Question loads here</div>
+        <div class="diagram-container" id="girlsDiagram"><div class="diagram-placeholder">📐 Diagram</div></div>
+      </div>
+      <div class="choices" id="girlsChoices"></div>
+      <div class="action-row">
+        <button class="roll-score-btn" id="girlsRollBtn">🎲 ROLL SCORE</button>
+        <span class="roll-display" id="girlsRollDisplay">0</span>
+        <button class="next-btn" id="girlsNextBtn">⏩ NEXT</button>
+      </div>
+      <div class="turn-indicator" id="girlsStatus">✅ ready</div>
+    </div>
   </div>
 </div>
 
 <script>
-  (function(){
-    "use strict";
-
-    // ----- QUESTIONS (15) -----
-    const QUESTIONS = [
-      { q: 'Name the part of protractor indicated by the arrow.', img: 'Q1.jpg', a: 'center mark', b: 'degree mark', c: 'zero edges', correct: 'a', diff: 'easy' },
-      { q: 'Name the part of protractor indicated by the arrow.', img: 'Q2.jpg', a: 'center mark', b: 'degree mark', c: 'zero edges', correct: 'b', diff: 'easy' },
-      { q: 'Name the part of protractor indicated by the arrow.', img: 'Q3.jpg', a: 'center mark', b: 'degree mark', c: 'zero edges', correct: 'c', diff: 'easy' },
-      { q: 'Name the angle.', img: 'Q4.jpg', a: '∠PQR', b: '∠RPQ', c: '∠QRP', correct: 'a', diff: 'average' },
-      { q: 'Name the vertex.', img: 'Q5.jpg', a: 'Dot N', b: 'Angle N', c: 'Point N or .N', correct: 'c', diff: 'average' },
-      { q: 'Name the arms.', img: 'Q6.jpg', a: 'segment CH and segment CK', b: 'line HC and line KC', c: 'ray CH and ray CK', correct: 'c', diff: 'average' },
-      { q: '……. is an angle measures bigger than 0° but smaller than 90°', img: null, a: 'Acute angle', b: 'Right angle', c: 'Obtuse angle', correct: 'a', diff: 'easy' },
-      { q: 'What type of angle is shown in the diagram?', img: 'Q8.jpg', a: 'Acute angle', b: 'Right angle', c: 'Obtuse angle', correct: 'b', diff: 'average' },
-      { q: 'What type of angle is ∠SUN = 150°?', img: 'Q9.jpg', a: 'Acute angle', b: 'Right angle', c: 'Obtuse angle', correct: 'c', diff: 'average' },
-      { q: '……. is an angle measures exactly 180°.', img: null, a: 'Right angle', b: 'Obtuse angle', c: 'Straight angle', correct: 'c', diff: 'easy' },
-      { q: 'Look at the figure. How many acute angles are there?', img: 'Q11.jpg', a: '1', b: '2', c: '3', correct: 'b', diff: 'hard' },
-      { q: 'Look at the figure. How many right angles?', img: 'Q12.jpg', a: '3', b: '12', c: '14', correct: 'b', diff: 'hard' },
-      { q: 'Measure and read the angle shown in the diagram.', img: 'Q13.jpg', a: '50°', b: '105°', c: '165°', correct: 'b', diff: 'average' },
-      { q: 'Find angle b.', img: 'Q14.jpg', a: '30°', b: '42°', c: '52°', correct: 'b', diff: 'hard' },
-      { q: 'Find angle a.', img: 'Q15.jpg', a: '144°', b: '180°', c: '324°', correct: 'a', diff: 'hard' }
+  (function() {
+    // ---------- QUESTIONS DATA (all 15, using images from attachments) ----------
+    const questions = [
+      { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
+      { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 15 },
+      { q: "3) Name the part of protractor indicated by the arrow.", img: "Q3.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 2, time: 15 },
+      { q: "4) Name the angle.", img: "Q4.jpg", choices: ["a) angle PQR", "b) angle RPQ", "c) angle QRP"], correct: 0, time: 15 },
+      { q: "5) Name the vertex.", img: "Q5.jpg", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], correct: 2, time: 15 },
+      { q: "6) Name the arms.", img: "Q6.jpg", choices: ["a) line segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 15 },
+      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", img: "Q7.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 15 },
+      { q: "8) What type of angle is 90°?", img: "Q8.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 1, time: 15 },
+      { q: "9) What type of angle is ∠SUN = 150° ?", img: "Q9.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 2, time: 20 },
+      { q: "10) ……. is an angle measures exactly 180°.", img: "Q10.jpg", choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 20 },
+      { q: "11) Look at the figure. How many acute angles?", img: "Q11.jpg", choices: ["a) 1", "b) 2", "c) 3"], correct: 1, time: 20 },
+      { q: "12) Look at the figure. How many right angles?", img: "Q12.jpg", choices: ["a) 3", "b) 12", "c) 14"], correct: 1, time: 20 },
+      { q: "13) Measure and read the angle shown.", img: "Q13.jpg", choices: ["a) 50°", "b) 105°", "c) 165°"], correct: 1, time: 30 },
+      { q: "14) Find angle b̂.", img: "Q14.jpg", choices: ["a) 30°", "b) 42°", "c) 52°"], correct: 1, time: 30 },
+      { q: "15) Find angle â.", img: "Q15.jpg", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 30 }
     ];
 
-    // ----- STATE -----
+    // ---------- GAME STATE ----------
     let currentIndex = 0;
-    let scores = { boys: 0, girls: 0 };
-    let timerInterval = null;
-    let timeLeft = 20;
-    let isAnswered = false;          // true if a team already answered
-    let correctAnswer = 'a';
-    let currentDiff = 'easy';
-    let slotInterval = null;
-    let slotActive = false;
-    let slotValue = 0;
-    let teamTurn = 'boys';           // which team gets the roll
-    let isRollLocked = false;        // prevent double roll
-    let gameLocked = false;          // block answers after reveal
+    // team states
+    const teams = {
+      boys: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false },
+      girls: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false }
+    };
+    let boysTotal = 0, girlsTotal = 0;
 
     // DOM refs
-    const qText = document.getElementById('questionText');
-    const timerDisplay = document.getElementById('timerDisplay');
-    const choices = document.querySelectorAll('.choice-btn');
-    const choiceA = document.getElementById('choiceA');
-    const choiceB = document.getElementById('choiceB');
-    const choiceC = document.getElementById('choiceC');
-    const statusMsg = document.getElementById('statusMsg');
-    const nextBtn = document.getElementById('nextBtn');
-    const rollBtn = document.getElementById('rollBtn');
-    const slotDisplay = document.getElementById('slotDisplay');
-    const scoreBoys = document.getElementById('scoreBoys');
-    const scoreGirls = document.getElementById('scoreGirls');
-    const resetBtn = document.getElementById('resetGame');
-    const diagramImg = document.getElementById('diagramImg');
-    const diagramPlaceholder = document.getElementById('diagramPlaceholder');
+    const boysQtext = document.getElementById('boysQtext');
+    const girlsQtext = document.getElementById('girlsQtext');
+    const boysDiagram = document.getElementById('boysDiagram');
+    const girlsDiagram = document.getElementById('girlsDiagram');
+    const boysChoices = document.getElementById('boysChoices');
+    const girlsChoices = document.getElementById('girlsChoices');
+    const boysStatus = document.getElementById('boysStatus');
+    const girlsStatus = document.getElementById('girlsStatus');
+    const boysRollBtn = document.getElementById('boysRollBtn');
+    const girlsRollBtn = document.getElementById('girlsRollBtn');
+    const boysRollDisplay = document.getElementById('boysRollDisplay');
+    const girlsRollDisplay = document.getElementById('girlsRollDisplay');
+    const boysNextBtn = document.getElementById('boysNextBtn');
+    const girlsNextBtn = document.getElementById('girlsNextBtn');
+    const boysTotalSpan = document.getElementById('boysTotal');
+    const girlsTotalSpan = document.getElementById('girlsTotal');
 
-    // ----- helpers -----
-    function updateScoreUI() {
-      scoreBoys.textContent = scores.boys;
-      scoreGirls.textContent = scores.girls;
-    }
-
-    function setTimer(seconds) {
-      timeLeft = seconds;
-      timerDisplay.textContent = `⏳ ${timeLeft}`;
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timeLeft -= 1;
-        timerDisplay.textContent = `⏳ ${timeLeft}`;
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          timerDisplay.textContent = '⌛ 0';
-          if (!isAnswered) {
-            // time's up: reveal correct answer and block
-            revealCorrectAnswer();
-            statusMsg.textContent = '⏰ Time is up! Correct answer shown.';
-          }
+    // sound fx (simple web audio)
+    function playSound(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        if (type === 'correct') {
+          osc.frequency.value = 880;
+          gain.gain.value = 0.15;
+          osc.start();
+          setTimeout(() => { osc.frequency.value = 1100; }, 100);
+          setTimeout(() => { osc.stop(); }, 300);
+        } else if (type === 'wrong') {
+          osc.frequency.value = 300;
+          gain.gain.value = 0.2;
+          osc.start();
+          setTimeout(() => { osc.frequency.value = 200; }, 150);
+          setTimeout(() => { osc.stop(); }, 400);
+        } else if (type === 'tick') {
+          osc.frequency.value = 700;
+          gain.gain.value = 0.08;
+          osc.start();
+          setTimeout(() => { osc.stop(); }, 60);
+        } else if (type === 'victory') {
+          osc.frequency.value = 523;
+          gain.gain.value = 0.12;
+          osc.start();
+          setTimeout(() => { osc.frequency.value = 659; }, 120);
+          setTimeout(() => { osc.frequency.value = 784; }, 240);
+          setTimeout(() => { osc.stop(); }, 400);
+        } else { // roll stop
+          osc.frequency.value = 440;
+          gain.gain.value = 0.1;
+          osc.start();
+          setTimeout(() => { osc.stop(); }, 150);
         }
-      }, 1000);
+      } catch(e) {}
     }
 
-    function revealCorrectAnswer() {
-      if (isAnswered) return;
-      isAnswered = true;
-      gameLocked = true;
-      choices.forEach(btn => {
-        const ch = btn.dataset.choice;
-        if (ch === correctAnswer) {
-          btn.classList.add('correct-reveal');
-        } else {
-          btn.classList.add('wrong-reveal');
-        }
-        btn.classList.add('disabled');
-      });
-      // voice hint (simulated)
-      speakText(`Correct answer is ${correctAnswer.toUpperCase()}`);
-    }
-
-    function speakText(text) {
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = 0.9;
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
-      }
-    }
-
-    function loadQuestion(index) {
-      // clear any timer
-      if (timerInterval) clearInterval(timerInterval);
-      // reset answer state
-      isAnswered = false;
-      gameLocked = false;
-      // enable choices
-      choices.forEach(btn => {
-        btn.classList.remove('correct-reveal', 'wrong-reveal', 'disabled');
-      });
-      // question
-      const q = QUESTIONS[index];
-      qText.innerHTML = `<i class="fas fa-angle-double-right"></i> ${q.q}`;
-      choiceA.textContent = q.a;
-      choiceB.textContent = q.b;
-      choiceC.textContent = q.c;
-      correctAnswer = q.correct;
-      currentDiff = q.diff;
-
+    // render question for both teams
+    function renderQuestion(index) {
+      const q = questions[index];
+      if (!q) return;
+      // update text & diagram (using placeholder images)
+      boysQtext.textContent = q.q;
+      girlsQtext.textContent = q.q;
       // diagram
-      if (q.img && q.img.length > 0) {
-        diagramImg.src = q.img;
-        diagramImg.style.display = 'block';
-        diagramPlaceholder.style.display = 'none';
-        // fallback if image missing
-        diagramImg.onerror = () => { diagramImg.style.display = 'none'; diagramPlaceholder.style.display = 'block'; };
-      } else {
-        diagramImg.style.display = 'none';
-        diagramPlaceholder.style.display = 'block';
-        diagramPlaceholder.textContent = '📐 no diagram';
-      }
+      const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:170px;">` : `<div class="diagram-placeholder">📐 ${q.img || 'diagram'}</div>`;
+      boysDiagram.innerHTML = imgHtml;
+      girlsDiagram.innerHTML = imgHtml;
 
-      // set timer
-      let sec = 20;
-      if (q.diff === 'easy') sec = 15;
-      else if (q.diff === 'hard') sec = 30;
-      else sec = 20;
-      setTimer(sec);
+      // choices
+      renderChoices('boys', q.choices, q.correct);
+      renderChoices('girls', q.choices, q.correct);
 
-      // reset roll status
-      slotActive = false;
-      if (slotInterval) clearInterval(slotInterval);
-      slotDisplay.textContent = '🎲';
-      rollBtn.disabled = false;
-      isRollLocked = false;
-      statusMsg.textContent = '👆 Tap answer, then Roll Score!';
-      nextBtn.disabled = true;
+      // reset team states for this question
+      teams.boys.answered = false;
+      teams.girls.answered = false;
+      teams.boys.lock = false;
+      teams.girls.lock = false;
+      teams.boys.choiceLocked = false;
+      teams.girls.choiceLocked = false;
+      boysStatus.textContent = '⏳ tap answer';
+      girlsStatus.textContent = '⏳ tap answer';
+      boysRollBtn.disabled = true;
+      girlsRollBtn.disabled = true;
+      boysNextBtn.disabled = true;
+      girlsNextBtn.disabled = true;
+      // reset roll display
+      boysRollDisplay.textContent = '0';
+      girlsRollDisplay.textContent = '0';
+      teams.boys.rollActive = false;
+      teams.girls.rollActive = false;
+      if (teams.boys.rollInterval) clearInterval(teams.boys.rollInterval);
+      if (teams.girls.rollInterval) clearInterval(teams.girls.rollInterval);
     }
 
-    // ----- handle answer click -----
-    choices.forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        if (gameLocked || isAnswered) return;
-        const chosen = this.dataset.choice;
-        // simulate voice of choice
-        speakText(`Choice ${chosen.toUpperCase()}`);
-        // reveal correct
-        revealCorrectAnswer();
-        // check if correct
-        const isCorrect = (chosen === correctAnswer);
-        if (isCorrect) {
-          statusMsg.innerHTML = '✅ Correct! <span style="color:#76ff03;">Tap Roll Score to earn points!</span>';
-          // allow roll for both? we set teamTurn = 'boys' by default but we can let roll
-          // BUT we need to know who tapped first? we use a flag: the first tap locks. we keep it simple: both can roll after correct? 
-          // but we want only the team that tapped correct first? actually if both tap at same time we can't, but we set who tapped first.
-          // we detect first click among all choices -> the team who pressed? but we have no team selection on click.
-          // we decide: when correct answer is tapped, we set teamTurn = 'boys' if boys tap first? we need a team toggle.
-          // We'll use a simple: after correct, the roll button will ask which team? we use a toggle? I'll implement a quick "team toggle" with two buttons? but simpler: use roll button then it adds to selected team via toggle.
-          // We'll have a hidden team selector. I'll create two small buttons 'Boys' and 'Girls' under roll, but to keep UI clean we'll use a toggle.
-          // added 'teamTurn' variable. We'll set teamTurn to 'boys' or 'girls' based on a click on scoreboard? i'll add a small toggle.
-          // Actually we can have the team click on their own scoreboard to select team for roll.
-          // Let's implement: clicking on team card sets teamTurn.
-        } else {
-          statusMsg.innerHTML = '❌ Wrong! Correct answer revealed.';
-        }
-        // after reveal, enable roll button (if not already)
-        rollBtn.disabled = false;
-        nextBtn.disabled = true;  // next only after roll
-        // stop timer
-        if (timerInterval) clearInterval(timerInterval);
-        timerDisplay.textContent = '⏹️';
+    function renderChoices(team, choiceTexts, correctIdx) {
+      const container = team === 'boys' ? boysChoices : girlsChoices;
+      container.innerHTML = '';
+      choiceTexts.forEach((text, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = text;
+        btn.dataset.idx = idx;
+        btn.dataset.correct = correctIdx;
+        btn.addEventListener('click', (e) => handleChoice(team, idx, correctIdx, btn));
+        container.appendChild(btn);
       });
-    });
+    }
 
-    // ----- Roll Score (slot machine) -----
-    const scorePool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000];
-
-    rollBtn.addEventListener('click', function() {
-      if (isRollLocked) return;
-      if (!slotActive) {
-        // start spinning
-        slotActive = true;
-        isRollLocked = false;
-        rollBtn.innerHTML = '<i class="fas fa-pause"></i> Stop';
-        // determine if current question is hard -> add 50000 to pool
-        let pool = [...scorePool];
-        if (currentDiff === 'hard') {
-          // add extra 50000 (bias)
-          pool.push(50000);
-        }
-        // clear old interval
-        if (slotInterval) clearInterval(slotInterval);
-        slotInterval = setInterval(() => {
-          const randomIdx = Math.floor(Math.random() * pool.length);
-          slotValue = pool[randomIdx];
-          // format with sign
-          let display = slotValue >= 0 ? `+${slotValue}` : `${slotValue}`;
-          slotDisplay.textContent = display;
-        }, 80);
-        statusMsg.textContent = '🎰 Rolling ... press Stop to lock!';
-        // disable answer choices
-        choices.forEach(b => b.classList.add('disabled'));
-      } else {
-        // STOP spin
-        slotActive = false;
-        if (slotInterval) clearInterval(slotInterval);
-        rollBtn.innerHTML = '<i class="fas fa-dice"></i> Roll Score';
-        // add score to teamTurn
-        const team = teamTurn; // 'boys' or 'girls'
-        if (team === 'boys') {
-          scores.boys += slotValue;
-        } else {
-          scores.girls += slotValue;
-        }
-        updateScoreUI();
-        // show message
-        statusMsg.innerHTML = `🎯 ${team==='boys'?'Boys':'Girls'} got ${slotValue>=0?'+':''}${slotValue}!`;
-        // enable next button
-        nextBtn.disabled = false;
-        // enable choices? no, keep locked until next.
-        isRollLocked = true; // prevent roll again until next
-        rollBtn.disabled = true;
-        // voice
-        speakText(`${team} scores ${slotValue}`);
-        // unlock answer? no
-        // reset slot display after a moment? keep value
+    function handleChoice(team, idx, correctIdx, btnEl) {
+      const state = teams[team];
+      if (state.lock || state.answered) return;
+      // check if other team already answered correctly (global lock)
+      const other = team === 'boys' ? 'girls' : 'boys';
+      if (teams[other].answered && teams[other].lock) {
+        // other team got it first, block
+        state.lock = true;
+        return;
       }
+      // lock this team answer
+      state.lock = true;
+      state.answered = true;
+      const isCorrect = (idx === correctIdx);
+      // reveal correct/wrong
+      const allBtns = team === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
+      allBtns.forEach(b => b.classList.add('disabled'));
+      if (isCorrect) {
+        btnEl.classList.add('correct-reveal');
+        playSound('correct');
+        // victory sound for team
+        setTimeout(() => playSound('victory'), 200);
+        // enable roll for this team
+        if (team === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 correct! roll score'; }
+        else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 correct! roll score'; }
+        // lock other team from answering
+        teams[other].lock = true;
+        teams[other].answered = true;
+        const otherBtns = other === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
+        otherBtns.forEach(b => b.classList.add('disabled'));
+        if (other === 'boys') boysStatus.textContent = '⛔ opponent answered';
+        else girlsStatus.textContent = '⛔ opponent answered';
+        // enable roll for correct team only
+      } else {
+        btnEl.classList.add('wrong-reveal');
+        playSound('wrong');
+        // wrong answer: team cannot roll, but other team may still answer if not locked
+        state.lock = true; // but not answered correctly
+        // check if other team already correct? if not, they can still answer
+        if (!teams[other].answered) {
+          // other team can still try
+          if (other === 'boys') boysStatus.textContent = '❌ wrong, other can answer';
+          else girlsStatus.textContent = '❌ wrong, other can answer';
+        } else {
+          // both wrong or other correct already
+        }
+        // if other team already answered correctly, they get roll
+        if (teams[other].answered && teams[other].lock) {
+          // enable roll for other
+          if (other === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 opponent correct! roll'; }
+          else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 opponent correct! roll'; }
+        }
+      }
+    }
+
+    // ---------- ROLL SCORE (slot machine) ----------
+    function initRoll(team) {
+      const state = teams[team];
+      if (state.rollActive) return;
+      state.rollActive = true;
+      const display = team === 'boys' ? boysRollDisplay : girlsRollDisplay;
+      const btn = team === 'boys' ? boysRollBtn : girlsRollBtn;
+      btn.disabled = true;
+      // possible scores (including bias 50000 for difficult)
+      const pool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000];
+      let interval = setInterval(() => {
+        const val = pool[Math.floor(Math.random() * pool.length)];
+        display.textContent = val;
+        state.rollValue = val;
+        playSound('tick');
+      }, 120);
+      state.rollInterval = interval;
+      // click again to stop
+      btn.textContent = '⏹️ STOP';
+      btn.disabled = false;
+      btn.onclick = function stopRoll() {
+        if (!state.rollActive) return;
+        clearInterval(state.rollInterval);
+        state.rollActive = false;
+        const finalVal = parseInt(display.textContent) || 0;
+        // add to score
+        if (team === 'boys') { boysTotal += finalVal; boysTotalSpan.textContent = boysTotal; }
+        else { girlsTotal += finalVal; girlsTotalSpan.textContent = girlsTotal; }
+        playSound('roll stop');
+        // update status
+        if (team === 'boys') { boysStatus.textContent = `➕ ${finalVal} added`; boysRollBtn.disabled = true; }
+        else { girlsStatus.textContent = `➕ ${finalVal} added`; girlsRollBtn.disabled = true; }
+        btn.textContent = '🎲 ROLL SCORE';
+        btn.onclick = null;
+        // enable next for both
+        boysNextBtn.disabled = false;
+        girlsNextBtn.disabled = false;
+        // if other team hasn't rolled yet, they can still roll if correct
+        const other = team === 'boys' ? 'girls' : 'boys';
+        if (teams[other].answered && teams[other].lock && !teams[other].rollActive) {
+          // other team correct but not rolled? enable their roll
+          if (other === 'boys' && boysRollBtn.disabled) { boysRollBtn.disabled = false; boysStatus.textContent = '🎲 roll now!'; }
+          else if (other === 'girls' && girlsRollBtn.disabled) { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎲 roll now!'; }
+        }
+        // reset button text
+        if (team === 'boys') boysRollBtn.textContent = '🎲 ROLL SCORE';
+        else girlsRollBtn.textContent = '🎲 ROLL SCORE';
+      };
+    }
+
+    // attach roll events
+    boysRollBtn.addEventListener('click', function(e) {
+      if (teams.boys.rollActive) {
+        // stop already handled by onclick override
+        return;
+      }
+      if (!teams.boys.answered || teams.boys.lock === false) return;
+      initRoll('boys');
+    });
+    girlsRollBtn.addEventListener('click', function(e) {
+      if (teams.girls.rollActive) return;
+      if (!teams.girls.answered || teams.girls.lock === false) return;
+      initRoll('girls');
     });
 
-    // ----- team turn selector (click on team card) -----
-    document.querySelector('.team-boys').addEventListener('click', function() {
-      teamTurn = 'boys';
-      statusMsg.innerHTML = '👦 Boys selected for next roll.';
-    });
-    document.querySelector('.team-girls').addEventListener('click', function() {
-      teamTurn = 'girls';
-      statusMsg.innerHTML = '👧 Girls selected for next roll.';
-    });
+    // next button logic
+    function goNext() {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion(currentIndex);
+        // enable choices
+        boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+        girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+        boysRollBtn.disabled = true;
+        girlsRollBtn.disabled = true;
+        boysNextBtn.disabled = true;
+        girlsNextBtn.disabled = true;
+        boysStatus.textContent = '⏳ tap answer';
+        girlsStatus.textContent = '⏳ tap answer';
+        // reset roll display
+        boysRollDisplay.textContent = '0';
+        girlsRollDisplay.textContent = '0';
+      } else {
+        // game over
+        boysStatus.textContent = '🏁 GAME OVER';
+        girlsStatus.textContent = '🏁 GAME OVER';
+        boysNextBtn.disabled = true;
+        girlsNextBtn.disabled = true;
+        playSound('victory');
+      }
+    }
+    boysNextBtn.addEventListener('click', goNext);
+    girlsNextBtn.addEventListener('click', goNext);
 
-    // ----- Next button -----
-    nextBtn.addEventListener('click', function() {
-      if (this.disabled) return;
-      currentIndex = (currentIndex + 1) % QUESTIONS.length;
-      loadQuestion(currentIndex);
-      // reset roll
-      rollBtn.disabled = false;
-      rollBtn.innerHTML = '<i class="fas fa-dice"></i> Roll Score';
-      slotDisplay.textContent = '🎲';
-      if (slotInterval) clearInterval(slotInterval);
-      slotActive = false;
-      isRollLocked = false;
-      nextBtn.disabled = true;
-      // enable choices
-      choices.forEach(b => b.classList.remove('disabled'));
-      gameLocked = false;
-      isAnswered = false;
-      statusMsg.textContent = 'New question! Tap answer.';
-    });
+    // ---------- INIT ----------
+    renderQuestion(0);
+    // enable choices initially
+    boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+    girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+    boysNextBtn.disabled = true;
+    girlsNextBtn.disabled = true;
+    boysRollBtn.disabled = true;
+    girlsRollBtn.disabled = true;
 
-    // ----- Reset -----
-    resetBtn.addEventListener('click', function() {
-      scores.boys = 0;
-      scores.girls = 0;
-      updateScoreUI();
-      currentIndex = 0;
-      loadQuestion(0);
-      if (slotInterval) clearInterval(slotInterval);
-      slotActive = false;
-      slotDisplay.textContent = '🎲';
-      rollBtn.disabled = false;
-      rollBtn.innerHTML = '<i class="fas fa-dice"></i> Roll Score';
-      nextBtn.disabled = true;
-      statusMsg.textContent = '🔄 Game reset! Start playing.';
-      teamTurn = 'boys';
-    });
+    // extra: if other team correct and roll not used, enable roll after first roll
+    // already handled in stopRoll
 
-    // ----- init -----
-    loadQuestion(0);
-
-    // extra: voice for each choice when tapped (already in click)
-
-    // make sure when answer is correct, roll can be used
-
-    // patch: if someone clicks answer after time out, block
-    // additional: if correct answer revealed, we set gameLocked true.
-
-    // add small sound effects simulation (optional)
-
-    console.log('🎯 Angle Arena loaded!');
   })();
 </script>
 </body>
