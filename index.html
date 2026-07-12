@@ -243,47 +243,66 @@
       transform: scale(1.05);
     }
 
-    .bar-score-section {
+    .roll-score-section {
       display: flex;
       justify-content: center;
       align-items: center;
       margin: 16px 0 10px;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
-    .bar-score-btn {
-      background: #f1c40f;
-      padding: 14px 40px;
-      border-radius: 20px;
+    .roll-score-btn {
+      background: linear-gradient(145deg, #f1c40f, #f39c12);
+      padding: 16px 50px;
+      border-radius: 60px;
       border: none;
-      font-size: 2rem;
-      font-weight: 800;
+      font-size: 2.2rem;
+      font-weight: 900;
       color: #0d1b2a;
-      box-shadow: 0 10px 0 #9e7d0e, 0 0 20px #f1c40f60;
+      box-shadow: 0 10px 0 #9e7d0e, 0 0 30px #f1c40f60;
       cursor: pointer;
       transition: 0.08s linear;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      min-width: 220px;
-      border: 2px solid #ffe484;
+      letter-spacing: 4px;
+      min-width: 260px;
+      border: 3px solid #ffe484;
       position: relative;
     }
 
-    .bar-score-btn:active {
+    .roll-score-btn:active {
       transform: translateY(6px);
       box-shadow: 0 4px 0 #9e7d0e;
     }
 
-    .bar-score-btn.hidden-bar {
+    .roll-score-btn.hidden-btn {
       display: none;
     }
 
-    .bar-score-btn.spinning {
+    .roll-score-btn.spinning {
       animation: pulse-glow 0.3s ease-in-out infinite alternate;
+      background: linear-gradient(145deg, #ff6b6b, #ee5a24);
+      color: white;
+      border-color: #ffd93d;
     }
 
     @keyframes pulse-glow {
-      0% { box-shadow: 0 10px 0 #9e7d0e, 0 0 20px #f1c40f60; }
-      100% { box-shadow: 0 10px 0 #9e7d0e, 0 0 40px #f1c40f, 0 0 80px #f1c40f80; }
+      0% { box-shadow: 0 10px 0 #9e7d0e, 0 0 30px #f1c40f60; }
+      100% { box-shadow: 0 10px 0 #9e7d0e, 0 0 60px #f1c40f, 0 0 100px #f1c40f80; }
+    }
+
+    .score-display-box {
+      background: #0b1622;
+      padding: 8px 30px;
+      border-radius: 60px;
+      border: 3px solid #f1c40f;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #f1c40f;
+      min-width: 160px;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      box-shadow: inset 0 0 20px #00000088;
     }
 
     .next-btn {
@@ -350,7 +369,8 @@
       .game-container { padding: 16px; }
       .choice-btn { font-size: 1.1rem; min-width: 75px; padding: 10px 8px; }
       .score-number { font-size: 1.4rem; min-width: 70px; }
-      .bar-score-btn { font-size: 1.4rem; padding: 10px 20px; min-width: 150px; }
+      .roll-score-btn { font-size: 1.5rem; padding: 12px 24px; min-width: 180px; }
+      .score-display-box { font-size: 1.8rem; min-width: 120px; padding: 6px 16px; }
       .team-choice-group { flex: 1 1 200px; }
     }
   </style>
@@ -397,8 +417,10 @@
 
     <div class="status-msg" id="statusMsg">⏳ Waiting for answers...</div>
 
-    <div class="bar-score-section">
-      <button class="bar-score-btn" id="barScoreBtn">🎲 PRESS FOR SCORE</button>
+    <!-- Roll Score Section -->
+    <div class="roll-score-section">
+      <button class="roll-score-btn" id="rollScoreBtn">🎲 ROLL SCORE</button>
+      <div class="score-display-box" id="scoreDisplay">0</div>
     </div>
 
     <div class="flex-center">
@@ -438,11 +460,11 @@
     let roundActive = false;
     let roundFinished = false;
     let winningTeam = null;
-    let barRevealed = false;
-    let barScoreValue = 0;
-    let barSpinning = false;
+    let scoreRevealed = false;
+    let finalScore = 0;
+    let isSpinning = false;
     let spinInterval = null;
-    let isBarStopped = false;
+    let isScoreAdded = false;
 
     // DOM refs
     const boysScoreEl = document.getElementById('boysScore');
@@ -452,7 +474,8 @@
     const diagramPlaceholder = document.getElementById('diagramPlaceholder');
     const diagramNumber = document.getElementById('diagramNumber');
     const timerDisplay = document.getElementById('timerDisplay');
-    const barBtn = document.getElementById('barScoreBtn');
+    const rollBtn = document.getElementById('rollScoreBtn');
+    const scoreDisplay = document.getElementById('scoreDisplay');
     const nextBtn = document.getElementById('nextBtn');
     const statusMsg = document.getElementById('statusMsg');
 
@@ -461,7 +484,7 @@
     const girlsChoices = document.querySelectorAll('#girlsChoices .choice-btn');
 
     // Score pool
-    const scorePool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000];
+    const scorePool = [1000, 2000, 3000, 4000, 5000, -1000, -2000, -3000, -5000, 10000, 20000];
 
     // ----- Helpers -----
     function speakText(text) {
@@ -512,10 +535,15 @@
           osc.start(ctx.currentTime);
           osc.stop(ctx.currentTime + 0.1);
         } else if (type === 'spin') {
-          osc.frequency.value = 440;
-          gain.gain.value = 0.1;
+          osc.frequency.value = 440 + Math.random() * 200;
+          gain.gain.value = 0.08;
           osc.start(ctx.currentTime);
-          osc.stop(ctx.currentTime + 0.05);
+          osc.stop(ctx.currentTime + 0.04);
+        } else if (type === 'score_add') {
+          osc.frequency.value = 660;
+          gain.gain.value = 0.25;
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.3);
         }
       } catch (_) {}
     }
@@ -551,15 +579,16 @@
       roundActive = true;
       roundFinished = false;
       winningTeam = null;
-      barRevealed = false;
-      isBarStopped = false;
-      barSpinning = false;
+      scoreRevealed = false;
+      isScoreAdded = false;
+      isSpinning = false;
       if (spinInterval) {
         clearInterval(spinInterval);
         spinInterval = null;
       }
-      barBtn.classList.remove('hidden-bar', 'spinning');
-      barBtn.textContent = '🎲 PRESS FOR SCORE';
+      rollBtn.classList.remove('hidden-btn', 'spinning');
+      rollBtn.textContent = '🎲 ROLL SCORE';
+      scoreDisplay.textContent = '0';
       statusMsg.textContent = '⏳ Waiting for answers...';
       resetChoices();
 
@@ -623,7 +652,7 @@
             statusMsg.textContent = '⏰ Time is up! No one scored.';
             speakText('Time is up');
             winningTeam = null;
-            // Still allow bar press but no team
+            // Still allow roll but no team
           }
         }
       }, 1000);
@@ -672,9 +701,11 @@
           });
 
           playBeep('victory');
-          barBtn.classList.remove('hidden-bar');
-          barBtn.textContent = '🎲 PRESS FOR SCORE';
-          isBarStopped = false;
+          rollBtn.classList.remove('hidden-btn');
+          rollBtn.textContent = '🎲 ROLL SCORE';
+          scoreDisplay.textContent = '0';
+          isScoreAdded = false;
+          scoreRevealed = false;
         } else {
           roundActive = false;
           roundFinished = true;
@@ -689,80 +720,96 @@
       }
     }
 
-    // ----- Bar Score with Spinning -----
-    function onBarClick() {
-      if (barRevealed) return;
+    // ----- Roll Score with Spinning -----
+    function onRollClick() {
+      // Check if round is finished
       if (!roundFinished) {
         statusMsg.textContent = '⏳ Wait for the round to finish!';
         speakText('Wait for the round to finish');
         return;
       }
-      if (!winningTeam) {
-        // If no winner (timeout), we still allow spin but add to nobody? We'll add to boys as default
-        // But we set a default winner
-        winningTeam = 'boys';
-        statusMsg.textContent = '⏰ No winner, defaulting to BOYS';
+
+      // If score already added, prevent further rolls
+      if (isScoreAdded) {
+        statusMsg.textContent = '✅ Score already added! Press NEXT to continue.';
+        speakText('Score already added');
+        return;
       }
 
-      // If already spinning, stop it
-      if (barSpinning) {
-        // Stop spinning
-        barSpinning = false;
-        barBtn.classList.remove('spinning');
+      // If no winner, set default
+      if (!winningTeam) {
+        winningTeam = 'boys';
+        statusMsg.textContent = '⏰ No winner, defaulting to BOYS';
+        speakText('No winner, defaulting to boys');
+      }
+
+      // Toggle spin
+      if (!isSpinning) {
+        // Start spinning
+        isSpinning = true;
+        rollBtn.classList.add('spinning');
+        rollBtn.textContent = '🎲 STOP!';
+        scoreDisplay.textContent = '?';
+        
+        // Clear any existing interval
+        if (spinInterval) clearInterval(spinInterval);
+        
+        // Start rapid cycling
+        spinInterval = setInterval(() => {
+          const randomScore = getRandomScore();
+          scoreDisplay.textContent = randomScore;
+          playBeep('spin');
+        }, 70);
+      } else {
+        // Stop spinning - finalize score
+        isSpinning = false;
+        rollBtn.classList.remove('spinning');
+        rollBtn.textContent = '✅ SCORE SET';
         if (spinInterval) {
           clearInterval(spinInterval);
           spinInterval = null;
         }
-        // The current displayed value is the final score
-        const finalScore = parseInt(barBtn.textContent.replace(/[^0-9-]/g, '')) || 0;
-        barScoreValue = finalScore;
-        barRevealed = true;
-        barBtn.classList.add('hidden-bar');
-
+        
+        // Get final score from display
+        const finalScoreText = scoreDisplay.textContent;
+        finalScore = parseInt(finalScoreText) || 0;
+        scoreRevealed = true;
+        isScoreAdded = true;
+        
         // Add to winning team
         if (winningTeam === 'boys') {
           boysScore += finalScore;
           statusMsg.textContent = `➕ BOYS ${finalScore > 0 ? '+' : ''}${finalScore}`;
+          speakText(`Boys get ${finalScore} points`);
         } else {
           girlsScore += finalScore;
           statusMsg.textContent = `➕ GIRLS ${finalScore > 0 ? '+' : ''}${finalScore}`;
+          speakText(`Girls get ${finalScore} points`);
         }
         updateScores();
+        playBeep('score_add');
+        
+        // Announce correct answer
         const q = questions[currentIndex];
         const correctAns = q.choices[q.answer];
-        speakText(`Score added: ${finalScore}. Correct answer is ${correctAns}`);
-        playBeep('correct');
-        return;
+        setTimeout(() => {
+          speakText(`Correct answer is ${correctAns}`);
+        }, 300);
+        
+        rollBtn.classList.add('hidden-btn');
       }
-
-      // Start spinning
-      barSpinning = true;
-      barBtn.classList.add('spinning');
-      // Generate a random starting score
-      let currentScore = getRandomScore();
-      barBtn.textContent = currentScore;
-
-      // Spin faster - update every 80ms
-      if (spinInterval) clearInterval(spinInterval);
-      spinInterval = setInterval(() => {
-        if (!barSpinning) return;
-        // Generate random score from pool
-        const newScore = getRandomScore();
-        barBtn.textContent = newScore;
-        playBeep('spin');
-      }, 80);
     }
 
     // ----- Next -----
     function onNext() {
-      if (!barRevealed && roundFinished) {
-        speakText('Press the score bar first');
-        statusMsg.textContent = '⚠️ Press the score bar first!';
+      if (!isScoreAdded && roundFinished && winningTeam) {
+        speakText('Roll the score first');
+        statusMsg.textContent = '⚠️ Roll the score first!';
         return;
       }
-      if (barSpinning) {
-        speakText('Stop the score spinner first');
-        statusMsg.textContent = '⚠️ Stop the score spinner first!';
+      if (isSpinning) {
+        speakText('Stop the spinner first');
+        statusMsg.textContent = '⚠️ Stop the spinner first!';
         return;
       }
       clearInterval(timerInterval);
@@ -770,15 +817,15 @@
         clearInterval(spinInterval);
         spinInterval = null;
       }
-      barSpinning = false;
-      barBtn.classList.remove('spinning');
+      isSpinning = false;
+      rollBtn.classList.remove('spinning');
       currentIndex = (currentIndex + 1) % questions.length;
       loadQuestion(currentIndex);
     }
 
     // ----- Event Listeners -----
     allChoiceBtns.forEach(btn => btn.addEventListener('click', onChoiceClick));
-    barBtn.addEventListener('click', onBarClick);
+    rollBtn.addEventListener('click', onRollClick);
     nextBtn.addEventListener('click', onNext);
 
     // ----- Start -----
