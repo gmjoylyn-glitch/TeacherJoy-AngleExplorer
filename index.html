@@ -450,34 +450,16 @@
         let musicEnabled = true;
         let musicNoteIndex = 0;
         
-        // Super Mario Bros theme melody (simplified)
         const marioMelody = [
-            { note: 659, dur: 150 },  // E
-            { note: 659, dur: 150 },  // E
-            { note: 659, dur: 150 },  // E
-            { note: 523, dur: 120 },  // C
-            { note: 659, dur: 120 },  // E
-            { note: 784, dur: 200 },  // G
-            { note: 392, dur: 150 },  // G
-            { note: 523, dur: 150 },  // C
-            { note: 659, dur: 150 },  // E
-            { note: 784, dur: 200 },  // G
-            { note: 659, dur: 150 },  // E
-            { note: 523, dur: 150 },  // C
-            { note: 659, dur: 150 },  // E
-            { note: 784, dur: 200 },  // G
-            { note: 659, dur: 150 },  // E
-            { note: 523, dur: 150 },  // C
-            { note: 659, dur: 150 },  // E
-            { note: 784, dur: 200 },  // G
-            { note: 659, dur: 150 },  // E
-            { note: 523, dur: 150 },  // C
-            { note: 659, dur: 150 },  // E
-            { note: 784, dur: 200 },  // G
-            { note: 988, dur: 200 },  // B
-            { note: 784, dur: 200 },  // G
-            { note: 659, dur: 150 },  // E
-            { note: 523, dur: 150 },  // C
+            { note: 659, dur: 150 }, { note: 659, dur: 150 }, { note: 659, dur: 150 },
+            { note: 523, dur: 120 }, { note: 659, dur: 120 }, { note: 784, dur: 200 },
+            { note: 392, dur: 150 }, { note: 523, dur: 150 }, { note: 659, dur: 150 },
+            { note: 784, dur: 200 }, { note: 659, dur: 150 }, { note: 523, dur: 150 },
+            { note: 659, dur: 150 }, { note: 784, dur: 200 }, { note: 659, dur: 150 },
+            { note: 523, dur: 150 }, { note: 659, dur: 150 }, { note: 784, dur: 200 },
+            { note: 659, dur: 150 }, { note: 523, dur: 150 }, { note: 659, dur: 150 },
+            { note: 784, dur: 200 }, { note: 988, dur: 200 }, { note: 784, dur: 200 },
+            { note: 659, dur: 150 }, { note: 523, dur: 150 },
         ];
 
         function startBackgroundMusic() {
@@ -487,39 +469,30 @@
                 musicGain = musicCtx.createGain();
                 musicGain.gain.value = 0.08;
                 musicGain.connect(musicCtx.destination);
-                
                 playMarioNote();
                 musicInterval = setInterval(() => {
                     if (musicEnabled && musicCtx && musicCtx.state === 'running') {
                         playMarioNote();
                     }
                 }, 180);
-            } catch(e) {
-                console.log('Music error:', e);
-            }
+            } catch(e) {}
         }
 
         function playMarioNote() {
             try {
                 if (!musicCtx || musicCtx.state !== 'running') return;
-                if (musicNoteIndex >= marioMelody.length) {
-                    musicNoteIndex = 0;
-                }
-                
+                if (musicNoteIndex >= marioMelody.length) musicNoteIndex = 0;
                 const noteData = marioMelody[musicNoteIndex];
                 const osc = musicCtx.createOscillator();
                 const gain = musicCtx.createGain();
                 osc.connect(gain);
                 gain.connect(musicGain);
-                
                 osc.frequency.value = noteData.note;
                 osc.type = 'square';
                 gain.gain.setValueAtTime(0.08, musicCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, musicCtx.currentTime + (noteData.dur / 1000));
                 osc.start(musicCtx.currentTime);
                 osc.stop(musicCtx.currentTime + (noteData.dur / 1000));
-                
-                // Add a harmony note (lower octave)
                 const osc2 = musicCtx.createOscillator();
                 const gain2 = musicCtx.createGain();
                 osc2.connect(gain2);
@@ -530,7 +503,6 @@
                 gain2.gain.exponentialRampToValueAtTime(0.001, musicCtx.currentTime + (noteData.dur / 1000));
                 osc2.start(musicCtx.currentTime);
                 osc2.stop(musicCtx.currentTime + (noteData.dur / 1000));
-                
                 musicNoteIndex++;
             } catch(e) {}
         }
@@ -592,7 +564,7 @@
         let rollActive = false;
         let rollInterval = null;
         let rollValue = 0;
-        let hasRolled = false; // Track if roll has been used
+        let hasRolled = false;
         const scores = { boys: 0, girls: 0 };
 
         // DOM refs
@@ -792,43 +764,62 @@
             girlsSelectBtn.classList.toggle('selected', selectedTeam === 'girls');
         }
 
+        // BOYS BUTTON - Working
         boysSelectBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
+            
+            // If question is locked and not rolled yet, allow team change but show message
             if (questionLocked && !hasRolled) {
-                statusMsg.textContent = '⛔ Question already answered! Roll for points or click NEXT.';
+                selectedTeam = 'boys';
+                updateTeamSelection();
+                statusMsg.innerHTML = `⚔️ BOYS selected! Now roll for points!`;
+                playSound('tick');
                 return;
             }
-            if (questionLocked && hasRolled) {
+            
+            // If already rolled, prevent change
+            if (hasRolled) {
                 statusMsg.textContent = '⛔ Already rolled! Click NEXT to continue.';
                 return;
             }
+            
             selectedTeam = 'boys';
             updateTeamSelection();
             statusMsg.innerHTML = `⚔️ BOYS selected! Tap an answer to earn points for BOYS.`;
             playSound('tick');
         });
 
+        // GIRLS BUTTON - FIXED: Now working properly
         girlsSelectBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
+            
+            // If question is locked and not rolled yet, allow team change but show message
             if (questionLocked && !hasRolled) {
-                statusMsg.textContent = '⛔ Question already answered! Roll for points or click NEXT.';
+                selectedTeam = 'girls';
+                updateTeamSelection();
+                statusMsg.innerHTML = `🌸 GIRLS selected! Now roll for points!`;
+                playSound('tick');
                 return;
             }
-            if (questionLocked && hasRolled) {
+            
+            // If already rolled, prevent change
+            if (hasRolled) {
                 statusMsg.textContent = '⛔ Already rolled! Click NEXT to continue.';
                 return;
             }
+            
             selectedTeam = 'girls';
             updateTeamSelection();
             statusMsg.innerHTML = `🌸 GIRLS selected! Tap an answer to earn points for GIRLS.`;
             playSound('tick');
         });
 
-        // ---------- ROLL SCORE - FIXED FOR BOTH TEAMS ----------
+        // ---------- ROLL SCORE ----------
         rollBtn.addEventListener('click', function() {
             // If roll is active, stop it
             if (rollActive) {
-                // Stop rolling
                 if (rollInterval) {
                     clearInterval(rollInterval);
                     rollInterval = null;
@@ -836,7 +827,6 @@
                 rollActive = false;
                 const finalVal = parseInt(rollDisplay.textContent) || 0;
                 
-                // Add to selected team's score
                 if (selectedTeam === 'boys') {
                     scores.boys += finalVal;
                     boysTotalSpan.textContent = scores.boys;
@@ -861,7 +851,7 @@
                 return;
             }
             
-            // Start rolling - check if button is enabled
+            // Start rolling
             if (rollBtn.disabled) {
                 statusMsg.textContent = '⛔ You need to answer correctly first!';
                 return;
@@ -877,14 +867,12 @@
                 return;
             }
             
-            // Start the roll
             rollActive = true;
             const pool = [1000, 2000, 3000, 4000, 5000, -1000, -2000, -3000, -5000, 10000, 20000, 50000];
             if (questions[currentIndex].time >= 30) {
                 pool.push(50000);
             }
             
-            // Clear any existing interval
             if (rollInterval) {
                 clearInterval(rollInterval);
                 rollInterval = null;
@@ -944,7 +932,7 @@
         renderQuestion(0);
         selectedTeam = 'boys';
         updateTeamSelection();
-        console.log('Game initialized - Boys selected by default');
+        console.log('Game initialized - Both team buttons working');
     })();
 </script>
 </body>
