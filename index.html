@@ -174,6 +174,17 @@
             box-shadow: 0 3px 0 #e65100;
             border-color: #ffb74d;
         }
+        .difficulty-badge {
+            font-size: 0.7rem;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .difficulty-badge.easy { background: #4caf50; color: #0d1f2e; }
+        .difficulty-badge.average { background: #ff9800; color: #0d1f2e; }
+        .difficulty-badge.difficult { background: #f44336; color: #fff; }
 
         .question-area {
             background: #1c2a3b;
@@ -198,6 +209,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         .diagram-container {
             background: #f2f6fc;
@@ -443,11 +456,12 @@
         @media (max-width: 650px) {
             .scoreboard { flex-direction: column; align-items: stretch; gap: 8px; }
             .team-score { justify-content: center; }
-            .timer-section { justify-content: center; }
+            .timer-section { justify-content: center; flex-wrap: wrap; }
             .choices { grid-template-columns: 1fr; }
             .action-row { flex-direction: column; }
             .roll-score-btn, .next-btn { width: 100%; }
             .team-select-btn { padding: 10px 20px; font-size: 1rem; min-width: 100px; }
+            .q-text { font-size: 1rem; }
         }
     </style>
 </head>
@@ -464,7 +478,10 @@
     </div>
 
     <div class="question-area">
-        <div class="q-text" id="questionText">Question loads here</div>
+        <div class="q-text" id="questionText">
+            <span>Question loads here</span>
+            <span class="difficulty-badge easy" id="difficultyBadge">EASY</span>
+        </div>
         <div class="diagram-container" id="diagramContainer"><div class="diagram-placeholder">📐 Diagram</div></div>
     </div>
 
@@ -581,23 +598,24 @@
             document.removeEventListener('click', initMusic);
         }, { once: true });
 
-        // ---------- QUESTIONS DATA ----------
+        // ---------- QUESTIONS DATA WITH REVISED TIMERS ----------
+        // Easy: 20 seconds, Average: 30 seconds, Difficult: 60 seconds
         const questions = [
-            { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
-            { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 15 },
-            { q: "3) Name the part of protractor indicated by the arrow.", img: "Q3.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 2, time: 15 },
-            { q: "4) Name the angle.", img: "Q4.jpg", choices: ["a) ∠PQR", "b) ∠RPQ", "c) ∠QRP"], correct: 0, time: 15 },
-            { q: "5) Name the vertex.", img: "Q5.jpg", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], correct: 2, time: 15 },
-            { q: "6) Name the arms.", img: "Q6.jpg", choices: ["a) segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 15 },
-            { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", img: null, choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 15 },
-            { q: "8) What type of angle is shown in the diagram?", img: "Q8.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 1, time: 15 },
-            { q: "9) What type of angle is ∠SUN = 150° ?", img: "Q9.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 2, time: 20 },
-            { q: "10) ……. is an angle measures exactly 180°.", img: null, choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 20 },
-            { q: "11) Look at the figure. How many acute angles?", img: "Q11.jpg", choices: ["a) 1", "b) 2", "c) 3"], correct: 1, time: 20 },
-            { q: "12) Look at the figure. How many right angles?", img: "Q12.jpg", choices: ["a) 3", "b) 12", "c) 14"], correct: 1, time: 20 },
-            { q: "13) Measure and read the angle shown.", img: "Q13.jpg", choices: ["a) 50°", "b) 105°", "c) 165°"], correct: 1, time: 30 },
-            { q: "14) Find angle b̂.", img: "Q14.jpg", choices: ["a) 30°", "b) 42°", "c) 52°"], correct: 1, time: 30 },
-            { q: "15) Find angle â.", img: "Q15.jpg", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 30 }
+            { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 20, difficulty: 'easy' },
+            { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 20, difficulty: 'easy' },
+            { q: "3) Name the part of protractor indicated by the arrow.", img: "Q3.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 2, time: 20, difficulty: 'easy' },
+            { q: "4) Name the angle.", img: "Q4.jpg", choices: ["a) ∠PQR", "b) ∠RPQ", "c) ∠QRP"], correct: 0, time: 20, difficulty: 'easy' },
+            { q: "5) Name the vertex.", img: "Q5.jpg", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], correct: 2, time: 20, difficulty: 'easy' },
+            { q: "6) Name the arms.", img: "Q6.jpg", choices: ["a) segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 20, difficulty: 'easy' },
+            { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", img: null, choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 20, difficulty: 'easy' },
+            { q: "8) What type of angle is shown in the diagram?", img: "Q8.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 1, time: 20, difficulty: 'easy' },
+            { q: "9) What type of angle is ∠SUN = 150° ?", img: "Q9.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 2, time: 30, difficulty: 'average' },
+            { q: "10) ……. is an angle measures exactly 180°.", img: null, choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 30, difficulty: 'average' },
+            { q: "11) Look at the figure. How many acute angles?", img: "Q11.jpg", choices: ["a) 1", "b) 2", "c) 3"], correct: 1, time: 30, difficulty: 'average' },
+            { q: "12) Look at the figure. How many right angles?", img: "Q12.jpg", choices: ["a) 3", "b) 12", "c) 14"], correct: 1, time: 30, difficulty: 'average' },
+            { q: "13) Measure and read the angle shown.", img: "Q13.jpg", choices: ["a) 50°", "b) 105°", "c) 165°"], correct: 1, time: 60, difficulty: 'difficult' },
+            { q: "14) Find angle b̂.", img: "Q14.jpg", choices: ["a) 30°", "b) 42°", "c) 52°"], correct: 1, time: 60, difficulty: 'difficult' },
+            { q: "15) Find angle â.", img: "Q15.jpg", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 60, difficulty: 'difficult' }
         ];
 
         // ---------- GAME STATE ----------
@@ -615,6 +633,7 @@
 
         // DOM refs
         const questionText = document.getElementById('questionText');
+        const difficultyBadge = document.getElementById('difficultyBadge');
         const diagramContainer = document.getElementById('diagramContainer');
         const choicesContainer = document.getElementById('choicesContainer');
         const rollBtn = document.getElementById('rollBtn');
@@ -719,7 +738,6 @@
             startTimerBtn.classList.add('running');
             startTimerBtn.disabled = true;
             
-            // Enable choices when timer starts
             document.querySelectorAll('.choice-btn').forEach(btn => {
                 if (!btn.classList.contains('disabled')) {
                     btn.style.pointerEvents = 'auto';
@@ -729,7 +747,7 @@
             timerInterval = setInterval(() => {
                 timeLeft -= 1;
                 timerDisplay.textContent = `⏳ ${timeLeft}`;
-                if (timeLeft <= 3 && timeLeft > 0) {
+                if (timeLeft <= 5 && timeLeft > 0) {
                     playSound('tick');
                 }
                 if (timeLeft <= 0) {
@@ -783,7 +801,6 @@
                 statusMsg.textContent = '⛔ Question already answered! Click NEXT.';
                 return;
             }
-            // Check if a team is selected
             const q = questions[currentIndex];
             startTimer(q.time);
             playSound('starttimer');
@@ -795,7 +812,6 @@
             const q = questions[index];
             if (!q) return;
             
-            // Stop any running timer
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
@@ -807,7 +823,14 @@
             timerStarted = false;
             if (rollInterval) clearInterval(rollInterval);
             
-            questionText.textContent = q.q;
+            // Update question text with difficulty badge
+            const difficultyLabels = { easy: 'EASY', average: 'AVERAGE', difficult: 'DIFFICULT' };
+            const difficultyColors = { easy: 'easy', average: 'average', difficult: 'difficult' };
+            difficultyBadge.textContent = difficultyLabels[q.difficulty] || 'EASY';
+            difficultyBadge.className = `difficulty-badge ${difficultyColors[q.difficulty] || 'easy'}`;
+            
+            questionText.innerHTML = `<span>${q.q}</span>`;
+            questionText.appendChild(difficultyBadge);
 
             const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:200px;">` : `<div class="diagram-placeholder">📐 No diagram</div>`;
             diagramContainer.innerHTML = imgHtml;
@@ -819,19 +842,17 @@
             rollDisplay.textContent = '0';
             nextBtn.disabled = true;
             
-            // Reset timer display
             timerDisplay.textContent = `⏳ ${q.time}`;
             startTimerBtn.textContent = '▶ START';
             startTimerBtn.classList.remove('running');
             startTimerBtn.disabled = false;
             
-            statusMsg.innerHTML = `✅ Select a team, teacher clicks START to begin! Currently: <strong>${selectedTeam.toUpperCase()}</strong>`;
+            statusMsg.innerHTML = `✅ ${difficultyLabels[q.difficulty]} question. Select a team, teacher clicks START! Currently: <strong>${selectedTeam.toUpperCase()}</strong>`;
             
             boysSelectBtn.disabled = false;
             girlsSelectBtn.disabled = false;
             updateTeamSelection();
             
-            // Disable choices initially until timer starts
             document.querySelectorAll('.choice-btn').forEach(btn => {
                 btn.style.pointerEvents = 'none';
             });
@@ -845,7 +866,7 @@
                 btn.textContent = text;
                 btn.dataset.idx = idx;
                 btn.dataset.correct = correctIdx;
-                btn.style.pointerEvents = 'none'; // Disabled until timer starts
+                btn.style.pointerEvents = 'none';
                 btn.addEventListener('click', (e) => handleChoice(idx, correctIdx, btn));
                 choicesContainer.appendChild(btn);
             });
@@ -868,7 +889,6 @@
                 playSound('correct');
                 questionLocked = true;
                 
-                // Stop the timer
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -887,7 +907,6 @@
                 playSound('wrong');
                 statusMsg.textContent = '❌ Wrong! Correct answer revealed.';
                 questionLocked = true;
-                // Stop timer
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -1010,7 +1029,7 @@
             
             rollActive = true;
             const pool = [1000, 2000, 3000, 4000, 5000, -1000, -2000, -3000, -5000, 10000, 20000, 50000];
-            if (questions[currentIndex].time >= 30) {
+            if (questions[currentIndex].time >= 60) {
                 pool.push(50000);
             }
             
@@ -1032,7 +1051,6 @@
 
         // ---------- NEXT ----------
         function goNext() {
-            // Stop any running timer
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
@@ -1090,7 +1108,7 @@
         renderQuestion(0);
         selectedTeam = 'boys';
         updateTeamSelection();
-        console.log('Game initialized - Teacher controls the timer!');
+        console.log('Game initialized - Revised timers: Easy=20s, Average=30s, Difficult=60s');
     })();
 </script>
 </body>
