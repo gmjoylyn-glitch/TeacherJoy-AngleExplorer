@@ -310,7 +310,7 @@
             font-family: 'Fredoka One', cursive;
         }
 
-        /* Team Selection Buttons */
+        /* Team Selection Buttons - FIXED */
         .team-selector {
             display: flex;
             gap: 15px;
@@ -319,15 +319,16 @@
             flex-wrap: wrap;
         }
         .team-select-btn {
-            padding: 12px 40px;
+            padding: 14px 45px;
             border-radius: 50px;
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             border: 3px solid transparent;
             cursor: pointer;
             transition: all 0.25s ease;
             box-shadow: 0 4px 0 rgba(0,0,0,0.3);
             position: relative;
+            min-width: 140px;
         }
         .team-select-btn:active {
             transform: translateY(3px);
@@ -338,7 +339,7 @@
             color: #9ac7ff;
             border-color: #3d9eff;
         }
-        .team-select-btn.boys-btn:hover {
+        .team-select-btn.boys-btn:hover:not(:disabled) {
             background: #2a5298;
             transform: scale(1.03);
         }
@@ -347,13 +348,14 @@
             color: #0b1a2e;
             box-shadow: 0 0 30px #3d9effaa, 0 4px 0 #1a3a6a;
             transform: scale(1.05);
+            border-color: #7bb3ff;
         }
         .team-select-btn.girls-btn {
             background: #6b2f5c;
             color: #ffb3d1;
             border-color: #ff7eb3;
         }
-        .team-select-btn.girls-btn:hover {
+        .team-select-btn.girls-btn:hover:not(:disabled) {
             background: #8a3d78;
             transform: scale(1.03);
         }
@@ -362,6 +364,7 @@
             color: #2a1a22;
             box-shadow: 0 0 30px #ff7eb3aa, 0 4px 0 #6a2f5c;
             transform: scale(1.05);
+            border-color: #ffb3d1;
         }
         .team-select-btn:disabled {
             opacity: 0.4;
@@ -409,7 +412,7 @@
             .choices { grid-template-columns: 1fr; }
             .action-row { flex-direction: column; }
             .roll-score-btn, .next-btn { width: 100%; }
-            .team-select-btn { padding: 10px 20px; font-size: 1rem; }
+            .team-select-btn { padding: 10px 20px; font-size: 1rem; min-width: 100px; }
         }
     </style>
 </head>
@@ -438,7 +441,7 @@
         <button class="next-btn" id="nextBtn">⏩ NEXT</button>
     </div>
 
-    <!-- Team Selector -->
+    <!-- Team Selector - FIXED with proper event handling -->
     <div class="team-selector">
         <button class="team-select-btn boys-btn selected" id="boysSelectBtn">⚔️ BOYS</button>
         <button class="team-select-btn girls-btn" id="girlsSelectBtn">🌸 GIRLS</button>
@@ -721,13 +724,15 @@
             }
         }
 
-        // ---------- TEAM SELECTION ----------
+        // ---------- TEAM SELECTION - FIXED ----------
         function updateTeamSelection() {
             boysSelectBtn.classList.toggle('selected', selectedTeam === 'boys');
             girlsSelectBtn.classList.toggle('selected', selectedTeam === 'girls');
         }
 
-        boysSelectBtn.addEventListener('click', function() {
+        // Boys button - properly working
+        boysSelectBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             if (questionLocked) {
                 statusMsg.textContent = '⛔ Question already answered! Click NEXT to continue.';
                 return;
@@ -735,9 +740,12 @@
             selectedTeam = 'boys';
             updateTeamSelection();
             statusMsg.innerHTML = `⚔️ BOYS selected! Tap an answer to earn points for BOYS.`;
+            console.log('Boys selected');
         });
 
-        girlsSelectBtn.addEventListener('click', function() {
+        // Girls button - properly working
+        girlsSelectBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             if (questionLocked) {
                 statusMsg.textContent = '⛔ Question already answered! Click NEXT to continue.';
                 return;
@@ -745,6 +753,7 @@
             selectedTeam = 'girls';
             updateTeamSelection();
             statusMsg.innerHTML = `🌸 GIRLS selected! Tap an answer to earn points for GIRLS.`;
+            console.log('Girls selected');
         });
 
         // ---------- ROLL SCORE ----------
@@ -844,6 +853,7 @@
         renderQuestion(0);
         selectedTeam = 'boys';
         updateTeamSelection();
+        console.log('Game initialized - Boys selected by default');
     })();
 </script>
 </body>
