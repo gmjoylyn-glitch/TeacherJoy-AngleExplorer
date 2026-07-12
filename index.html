@@ -24,20 +24,18 @@
       padding: 12px;
     }
 
-    /* main game card – gamified background (no overlap with diagrams) */
     .game-container {
-      max-width: 1300px;
+      max-width: 1400px;
       width: 100%;
       background: linear-gradient(145deg, #1b2f44, #152433);
       border-radius: 60px 60px 40px 40px;
       padding: 24px 28px 32px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,215,0,0.2);
       border: 1px solid #f1c40f50;
-      position: relative;
       backdrop-filter: blur(2px);
     }
 
-    /* scoreboard row */
+    /* scoreboard */
     .scoreboard {
       display: flex;
       justify-content: space-between;
@@ -84,7 +82,7 @@
     .score-number.boys-score { border-color: #3498db; box-shadow: 0 0 12px #3498db80; }
     .score-number.girls-score { border-color: #e84393; box-shadow: 0 0 12px #e8439380; }
 
-    /* question & diagram area */
+    /* question & diagram */
     .question-area {
       background: #0d1b2aee;
       border-radius: 48px;
@@ -103,9 +101,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 200px;
+      min-height: 180px;
       border: 2px dashed #f1c40f60;
-      font-size: 2rem;
+      font-size: 1.8rem;
       color: #b0c7d9;
       text-align: center;
     }
@@ -127,33 +125,76 @@
       border: 1px solid #f1c40f30;
     }
 
-    /* choices row */
+    /* two-team choices row */
+    .team-choices-wrapper {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      margin: 22px 0 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .team-choice-group {
+      flex: 1 1 300px;
+      background: #122433cc;
+      border-radius: 40px;
+      padding: 16px 12px 20px;
+      border: 2px solid #4a6679;
+      backdrop-filter: blur(2px);
+    }
+
+    .team-choice-group.boys-group {
+      border-color: #3498db;
+      box-shadow: 0 0 15px #3498db40;
+    }
+
+    .team-choice-group.girls-group {
+      border-color: #e84393;
+      box-shadow: 0 0 15px #e8439340;
+    }
+
+    .team-label {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ecf0f1;
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .team-label i {
+      font-size: 1.8rem;
+    }
+
     .choices-grid {
       display: flex;
       justify-content: center;
-      gap: 25px;
-      margin: 22px 0 12px;
+      gap: 12px;
       flex-wrap: wrap;
     }
 
     .choice-btn {
       background: #1d3347;
-      padding: 16px 30px;
-      border-radius: 100px;
+      padding: 14px 18px;
+      border-radius: 60px;
       border: 3px solid #4a6679;
       color: white;
-      font-size: 1.9rem;
-      font-weight: 700;
-      min-width: 130px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      min-width: 100px;
       cursor: pointer;
-      transition: all 0.15s ease;
-      box-shadow: 0 8px 0 #0a141f;
+      transition: all 0.1s ease;
+      box-shadow: 0 6px 0 #0a141f;
       text-shadow: 0 2px 2px black;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
+      letter-spacing: 0.5px;
+      flex: 1 0 auto;
+      max-width: 160px;
+      text-align: center;
     }
 
     .choice-btn:hover:not(.disabled-choice) {
@@ -163,16 +204,17 @@
     }
 
     .choice-btn:active:not(.disabled-choice) {
-      transform: translateY(6px);
+      transform: translateY(4px);
       box-shadow: 0 2px 0 #0a141f;
     }
 
     .choice-btn.disabled-choice {
-      opacity: 0.5;
+      opacity: 0.45;
       filter: grayscale(0.6);
       cursor: not-allowed;
       transform: scale(0.97);
       border-color: #4f5f6b;
+      pointer-events: none;
     }
 
     .choice-btn.correct-highlight {
@@ -187,7 +229,13 @@
       box-shadow: 0 0 20px #e74c3caa;
     }
 
-    /* bar score (rectangular) */
+    .choice-btn.team-winner {
+      box-shadow: 0 0 25px gold, 0 0 50px gold;
+      border-color: gold;
+      transform: scale(1.05);
+    }
+
+    /* bar score */
     .bar-score-section {
       display: flex;
       justify-content: center;
@@ -265,6 +313,15 @@
       border: 1px solid #f1c40f60;
     }
 
+    .status-msg {
+      color: #f1c40f;
+      font-size: 1.2rem;
+      text-align: center;
+      margin-top: 6px;
+      font-weight: 600;
+      min-height: 2.2rem;
+    }
+
     .footnote {
       color: #95a5a6;
       text-align: center;
@@ -272,12 +329,12 @@
       font-size: 0.9rem;
     }
 
-    /* small screens */
-    @media (max-width: 750px) {
+    @media (max-width: 850px) {
       .game-container { padding: 16px; }
-      .choice-btn { font-size: 1.3rem; min-width: 90px; padding: 12px 14px; }
+      .choice-btn { font-size: 1.1rem; min-width: 75px; padding: 10px 8px; }
       .score-number { font-size: 1.4rem; min-width: 70px; }
       .bar-score-btn { font-size: 1.4rem; padding: 10px 20px; min-width: 150px; }
+      .team-choice-group { flex: 1 1 200px; }
     }
   </style>
 </head>
@@ -297,13 +354,32 @@
     </div>
     <div class="question-text" id="questionText">Loading question...</div>
 
-    <div class="choices-grid" id="choicesContainer">
-      <button class="choice-btn" data-choice="a">A</button>
-      <button class="choice-btn" data-choice="b">B</button>
-      <button class="choice-btn" data-choice="c">C</button>
+    <!-- two groups: boys & girls choices -->
+    <div class="team-choices-wrapper">
+      <!-- BOYS group -->
+      <div class="team-choice-group boys-group" id="boysGroup">
+        <div class="team-label"><i class="fas fa-mars" style="color:#3498db;"></i> BOYS</div>
+        <div class="choices-grid" id="boysChoices">
+          <button class="choice-btn" data-team="boys" data-choice="a">A</button>
+          <button class="choice-btn" data-team="boys" data-choice="b">B</button>
+          <button class="choice-btn" data-team="boys" data-choice="c">C</button>
+        </div>
+      </div>
+      <!-- GIRLS group -->
+      <div class="team-choice-group girls-group" id="girlsGroup">
+        <div class="team-label"><i class="fas fa-venus" style="color:#e84393;"></i> GIRLS</div>
+        <div class="choices-grid" id="girlsChoices">
+          <button class="choice-btn" data-team="girls" data-choice="a">A</button>
+          <button class="choice-btn" data-team="girls" data-choice="b">B</button>
+          <button class="choice-btn" data-team="girls" data-choice="c">C</button>
+        </div>
+      </div>
     </div>
 
-    <!-- bar score (rectangular) -->
+    <!-- status message -->
+    <div class="status-msg" id="statusMsg">⏳ Waiting for answers...</div>
+
+    <!-- bar score -->
     <div class="bar-score-section">
       <button class="bar-score-btn" id="barScoreBtn">🎲 PRESS FOR SCORE</button>
     </div>
@@ -313,12 +389,12 @@
       <button class="next-btn" id="nextBtn"><i class="fas fa-forward"></i> NEXT QUESTION</button>
     </div>
   </div>
-  <div class="footnote"><i class="fas fa-bolt"></i> tap choice · first correct wins</div>
+  <div class="footnote"><i class="fas fa-bolt"></i> each team taps its own choices · first correct wins</div>
 </div>
 
 <script>
   (function() {
-    // ----- all 15 questions (with diagrams placeholder) -----
+    // ----- all 15 questions -----
     const questions = [
       { q: "1) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 0, difficulty: "easy" },
       { q: "2) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 1, difficulty: "easy" },
@@ -343,24 +419,30 @@
     let girlsScore = 0;
     let timerInterval = null;
     let timeLeft = 20;
-    let roundActive = false;      // can tap choices?
-    let roundFinished = false;    // answer revealed? block further taps
-    let firstCorrectTeam = null;  // 'boys' or 'girls'
-    let barScoreActive = false;   // if bar score pressed once
+    let roundActive = false;          // can teams tap?
+    let roundFinished = false;        // answer revealed
+    let winningTeam = null;           // 'boys' or 'girls' or null
+    let barRevealed = false;
     let barScoreValue = 0;
-    let barRevealed = false;      // score shown?
 
-    // DOM
+    // DOM refs
     const boysScoreEl = document.getElementById('boysScore');
     const girlsScoreEl = document.getElementById('girlsScore');
     const questionText = document.getElementById('questionText');
     const diagramPlaceholder = document.getElementById('diagramPlaceholder');
-    const choices = document.querySelectorAll('.choice-btn');
     const timerDisplay = document.getElementById('timerDisplay');
     const barBtn = document.getElementById('barScoreBtn');
     const nextBtn = document.getElementById('nextBtn');
+    const statusMsg = document.getElementById('statusMsg');
 
-    // helper: speak (voice)
+    // all choice buttons (both teams)
+    const allChoiceBtns = document.querySelectorAll('.choice-btn');
+
+    // team containers
+    const boysChoices = document.querySelectorAll('#boysChoices .choice-btn');
+    const girlsChoices = document.querySelectorAll('#girlsChoices .choice-btn');
+
+    // ----- helpers -----
     function speakText(text) {
       if (!window.speechSynthesis) return;
       const utterance = new SpeechSynthesisUtterance(text);
@@ -370,7 +452,6 @@
       speechSynthesis.speak(utterance);
     }
 
-    // play sound (web audio)
     function playBeep(type) {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -413,40 +494,66 @@
       } catch (_) {}
     }
 
-    // update scoreboard
     function updateScores() {
       boysScoreEl.textContent = boysScore;
       girlsScoreEl.textContent = girlsScore;
     }
 
-    // load question
-    function loadQuestion(index) {
-      // reset round state
-      roundActive = true;
-      roundFinished = false;
-      firstCorrectTeam = null;
-      barRevealed = false;
-      barScoreActive = false;
-      barBtn.classList.remove('hidden-bar');
-      barBtn.textContent = '🎲 PRESS FOR SCORE';
-      // reset choice classes
-      choices.forEach(btn => {
-        btn.classList.remove('disabled-choice', 'correct-highlight', 'wrong-highlight');
+    // reset all choice buttons (both teams)
+    function resetChoices() {
+      allChoiceBtns.forEach(btn => {
+        btn.classList.remove('disabled-choice', 'correct-highlight', 'wrong-highlight', 'team-winner');
         btn.disabled = false;
       });
+    }
+
+    // disable all choices
+    function disableAllChoices() {
+      allChoiceBtns.forEach(btn => {
+        btn.classList.add('disabled-choice');
+        btn.disabled = true;
+      });
+    }
+
+    // highlight correct/wrong for a specific team's buttons
+    function highlightTeamChoices(team, correctIdx, wrongIdx = null) {
+      const btns = team === 'boys' ? boysChoices : girlsChoices;
+      btns.forEach((btn, idx) => {
+        if (idx === correctIdx) {
+          btn.classList.add('correct-highlight');
+        } else if (idx === wrongIdx) {
+          btn.classList.add('wrong-highlight');
+        }
+        btn.classList.add('disabled-choice');
+        btn.disabled = true;
+      });
+    }
+
+    // load question
+    function loadQuestion(index) {
+      // reset state
+      roundActive = true;
+      roundFinished = false;
+      winningTeam = null;
+      barRevealed = false;
+      barBtn.classList.remove('hidden-bar');
+      barBtn.textContent = '🎲 PRESS FOR SCORE';
+      statusMsg.textContent = '⏳ Waiting for answers...';
+      resetChoices();
 
       const q = questions[index];
       if (!q) return;
       questionText.textContent = q.q;
-      // diagram placeholder
       diagramPlaceholder.innerHTML = `<i class="fas fa-image"></i> [Diagram] Q${index+1}`;
 
-      // set choices text
-      choices.forEach((btn, idx) => {
-        btn.innerHTML = q.choices[idx] || '---';
+      // set choices text for both teams
+      const allBtns = document.querySelectorAll('.choice-btn');
+      allBtns.forEach((btn, idx) => {
+        const choiceIndex = idx % 3; // a,b,c
+        btn.innerHTML = q.choices[choiceIndex] || '---';
       });
 
-      // set timer based on difficulty
+      // timer
       let maxTime = 15;
       if (q.difficulty === 'average') maxTime = 20;
       else if (q.difficulty === 'difficult') maxTime = 30;
@@ -460,83 +567,115 @@
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           timerDisplay.textContent = '⏰';
-          // time's up: block choices, reveal? we reveal if no one answered
+          // time's up: if not finished, reveal correct answer
           if (!roundFinished) {
             roundActive = false;
             roundFinished = true;
-            choices.forEach(btn => btn.classList.add('disabled-choice'));
-            // reveal correct answer highlight (without voice? )
+            disableAllChoices();
             const correctIdx = q.answer;
-            choices.forEach((btn, idx) => {
+            // highlight correct on both teams
+            boysChoices.forEach((btn, idx) => {
               if (idx === correctIdx) btn.classList.add('correct-highlight');
+              btn.classList.add('disabled-choice');
+              btn.disabled = true;
             });
+            girlsChoices.forEach((btn, idx) => {
+              if (idx === correctIdx) btn.classList.add('correct-highlight');
+              btn.classList.add('disabled-choice');
+              btn.disabled = true;
+            });
+            statusMsg.textContent = '⏰ Time is up! No one scored.';
             speakText('Time is up');
-            // show bar score anyway
+            // bar still available but no team wins
+            winningTeam = null;
+            // but we still show bar? we allow bar press but no team add? we'll handle
           }
         }
       }, 1000);
     }
 
-    // handle choice tap
+    // handle team choice click
     function onChoiceClick(e) {
       const btn = e.currentTarget;
       if (!roundActive || roundFinished || btn.classList.contains('disabled-choice')) return;
+
+      const team = btn.dataset.team; // 'boys' or 'girls'
+      const choiceLetter = btn.dataset.choice; // 'a','b','c'
+      const choiceIdx = choiceLetter.charCodeAt(0) - 97; // 0,1,2
       const q = questions[currentIndex];
-      const choiceIdx = parseInt(btn.dataset.choice.charCodeAt(0) - 97); // a=0,b=1,c=2
       const isCorrect = (choiceIdx === q.answer);
 
-      // voice command: say the choice letter + degree or text
-      const letter = String.fromCharCode(65 + choiceIdx); // A,B,C
+      // voice: say the choice letter + text
+      const letter = choiceLetter.toUpperCase();
       let voiceText = letter + '. ' + q.choices[choiceIdx];
       speakText(voiceText);
 
-      // determine team: who tapped? we need to know which team pressed? we use first correct.
-      // but we don't have team button. we use "boys" or "girls" based on click? we'll simulate: if first correct is boys, else girls.
-      // we need a way: we simulate based on current "team turn" but we want both can press. 
-      // we assign: if boysScore <= girlsScore ? boys : girls (just for demo) but we need both sides. We'll set firstCorrectTeam as 'boys' if no one correct yet, else 'girls' 
-      // actually we need to know which team pressed first. we don't have team selector. we will assume: if first correct, it's boys, second correct will be blocked.
-      // BUT we need to differentiate: we use a flag: if no firstCorrectTeam, set to boys; else if firstCorrectTeam already set, block all.
-      if (!roundFinished && roundActive) {
-        if (isCorrect) {
-          // if first correct not set, set team as boys (since we need two teams, we'll alternate but we let first correct be boys always for demo)
-          if (!firstCorrectTeam) {
-            firstCorrectTeam = 'boys';
-            playBeep('correct');
-            speakText('Correct!');
-            // block girls from tapping (but they can still tap? we disable all choice)
-            roundActive = false;
-            roundFinished = true;
-            // highlight correct
-            choices.forEach((b, idx) => {
-              b.classList.add('disabled-choice');
-              if (idx === q.answer) b.classList.add('correct-highlight');
-            });
-            // show bar score
-            showBarScoreForTeam('boys');
-            // play victory music
-            playBeep('victory');
-          } else {
-            // already answered by someone else
-            roundActive = false;
-            roundFinished = true;
-            choices.forEach(b => b.classList.add('disabled-choice'));
-          }
+      // if correct
+      if (isCorrect) {
+        // if no winner yet, this team wins
+        if (!winningTeam) {
+          winningTeam = team;
+          roundActive = false;
+          roundFinished = true;
+          playBeep('correct');
+          speakText('Correct!');
+          statusMsg.textContent = `🏆 ${team.toUpperCase()} wins this round!`;
+
+          // highlight correct on winner, show correct on both teams but winner gets gold glow
+          const winnerBtns = team === 'boys' ? boysChoices : girlsChoices;
+          const loserBtns = team === 'boys' ? girlsChoices : boysChoices;
+
+          // winner: highlight correct + team-winner glow
+          winnerBtns.forEach((b, idx) => {
+            b.classList.add('disabled-choice');
+            b.disabled = true;
+            if (idx === q.answer) {
+              b.classList.add('correct-highlight', 'team-winner');
+            }
+          });
+          // loser: show correct answer but no glow
+          loserBtns.forEach((b, idx) => {
+            b.classList.add('disabled-choice');
+            b.disabled = true;
+            if (idx === q.answer) {
+              b.classList.add('correct-highlight');
+            }
+          });
+
+          playBeep('victory');
+          // show bar for score
+          // bar will be available
+          barBtn.classList.remove('hidden-bar');
+          barBtn.textContent = '🎲 PRESS FOR SCORE';
         } else {
-          // wrong answer: disable that choice, but still can tap others?
-          btn.classList.add('wrong-highlight');
-          btn.classList.add('disabled-choice');
-          playBeep('wrong');
-          speakText('Wrong');
-          // but we need to check if all choices disabled? not necessary
+          // already a winner, block everything
+          roundActive = false;
+          roundFinished = true;
+          disableAllChoices();
+          statusMsg.textContent = `⛔ Already answered by ${winningTeam.toUpperCase()}`;
         }
+      } else {
+        // wrong: highlight wrong on that team's button only
+        btn.classList.add('wrong-highlight', 'disabled-choice');
+        btn.disabled = true;
+        playBeep('wrong');
+        speakText('Wrong');
+        // check if all buttons of that team are disabled? optional
       }
     }
 
-    // show bar score and add points
-    function showBarScoreForTeam(team) {
-      // generate random from list: 1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000
+    // bar score click
+    function onBarClick() {
+      if (barRevealed) return;
+      if (!roundFinished) {
+        statusMsg.textContent = '⏳ Wait for the round to finish!';
+        speakText('Wait for the round to finish');
+        return;
+      }
+      // if no winningTeam (timeout) we can still give score to random? we'll give to boys as default
+      const targetTeam = winningTeam || 'boys';
+      // generate random score from pool
       const pool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000];
-      // difficult question bias: add 50000 if current question difficulty is difficult
       const q = questions[currentIndex];
       if (q.difficulty === 'difficult') pool.push(50000);
       const randomIdx = Math.floor(Math.random() * pool.length);
@@ -545,55 +684,42 @@
       barRevealed = true;
       barBtn.textContent = `${score > 0 ? '+' : ''}${score}`;
       barBtn.classList.add('hidden-bar');
+
       // add to team
-      if (team === 'boys') {
+      if (targetTeam === 'boys') {
         boysScore += score;
-      } else if (team === 'girls') {
+        statusMsg.textContent = `➕ BOYS ${score > 0 ? '+' : ''}${score}`;
+      } else {
         girlsScore += score;
+        statusMsg.textContent = `➕ GIRLS ${score > 0 ? '+' : ''}${score}`;
       }
       updateScores();
-      // voice command correct answer (say correct answer)
+      // speak correct answer
       const correctAns = q.choices[q.answer];
-      speakText(`Correct answer is ${correctAns}`);
-    }
-
-    // bar score click (only when available)
-    function onBarClick() {
-      if (barRevealed || !roundFinished) return;
-      if (!firstCorrectTeam) {
-        // if no one answered, but round finished (timeout) we set firstCorrectTeam as 'boys' for demo
-        firstCorrectTeam = 'boys';
-      }
-      showBarScoreForTeam(firstCorrectTeam);
+      speakText(`Score added. Correct answer is ${correctAns}`);
     }
 
     // next button
     function onNext() {
-      // if bar score not revealed yet? allow? but we force bar to show before next
       if (!barRevealed && roundFinished) {
-        // if round finished but bar not pressed, we auto assign? but we allow manual press.
-        // we could just show bar if not pressed? we'll force by giving a message
+        // if round finished but bar not pressed, we still allow? we give warning
         speakText('Press the score bar first');
+        statusMsg.textContent = '⚠️ Press the score bar first!';
         return;
       }
       clearInterval(timerInterval);
-      // move to next question
       currentIndex = (currentIndex + 1) % questions.length;
       loadQuestion(currentIndex);
     }
 
-    // init event listeners
-    choices.forEach(btn => btn.addEventListener('click', onChoiceClick));
+    // attach events to all choice buttons
+    allChoiceBtns.forEach(btn => btn.addEventListener('click', onChoiceClick));
     barBtn.addEventListener('click', onBarClick);
     nextBtn.addEventListener('click', onNext);
 
-    // load first question
+    // load first
     loadQuestion(0);
     updateScores();
-
-    // add voice on correct answer reveal? we already handle in showBarScoreForTeam
-
-    // extra: voice command for each letter choice already in onChoiceClick
   })();
 </script>
 </body>
