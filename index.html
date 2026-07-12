@@ -77,7 +77,7 @@
       box-shadow: inset 0 2px 6px #00000099;
     }
 
-    /* main question area */
+    /* question panel */
     .question-panel {
       background: #182b3b;
       border-radius: 48px;
@@ -112,7 +112,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 140px;
+      min-height: 160px;
       border: 1px solid #3a5b75;
       box-shadow: inset 0 4px 12px #00000066;
     }
@@ -131,6 +131,11 @@
       border-radius: 30px;
       letter-spacing: 1px;
       border: 1px dashed #5b7f9a;
+      text-align: center;
+    }
+    .diagram-placeholder svg {
+      display: block;
+      margin: 0 auto 8px;
     }
 
     /* choices */
@@ -208,8 +213,6 @@
       color: #ffd966;
       border: 1px solid #c9a04b;
     }
-
-    /* score-roll popup */
     .roll-popup {
       background: #1f3b4e;
       border-radius: 60px;
@@ -222,7 +225,6 @@
       min-width: 130px;
       text-align: center;
     }
-
     .footnote {
       color: #7f9bb3;
       text-align: center;
@@ -230,8 +232,6 @@
       font-weight: 500;
       letter-spacing: 0.5px;
     }
-
-    /* responsive */
     @media (max-width: 800px) {
       .game-container { padding: 16px; }
       .choice-btn { min-width: 100px; padding: 12px 20px; font-size: 1.3rem; }
@@ -242,13 +242,11 @@
 </head>
 <body>
 <div class="game-container" id="app">
-  <!-- Scoreboard -->
   <div class="scoreboard">
     <div class="team-score"><span class="team-badge boys">👦 BOYS</span><span class="score-number" id="boysScore">0</span></div>
     <div class="team-score"><span class="team-badge girls">👧 GIRLS</span><span class="score-number" id="girlsScore">0</span></div>
   </div>
 
-  <!-- Question panel -->
   <div class="question-panel">
     <div class="q-text"><span class="q-badge" id="qNumber">Q1</span> <span id="qText">Loading...</span></div>
     <div class="diagram-area" id="diagramContainer">
@@ -259,7 +257,6 @@
       <button class="choice-btn" data-choice="b">B</button>
       <button class="choice-btn" data-choice="c">C</button>
     </div>
-    <!-- timer + roll -->
     <div class="action-bar">
       <div class="timer-area" id="timerDisplay">⏱️ 15s</div>
       <div style="display: flex; gap: 12px; flex-wrap: wrap;">
@@ -273,7 +270,7 @@
 </div>
 <script>
   (function(){
-    // ---------- QUESTIONS ----------
+    // ---------- QUESTIONS with diagram generators ----------
     const questions = [
       { q: "Name the part of protractor indicated by the arrow.", diagram: "Q1.jpg", choices: ["a center mark", "a degree mark", "zero edges"], correct: 0 },
       { q: "Name the part of protractor indicated by the arrow.", diagram: "Q2.jpg", choices: ["a center mark", "a degree mark", "zero edges"], correct: 1 },
@@ -281,7 +278,7 @@
       { q: "Name the angle.", diagram: "Q4.jpg", choices: ["PQ̂R", "RP̂Q", "QR̂P"], correct: 0 },
       { q: "Name the vertex.", diagram: "Q5.jpg", choices: ["Dot N", "Angle N", "Point N or .N"], correct: 2 },
       { q: "Name the arms.", diagram: "Q6.jpg", choices: ["(CH)̅ and (CK)̅", "(HC)⃗ and (KC)⃗", "(CH)⃗ and (CK)⃗"], correct: 2 },
-      { q: "……. is an angle measures bigger than 0° but smaller than 90°", diagram: null, choices: ["Acute angle", "Right angle", "Obtuse angle"], correct: 0 },
+      { q: "……. is an angle measures bigger than 0° but smaller than 90°", diagram: "Q7.jpg", choices: ["Acute angle", "Right angle", "Obtuse angle"], correct: 0 },
       { q: "What type of angle is shown in the diagram?", diagram: "Q8.jpg", choices: ["Acute angle", "Right angle", "Obtuse angle"], correct: 1 },
       { q: "What type of angle is SÛN = 150° ?", diagram: "Q9.jpg", choices: ["Acute angle", "Right angle", "Obtuse angle"], correct: 2 },
       { q: "……. is an angle measures exactly 180°.", diagram: "Q10.jpg", choices: ["Right angle", "Obtuse angle", "Straight angle"], correct: 2 },
@@ -292,19 +289,68 @@
       { q: "Find angle â.", diagram: "Q15.jpg", choices: ["144°", "180°", "324°"], correct: 0 }
     ];
 
+    // ---------- SVG placeholders for missing images ----------
+    function getDiagramHTML(filename) {
+      // if we have the actual image, use it
+      if (['Q1.jpg','Q3.jpg','Q4.jpg','Q5.jpg','Q6.jpg','Q8.jpg','Q9.jpg','Q10.jpg','Q12.jpg','Q13.jpg','Q14.jpg'].includes(filename)) {
+        return `<img src="${filename}" alt="diagram" onerror="this.parentElement.innerHTML=\`<div class='diagram-placeholder'>📐 ${filename} not found</div>\`">`;
+      }
+      // built-in placeholders
+      if (filename === 'Q2.jpg') {
+        return `<div class="diagram-placeholder">
+          <svg width="180" height="100" viewBox="0 0 180 100"><rect x="10" y="10" width="160" height="80" fill="#1f3a4b" stroke="#7aa5c2" stroke-width="2" rx="10"/>
+          <line x1="30" y1="50" x2="150" y2="50" stroke="#ffd966" stroke-width="3" />
+          <circle cx="90" cy="50" r="6" fill="#f5c542" />
+          <text x="40" y="30" fill="#b3d9f0" font-size="14">⬆ arrow</text>
+          <text x="100" y="80" fill="#d4e8f5" font-size="12">degree marks</text>
+          </div>`;
+      }
+      if (filename === 'Q7.jpg') {
+        return `<div class="diagram-placeholder">
+          <svg width="140" height="100" viewBox="0 0 140 100"><rect x="10" y="10" width="120" height="80" fill="#1f3a4b" stroke="#7aa5c2" stroke-width="2" rx="10"/>
+          <line x1="20" y1="80" x2="70" y2="20" stroke="#ffd966" stroke-width="3" />
+          <line x1="20" y1="80" x2="110" y2="80" stroke="#ffd966" stroke-width="3" />
+          <circle cx="20" cy="80" r="5" fill="#f5c542" />
+          <text x="30" y="50" fill="#b3d9f0" font-size="14">acute</text>
+          <text x="80" y="85" fill="#d4e8f5" font-size="12">45°</text>
+          </div>`;
+      }
+      if (filename === 'Q11.jpg') {
+        return `<div class="diagram-placeholder">
+          <svg width="160" height="100" viewBox="0 0 160 100"><rect x="10" y="10" width="140" height="80" fill="#1f3a4b" stroke="#7aa5c2" stroke-width="2" rx="10"/>
+          <line x1="30" y1="70" x2="70" y2="30" stroke="#ffd966" stroke-width="3" />
+          <line x1="70" y1="30" x2="110" y2="70" stroke="#ffd966" stroke-width="3" />
+          <line x1="110" y1="70" x2="130" y2="40" stroke="#ffd966" stroke-width="3" />
+          <circle cx="30" cy="70" r="4" fill="#f5c542"/><circle cx="70" cy="30" r="4" fill="#f5c542"/><circle cx="110" cy="70" r="4" fill="#f5c542"/>
+          <text x="40" y="20" fill="#b3d9f0" font-size="12">2 acute</text>
+          </div>`;
+      }
+      if (filename === 'Q15.jpg') {
+        return `<div class="diagram-placeholder">
+          <svg width="160" height="100" viewBox="0 0 160 100"><rect x="10" y="10" width="140" height="80" fill="#1f3a4b" stroke="#7aa5c2" stroke-width="2" rx="10"/>
+          <line x1="30" y1="80" x2="80" y2="20" stroke="#ffd966" stroke-width="3" />
+          <line x1="80" y1="20" x2="130" y2="80" stroke="#ffd966" stroke-width="3" />
+          <circle cx="30" cy="80" r="5" fill="#f5c542"/>
+          <circle cx="80" cy="20" r="5" fill="#f5c542"/>
+          <circle cx="130" cy="80" r="5" fill="#f5c542"/>
+          <text x="50" y="50" fill="#b3d9f0" font-size="14">â = 144°</text>
+          </div>`;
+      }
+      return `<div class="diagram-placeholder">📐 ${filename} (placeholder)</div>`;
+    }
+
     // ---------- STATE ----------
     let currentIndex = 0;
     let boysScore = 0, girlsScore = 0;
     let timer = 15;
     let timerInterval = null;
-    let questionLocked = false;        // true after correct answer or timeout
+    let questionLocked = false;
     let correctAnswerIndex = -1;
-    let selectedTeam = null;           // 'boys' or 'girls'
+    let selectedTeam = null; // 'boys' or 'girls'
     let rollInterval = null;
     let rollActive = false;
     let currentRollValue = 0;
 
-    // DOM refs
     const qNumberEl = document.getElementById('qNumber');
     const qTextEl = document.getElementById('qText');
     const diagramContainer = document.getElementById('diagramContainer');
@@ -316,86 +362,9 @@
     const rollBtn = document.getElementById('rollScoreBtn');
     const rollPopup = document.getElementById('rollPopup');
 
-    // ---------- helpers ----------
     function updateScoresUI() {
       boysScoreEl.textContent = boysScore;
       girlsScoreEl.textContent = girlsScore;
-    }
-
-    function loadQuestion(index) {
-      // reset state
-      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-      questionLocked = false;
-      selectedTeam = null;
-      rollActive = false;
-      if (rollInterval) { clearInterval(rollInterval); rollInterval = null; }
-      rollPopup.textContent = '⚡0';
-      document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('correct-highlight', 'wrong-highlight', 'disabled'));
-
-      const q = questions[index];
-      if (!q) return;
-      qNumberEl.textContent = `Q${index+1}`;
-      qTextEl.textContent = q.q;
-      // diagram
-      diagramContainer.innerHTML = '';
-      if (q.diagram) {
-        const img = document.createElement('img');
-        img.src = q.diagram;
-        img.alt = 'diagram';
-        img.onerror = () => { diagramContainer.innerHTML = `<div class="diagram-placeholder">📐 ${q.diagram} (missing)</div>`; };
-        diagramContainer.appendChild(img);
-      } else {
-        diagramContainer.innerHTML = `<div class="diagram-placeholder">📐 no diagram</div>`;
-      }
-      // choices
-      choicesBtns.forEach((btn, idx) => {
-        btn.textContent = String.fromCharCode(65 + idx) + '. ' + q.choices[idx];
-        btn.dataset.correct = (idx === q.correct) ? 'true' : 'false';
-        btn.classList.remove('disabled');
-      });
-      correctAnswerIndex = q.correct;
-
-      // set timer based on difficulty (we use fixed: 15s easy,20s avg,30s hard) but we just map:
-      // we use 15,20,30 based on index: first 5 easy, 5-9 avg, 10-14 hard
-      let seconds = 15;
-      if (index >= 5 && index < 10) seconds = 20;
-      else if (index >= 10) seconds = 30;
-      timer = seconds;
-      timerDisplay.textContent = `⏱️ ${timer}s`;
-
-      // start timer
-      timerInterval = setInterval(() => {
-        timer--;
-        timerDisplay.textContent = `⏱️ ${timer}s`;
-        if (timer <= 0) {
-          clearInterval(timerInterval);
-          timerInterval = null;
-          timerDisplay.textContent = `⏱️ 0s`;
-          // timeout => lock and show correct
-          if (!questionLocked) {
-            questionLocked = true;
-            highlightCorrect();
-            // allow roll only if locked
-            rollBtn.disabled = false;
-          }
-        }
-      }, 1000);
-
-      // enable roll? disabled until locked
-      rollBtn.disabled = true;
-      rollPopup.textContent = '⚡0';
-      // next disabled until score roll ?
-      nextBtn.disabled = true;
-    }
-
-    function highlightCorrect() {
-      choicesBtns.forEach(btn => {
-        btn.classList.add('disabled');
-        if (btn.dataset.correct === 'true') btn.classList.add('correct-highlight');
-      });
-      // reveal correct answer with voice (simulate)
-      const correctText = questions[currentIndex].choices[correctAnswerIndex];
-      speakText(`Correct answer: ${correctText}`);
     }
 
     function speakText(text) {
@@ -408,6 +377,63 @@
       }
     }
 
+    function highlightCorrect() {
+      choicesBtns.forEach(btn => {
+        btn.classList.add('disabled');
+        if (btn.dataset.correct === 'true') btn.classList.add('correct-highlight');
+      });
+      const q = questions[currentIndex];
+      if (q) speakText(`Correct answer: ${q.choices[correctAnswerIndex]}`);
+    }
+
+    function loadQuestion(index) {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      questionLocked = false;
+      selectedTeam = null;
+      rollActive = false;
+      if (rollInterval) { clearInterval(rollInterval); rollInterval = null; }
+      rollPopup.textContent = '⚡0';
+      document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('correct-highlight', 'wrong-highlight', 'disabled'));
+
+      const q = questions[index];
+      qNumberEl.textContent = `Q${index+1}`;
+      qTextEl.textContent = q.q;
+      // diagram
+      diagramContainer.innerHTML = getDiagramHTML(q.diagram || '');
+      
+      choicesBtns.forEach((btn, idx) => {
+        btn.textContent = String.fromCharCode(65 + idx) + '. ' + q.choices[idx];
+        btn.dataset.correct = (idx === q.correct) ? 'true' : 'false';
+        btn.classList.remove('disabled');
+      });
+      correctAnswerIndex = q.correct;
+
+      let seconds = 15;
+      if (index >= 5 && index < 10) seconds = 20;
+      else if (index >= 10) seconds = 30;
+      timer = seconds;
+      timerDisplay.textContent = `⏱️ ${timer}s`;
+
+      timerInterval = setInterval(() => {
+        timer--;
+        timerDisplay.textContent = `⏱️ ${timer}s`;
+        if (timer <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          timerDisplay.textContent = `⏱️ 0s`;
+          if (!questionLocked) {
+            questionLocked = true;
+            highlightCorrect();
+            rollBtn.disabled = false;
+          }
+        }
+      }, 1000);
+
+      rollBtn.disabled = true;
+      rollPopup.textContent = '⚡0';
+      nextBtn.disabled = true;
+    }
+
     // ---------- choice handler ----------
     function handleChoice(e) {
       const btn = e.currentTarget;
@@ -415,56 +441,23 @@
       if (btn.classList.contains('disabled')) return;
       const isCorrect = btn.dataset.correct === 'true';
       const choiceLetter = btn.textContent.charAt(0);
-      speakText(choiceLetter); // voice A/B/C
+      speakText(choiceLetter);
 
-      // determine team: who tapped? we use event to know boys/girls? we assume left side boys, right side girls? but we just alternate? 
-      // We'll use: if selectedTeam is null, set to 'boys' (for demo) but we want actual interaction: we can use a toggle? 
-      // Actually requirement: "team boys tap first their answer ... team girls cannot tap anymore" 
-      // we need to know which team tapped: we can split screen but we simulate with two buttons? 
-      // Instead we use: if boys click left side of screen? we'll add two invisible areas? 
-      // For simplicity we will use 'boys' as default for first click, then 'girls' if boys already tapped? 
-      // but we need to detect team: we can use "if (selectedTeam === null) selectedTeam = 'boys'; else if (selectedTeam === 'boys') selectedTeam = 'girls'?" no.
-      // We'll implement: when a choice is clicked, if no team selected, assign 'boys' (since we need to demo). But we want both teams possible.
-      // Better: use two hidden buttons? but we keep it: we set team based on a global "currentTeam" toggle? 
-      // But requirement: "team boys tap first their answer and its correct, the team girls cannot tap ... and vice versa"
-      // We'll add a subtle team toggle: click on left side of choice = boys, right side = girls? But this is messy.
-      // I'll implement: the first correct answer locks the team that clicked. But we need to know who clicked.
-      // For simplicity, we add a small toggle: we will assume the 'click' event has a way: we use a global variable 'teamTurn' that toggles between boys/girls
-      // We'll use a quick hack:  we use two buttons "BOYS tap" and "GIRLS tap" before answering? too complex.
-      // Better: we treat the first click as 'boys' and second click as 'girls' but we need correct lock.
-      // I'll implement: when a choice is clicked, if no team selected, set to 'boys'. if boys already selected and correct, girls cannot tap. 
-      // but if boys wrong, girls can still tap. We'll implement correct lock only.
-      // But we need a way to differentiate teams: we'll add two small radio buttons? not good.
-      // I'll use a simple approach: we add a team toggle button that switches between BOYS/GIRLS. 
-      // But to keep code simple: we set team based on the first click: if selectedTeam null => selectedTeam = 'boys'; else selectedTeam = 'girls';
-      // and if the team is wrong, they can try again but if correct, lock.
-      // However requirement: "If the team boys tap first their answer and its correct, the team girls cannot tap" -> so correct locks.
-      // I will implement: first click sets team to 'boys', second click sets to 'girls' (if not locked)
-      // We also need to track if first team correct.
       if (!questionLocked) {
-        // if no team, set to boys
         if (selectedTeam === null) {
           selectedTeam = 'boys';
         } else {
-          // if already selected team is boys, we set to girls? but only if not locked
-          if (selectedTeam === 'boys') selectedTeam = 'girls';
-          else selectedTeam = 'boys';
+          selectedTeam = (selectedTeam === 'boys') ? 'girls' : 'boys';
         }
-        // check answer
         if (isCorrect) {
-          // correct answer!
           questionLocked = true;
           clearInterval(timerInterval);
           timerInterval = null;
           highlightCorrect();
-          // lock other team
           choicesBtns.forEach(b => b.classList.add('disabled'));
-          // add score? we do via roll
-          rollBtn.disabled = false; // enable roll
-          // speak correct
+          rollBtn.disabled = false;
           speakText('Correct!');
         } else {
-          // wrong answer: highlight wrong, but team can try again? we allow retry
           btn.classList.add('wrong-highlight');
           setTimeout(() => btn.classList.remove('wrong-highlight'), 400);
           speakText('Wrong');
@@ -476,36 +469,26 @@
     function rollScore() {
       if (!questionLocked) return;
       if (rollActive) {
-        // stop rolling
         if (rollInterval) {
           clearInterval(rollInterval);
           rollInterval = null;
           rollActive = false;
-          // add score to selected team
           const scoreToAdd = currentRollValue;
-          if (selectedTeam === 'boys') {
-            boysScore += scoreToAdd;
-          } else if (selectedTeam === 'girls') {
-            girlsScore += scoreToAdd;
-          } else {
-            // default boys
-            boysScore += scoreToAdd;
-          }
+          if (selectedTeam === 'boys') boysScore += scoreToAdd;
+          else if (selectedTeam === 'girls') girlsScore += scoreToAdd;
+          else boysScore += scoreToAdd;
           updateScoresUI();
           rollPopup.textContent = `🎯${scoreToAdd}`;
           speakText(`Score added ${scoreToAdd}`);
-          // enable next
           nextBtn.disabled = false;
           rollBtn.disabled = true;
         }
         return;
       }
 
-      // start rolling
       rollActive = true;
       rollBtn.disabled = false;
       const possibleScores = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000];
-      // for difficult question (index >=10) we bias 50000
       let pool = [...possibleScores];
       if (currentIndex >= 10) {
         pool = pool.concat([50000,50000,50000]);
@@ -517,41 +500,23 @@
       }, 120);
     }
 
-    // ---------- next question ----------
     function nextQuestion() {
       if (nextBtn.disabled) return;
       if (rollInterval) { clearInterval(rollInterval); rollInterval = null; rollActive = false; }
       currentIndex = (currentIndex + 1) % questions.length;
       loadQuestion(currentIndex);
-      // reset roll
       rollPopup.textContent = '⚡0';
       rollBtn.disabled = true;
       nextBtn.disabled = true;
     }
 
-    // ---------- event binding ----------
+    // ---------- bind events ----------
     choicesBtns.forEach(btn => btn.addEventListener('click', handleChoice));
     rollBtn.addEventListener('click', rollScore);
     nextBtn.addEventListener('click', nextQuestion);
 
-    // load first
     loadQuestion(0);
     updateScoresUI();
-
-    // voice on correct reveal via highlightCorrect
-    // also add voice for choice letter already in handleChoice
-
-    // extra: when correct highlighted, speak answer
-    const origHighlight = highlightCorrect;
-    highlightCorrect = function() {
-      origHighlight();
-      const q = questions[currentIndex];
-      if (q) speakText(`Answer: ${q.choices[correctAnswerIndex]}`);
-    };
-    // re-assign
-    window.highlightCorrect = highlightCorrect;
-
-    // small hack: after load we set next disabled
     nextBtn.disabled = true;
   })();
 </script>
