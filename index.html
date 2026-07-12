@@ -377,6 +377,12 @@
             box-shadow: 0 4px 0 rgba(0,0,0,0.3);
             position: relative;
             min-width: 140px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .team-select-btn.active {
+            opacity: 1;
+            pointer-events: auto;
         }
         .team-select-btn:active {
             transform: translateY(3px);
@@ -387,7 +393,7 @@
             color: #9ac7ff;
             border-color: #3d9eff;
         }
-        .team-select-btn.boys-btn:hover:not(:disabled) {
+        .team-select-btn.boys-btn:hover:not(:disabled).active {
             background: #2a5298;
             transform: scale(1.03);
         }
@@ -403,7 +409,7 @@
             color: #ffb3d1;
             border-color: #ff7eb3;
         }
-        .team-select-btn.girls-btn:hover:not(:disabled) {
+        .team-select-btn.girls-btn:hover:not(:disabled).active {
             background: #8a3d78;
             transform: scale(1.03);
         }
@@ -415,7 +421,7 @@
             border-color: #ffb3d1;
         }
         .team-select-btn:disabled {
-            opacity: 0.4;
+            opacity: 0.3;
             pointer-events: none;
             transform: scale(0.95);
         }
@@ -494,11 +500,11 @@
     </div>
 
     <div class="team-selector">
-        <button class="team-select-btn boys-btn selected" id="boysSelectBtn">⚔️ BOYS</button>
+        <button class="team-select-btn boys-btn" id="boysSelectBtn">⚔️ BOYS</button>
         <button class="team-select-btn girls-btn" id="girlsSelectBtn">🌸 GIRLS</button>
     </div>
 
-    <div class="turn-indicator" id="statusMsg">✅ Select a team, teacher clicks START to begin!</div>
+    <div class="turn-indicator" id="statusMsg">✅ Teacher: Click START to begin the round!</div>
 </div>
 
 <button class="music-control" id="musicToggle">🎵 Music: ON</button>
@@ -598,8 +604,7 @@
             document.removeEventListener('click', initMusic);
         }, { once: true });
 
-        // ---------- QUESTIONS DATA WITH REVISED TIMERS ----------
-        // Easy: 20 seconds, Average: 30 seconds, Difficult: 60 seconds
+        // ---------- QUESTIONS DATA ----------
         const questions = [
             { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 20, difficulty: 'easy' },
             { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 20, difficulty: 'easy' },
@@ -629,6 +634,7 @@
         let rollValue = 0;
         let hasRolled = false;
         let timerStarted = false;
+        let teamSelectionActive = false; // NEW: Track if team selection is active
         const scores = { boys: 0, girls: 0 };
 
         // DOM refs
@@ -738,6 +744,12 @@
             startTimerBtn.classList.add('running');
             startTimerBtn.disabled = true;
             
+            // Activate team selection buttons AFTER timer starts
+            teamSelectionActive = true;
+            boysSelectBtn.classList.add('active');
+            girlsSelectBtn.classList.add('active');
+            
+            // Enable choices
             document.querySelectorAll('.choice-btn').forEach(btn => {
                 if (!btn.classList.contains('disabled')) {
                     btn.style.pointerEvents = 'auto';
@@ -771,6 +783,9 @@
                 timerInterval = null;
             }
             timerStarted = false;
+            teamSelectionActive = false;
+            boysSelectBtn.classList.remove('active');
+            girlsSelectBtn.classList.remove('active');
             startTimerBtn.textContent = '▶ START';
             startTimerBtn.classList.remove('running');
             startTimerBtn.disabled = false;
@@ -792,6 +807,10 @@
             startTimerBtn.textContent = '⏰ DONE';
             startTimerBtn.classList.remove('running');
             startTimerBtn.disabled = true;
+            // Deactivate team selection
+            teamSelectionActive = false;
+            boysSelectBtn.classList.remove('active');
+            girlsSelectBtn.classList.remove('active');
         }
 
         // ---------- START TIMER BUTTON ----------
@@ -804,7 +823,7 @@
             const q = questions[currentIndex];
             startTimer(q.time);
             playSound('starttimer');
-            statusMsg.innerHTML = `⏱️ Timer started! <strong>${selectedTeam.toUpperCase()}</strong> selected. Tap an answer!`;
+            statusMsg.innerHTML = `⏱️ Timer started! Select a team (BOYS or GIRLS) then tap an answer!`;
         });
 
         // ---------- RENDER QUESTION ----------
@@ -821,6 +840,7 @@
             rollActive = false;
             hasRolled = false;
             timerStarted = false;
+            teamSelectionActive = false;
             if (rollInterval) clearInterval(rollInterval);
             
             // Update question text with difficulty badge
@@ -847,11 +867,18 @@
             startTimerBtn.classList.remove('running');
             startTimerBtn.disabled = false;
             
-            statusMsg.innerHTML = `✅ ${difficultyLabels[q.difficulty]} question. Select a team, teacher clicks START! Currently: <strong>${selectedTeam.toUpperCase()}</strong>`;
+            // Deactivate team selection - only active after timer starts
+            boysSelectBtn.classList.remove('active');
+            girlsSelectBtn.classList.remove('active');
+            boysSelectBtn.classList.remove('selected');
+            girlsSelectBtn.classList.remove('selected');
+            // Default to boys but not selected visually until timer starts
+            selectedTeam = 'boys';
+            
+            statusMsg.innerHTML = `✅ ${difficultyLabels[q.difficulty]} question. Teacher: Click START to begin!`;
             
             boysSelectBtn.disabled = false;
             girlsSelectBtn.disabled = false;
-            updateTeamSelection();
             
             document.querySelectorAll('.choice-btn').forEach(btn => {
                 btn.style.pointerEvents = 'none';
@@ -877,6 +904,12 @@
             if (questionLocked) return;
             if (!timerStarted) {
                 statusMsg.textContent = '⏳ Teacher must click START first!';
+                return;
+            }
+            
+            // Check if a team has been selected
+            if (!boysSelectBtn.classList.contains('selected') && !girlsSelectBtn.classList.contains('selected')) {
+                statusMsg.textContent = '⚠️ Select a team (BOYS or GIRLS) first!';
                 return;
             }
             
@@ -929,6 +962,12 @@
             e.preventDefault();
             e.stopPropagation();
             
+            // Only allow selection after timer starts (teamSelectionActive = true)
+            if (!teamSelectionActive) {
+                statusMsg.textContent = '⏳ Teacher must click START first before selecting a team!';
+                return;
+            }
+            
             if (questionLocked && !hasRolled) {
                 selectedTeam = 'boys';
                 updateTeamSelection();
@@ -942,20 +981,21 @@
                 return;
             }
             
-            if (timerStarted) {
-                statusMsg.textContent = '⛔ Timer is running! Wait or answer first.';
-                return;
-            }
-            
             selectedTeam = 'boys';
             updateTeamSelection();
-            statusMsg.innerHTML = `⚔️ BOYS selected! Teacher clicks START to begin!`;
+            statusMsg.innerHTML = `⚔️ BOYS selected! Tap an answer!`;
             playSound('tick');
         });
 
         girlsSelectBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
+            
+            // Only allow selection after timer starts (teamSelectionActive = true)
+            if (!teamSelectionActive) {
+                statusMsg.textContent = '⏳ Teacher must click START first before selecting a team!';
+                return;
+            }
             
             if (questionLocked && !hasRolled) {
                 selectedTeam = 'girls';
@@ -970,14 +1010,9 @@
                 return;
             }
             
-            if (timerStarted) {
-                statusMsg.textContent = '⛔ Timer is running! Wait or answer first.';
-                return;
-            }
-            
             selectedTeam = 'girls';
             updateTeamSelection();
-            statusMsg.innerHTML = `🌸 GIRLS selected! Teacher clicks START to begin!`;
+            statusMsg.innerHTML = `🌸 GIRLS selected! Tap an answer!`;
             playSound('tick');
         });
 
@@ -1007,6 +1042,8 @@
                 nextBtn.disabled = false;
                 hasRolled = true;
                 
+                boysSelectBtn.classList.remove('active');
+                girlsSelectBtn.classList.remove('active');
                 boysSelectBtn.disabled = true;
                 girlsSelectBtn.disabled = true;
                 return;
@@ -1056,14 +1093,16 @@
                 timerInterval = null;
             }
             timerStarted = false;
+            teamSelectionActive = false;
             
             if (currentIndex < questions.length - 1) {
                 currentIndex++;
                 renderQuestion(currentIndex);
                 boysSelectBtn.disabled = false;
                 girlsSelectBtn.disabled = false;
+                boysSelectBtn.classList.remove('active');
+                girlsSelectBtn.classList.remove('active');
                 hasRolled = false;
-                updateTeamSelection();
                 playSound('tick');
             } else {
                 statusMsg.textContent = '🏆 GAME OVER! Great job everyone! 🎉';
@@ -1090,6 +1129,7 @@
                 currentIndex = 0;
                 hasRolled = false;
                 timerStarted = false;
+                teamSelectionActive = false;
                 renderQuestion(0);
                 timerDisplay.textContent = '⏳ Reset';
                 startTimerBtn.textContent = '▶ START';
@@ -1098,17 +1138,17 @@
                 playSound('tick');
                 boysSelectBtn.disabled = false;
                 girlsSelectBtn.disabled = false;
+                boysSelectBtn.classList.remove('active');
+                girlsSelectBtn.classList.remove('active');
                 selectedTeam = 'boys';
-                updateTeamSelection();
-                statusMsg.textContent = '🔄 Game reset! Select a team and click START!';
+                statusMsg.textContent = '🔄 Game reset! Teacher: Click START to begin!';
             }
         });
 
         // ---------- INIT ----------
         renderQuestion(0);
         selectedTeam = 'boys';
-        updateTeamSelection();
-        console.log('Game initialized - Revised timers: Easy=20s, Average=30s, Difficult=60s');
+        console.log('Game initialized - Timer must be started before team selection');
     })();
 </script>
 </body>
