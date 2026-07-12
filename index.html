@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Angle Arena · Boys vs Girls</title>
-  <!-- Font & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
@@ -33,7 +32,6 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 1px 3px rgba(255,255,255,0.1);
       border: 1px solid rgba(255,215,0,0.2);
     }
-    /* scoreboard row */
     .scoreboard {
       display: flex;
       justify-content: space-between;
@@ -84,7 +82,15 @@
     .score-value.boys-score { color: #7bb3ff; text-shadow: 0 0 12px #3d9eff; }
     .score-value.girls-score { color: #ff8ec4; text-shadow: 0 0 12px #ff4f9e; }
 
-    /* main grid */
+    .question-progress {
+      font-size: 1rem;
+      color: #b9d0f0;
+      background: #0e1d2b;
+      padding: 4px 20px;
+      border-radius: 40px;
+      font-weight: 600;
+    }
+
     .game-grid {
       display: flex;
       gap: 15px;
@@ -97,11 +103,23 @@
       padding: 18px 12px 20px;
       backdrop-filter: blur(2px);
       border: 1px solid #566b84;
-      transition: all 0.2s;
+      transition: all 0.3s;
       box-shadow: 0 8px 0 #111d2b;
+      position: relative;
     }
     .team-zone.boys-zone { border-top: 6px solid #3d9eff; }
     .team-zone.girls-zone { border-top: 6px solid #ff7eb3; }
+    
+    .team-zone.team-winner {
+      border-color: #ffd700;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+    }
+    
+    .team-zone.team-locked {
+      opacity: 0.7;
+      filter: grayscale(0.3);
+    }
+    
     .zone-title {
       font-size: 1.6rem;
       font-weight: 700;
@@ -115,7 +133,6 @@
     .zone-title.boys-title { color: #9ac7ff; }
     .zone-title.girls-title { color: #ffb3d1; }
 
-    /* question & diagram */
     .question-area {
       background: #1c2a3b;
       border-radius: 28px;
@@ -141,26 +158,23 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 120px;
+      min-height: 180px;
       border: 2px solid #b9cfec;
     }
-    .diagram-container img {
+    .diagram-container svg {
       max-width: 100%;
       max-height: 170px;
-      object-fit: contain;
-      border-radius: 16px;
+      border-radius: 8px;
       background: white;
-      padding: 6px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
     .diagram-placeholder {
       font-size: 1.2rem;
       color: #2b4a6b;
       font-weight: 600;
       padding: 10px;
+      text-align: center;
     }
 
-    /* choices */
     .choices {
       display: flex;
       flex-direction: column;
@@ -181,6 +195,7 @@
       cursor: pointer;
       letter-spacing: 0.5px;
       border: 1px solid #6f8aa8;
+      position: relative;
     }
     .choice-btn:active {
       transform: translateY(4px);
@@ -195,10 +210,21 @@
       background: #2a9d8f;
       border-color: #b8f2e6;
       box-shadow: 0 0 20px #2a9d8faa;
+      animation: pulse-green 0.5s ease-in-out;
     }
     .choice-btn.wrong-reveal {
       background: #b13e4b;
       border-color: #ffb3b3;
+      animation: pulse-red 0.5s ease-in-out;
+    }
+    
+    @keyframes pulse-green {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); background: #35b5a5; }
+    }
+    @keyframes pulse-red {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); background: #d14552; }
     }
 
     .action-row {
@@ -269,7 +295,6 @@
       font-family: 'Fredoka One', cursive;
     }
 
-    /* status */
     .turn-indicator {
       text-align: center;
       margin-top: 8px;
@@ -277,30 +302,98 @@
       color: #bdd4f0;
       background: #142433;
       border-radius: 40px;
-      padding: 6px;
-      font-size: 0.9rem;
+      padding: 8px;
+      font-size: 1rem;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+    .turn-indicator.team-correct {
+      background: #1a5a4a;
+      color: #8fffd6;
+      border: 1px solid #2a9d8f;
+    }
+    .turn-indicator.team-wrong {
+      background: #5a2a2a;
+      color: #ffb3b3;
+      border: 1px solid #b13e4b;
+    }
+    .turn-indicator.team-waiting {
+      background: #1a2a4a;
+      color: #8fcbff;
+      border: 1px solid #3d9eff;
+      animation: pulse-blue 1s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-blue {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; background: #1a3a6a; }
+    }
+
     .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .timer-display {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ff6b6b;
+      background: #1a0a0a;
+      padding: 0 20px;
+      border-radius: 40px;
+      border: 2px solid #ff4444;
+      min-width: 60px;
+      text-align: center;
+      font-family: 'Fredoka One', cursive;
+    }
+    .timer-display.urgent {
+      animation: blink-red 0.5s ease-in-out infinite;
+    }
+    @keyframes blink-red {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
 
     @media (max-width: 850px) {
       .scoreboard { flex-direction: column; align-items: stretch; gap: 10px; }
       .team-score { justify-content: center; }
     }
-    /* hidden helper */
     .hidden { display: none; }
+
+    /* Music toggle button */
+    .music-toggle {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid #f7d44a;
+      border-radius: 40px;
+      padding: 6px 16px;
+      color: #ffd966;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    .music-toggle:hover {
+      background: rgba(255,215,0,0.2);
+    }
   </style>
 </head>
 <body>
 <div class="game-wrapper" id="app">
-  <!-- Scoreboard -->
   <div class="scoreboard">
-    <div class="team-score"><span class="team-badge boys">⚔️ BOYS</span><span class="score-value boys-score" id="boysTotal">0</span></div>
-    <div style="font-size:1.1rem; color:#b9d0f0; background:#0e1d2b; padding:4px 20px; border-radius:40px;">⏳ 15s / 20s / 30s</div>
-    <div class="team-score"><span class="team-badge girls">🌸 GIRLS</span><span class="score-value girls-score" id="girlsTotal">0</span></div>
+    <div class="team-score">
+      <span class="team-badge boys">⚔️ BOYS</span>
+      <span class="score-value boys-score" id="boysTotal">0</span>
+    </div>
+    <div style="display:flex; gap:15px; align-items:center;">
+      <span class="question-progress" id="questionProgress">Q1/15</span>
+      <span class="timer-display" id="timerDisplay">15s</span>
+      <button class="music-toggle" id="musicToggle">🔊 Music</button>
+    </div>
+    <div class="team-score">
+      <span class="team-badge girls">🌸 GIRLS</span>
+      <span class="score-value girls-score" id="girlsTotal">0</span>
+    </div>
   </div>
 
   <div class="game-grid">
-    <!-- BOYS ZONE -->
     <div class="team-zone boys-zone" id="boysZone">
       <div class="zone-title boys-title">⚡ BOYS</div>
       <div class="question-area" id="boysQuestionArea">
@@ -316,7 +409,6 @@
       <div class="turn-indicator" id="boysStatus">✅ ready</div>
     </div>
 
-    <!-- GIRLS ZONE -->
     <div class="team-zone girls-zone" id="girlsZone">
       <div class="zone-title girls-title">🌸 GIRLS</div>
       <div class="question-area" id="girlsQuestionArea">
@@ -336,28 +428,394 @@
 
 <script>
   (function() {
-    // ---------- QUESTIONS DATA (all 15, using images from attachments) ----------
+    // ============================================
+    // AUDIO SYSTEM - Background Music & Sound FX
+    // ============================================
+    class AudioManager {
+      constructor() {
+        this.ctx = null;
+        this.isMusicOn = true;
+        this.musicInterval = null;
+        this.musicOscillators = [];
+        this.musicGain = null;
+        this.initAudio();
+      }
+
+      initAudio() {
+        try {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch(e) {
+          console.warn('Web Audio not supported');
+        }
+      }
+
+      // Play a simple tone with duration
+      playTone(freq, duration, type = 'square', volume = 0.15) {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.value = freq;
+          gain.gain.value = volume;
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+          return osc;
+        } catch(e) {
+          return null;
+        }
+      }
+
+      // Play a chord (victory sound)
+      playChord() {
+        if (!this.ctx) return;
+        const notes = [523, 659, 784, 1047];
+        notes.forEach((freq, i) => {
+          setTimeout(() => {
+            this.playTone(freq, 0.3, 'sine', 0.12);
+          }, i * 100);
+        });
+      }
+
+      // Correct answer sound - ascending happy tone
+      playCorrect() {
+        this.playTone(880, 0.15, 'sine', 0.15);
+        setTimeout(() => this.playTone(1100, 0.2, 'sine', 0.15), 120);
+        setTimeout(() => this.playTone(1320, 0.25, 'sine', 0.12), 250);
+      }
+
+      // Wrong answer sound - descending sad tone
+      playWrong() {
+        this.playTone(400, 0.2, 'sawtooth', 0.1);
+        setTimeout(() => this.playTone(300, 0.25, 'sawtooth', 0.1), 150);
+        setTimeout(() => this.playTone(200, 0.3, 'sawtooth', 0.08), 300);
+      }
+
+      // Victory fanfare
+      playVictory() {
+        if (!this.ctx) return;
+        const melody = [523, 523, 523, 659, 784, 659, 784, 880];
+        melody.forEach((freq, i) => {
+          setTimeout(() => {
+            this.playTone(freq, 0.2, 'square', 0.1);
+          }, i * 130);
+        });
+        setTimeout(() => {
+          this.playChord();
+        }, 800);
+      }
+
+      // Score roll sound
+      playRollTick() {
+        this.playTone(600 + Math.random() * 400, 0.05, 'sine', 0.05);
+      }
+
+      // Timer warning
+      playTimerTick() {
+        this.playTone(440, 0.08, 'square', 0.08);
+      }
+
+      // Background Music - upbeat game music
+      toggleMusic() {
+        this.isMusicOn = !this.isMusicOn;
+        if (this.isMusicOn) {
+          this.startMusic();
+        } else {
+          this.stopMusic();
+        }
+        return this.isMusicOn;
+      }
+
+      startMusic() {
+        if (this.musicInterval) return;
+        if (!this.ctx) return;
+        // Resume context if suspended
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        
+        let pattern = [
+          { note: 523, dur: 0.15 }, // C5
+          { note: 0, dur: 0.05 },
+          { note: 587, dur: 0.15 }, // D5
+          { note: 0, dur: 0.05 },
+          { note: 659, dur: 0.15 }, // E5
+          { note: 0, dur: 0.05 },
+          { note: 523, dur: 0.2 }, // C5
+          { note: 0, dur: 0.1 },
+          { note: 523, dur: 0.15 }, // C5
+          { note: 0, dur: 0.05 },
+          { note: 587, dur: 0.15 }, // D5
+          { note: 0, dur: 0.05 },
+          { note: 659, dur: 0.15 }, // E5
+          { note: 0, dur: 0.05 },
+          { note: 523, dur: 0.2 }, // C5
+          { note: 0, dur: 0.1 },
+          { note: 523, dur: 0.15 }, // C5
+          { note: 0, dur: 0.05 },
+          { note: 587, dur: 0.15 }, // D5
+          { note: 0, dur: 0.05 },
+          { note: 659, dur: 0.15 }, // E5
+          { note: 0, dur: 0.05 },
+          { note: 523, dur: 0.2 }, // C5
+          { note: 0, dur: 0.1 },
+        ];
+
+        let index = 0;
+        const totalDuration = pattern.reduce((sum, p) => sum + p.dur + 0.02, 0);
+        
+        this.musicInterval = setInterval(() => {
+          if (!this.isMusicOn) {
+            this.stopMusic();
+            return;
+          }
+          if (!this.ctx) return;
+          
+          const p = pattern[index % pattern.length];
+          if (p.note > 0) {
+            this.playTone(p.note, p.dur * 0.8, 'square', 0.04);
+          }
+          index++;
+        }, 220);
+      }
+
+      stopMusic() {
+        if (this.musicInterval) {
+          clearInterval(this.musicInterval);
+          this.musicInterval = null;
+        }
+      }
+    }
+
+    // Initialize audio
+    const audio = new AudioManager();
+
+    // ============================================
+    // SVG DIAGRAM GENERATORS
+    // ============================================
+    const diagramGenerators = {
+      Q1: function() {
+        return `<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="130" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <path d="M 30 110 A 80 80 0 0 1 210 110" stroke="#2c3e50" stroke-width="2" fill="none"/>
+          <path d="M 30 110 L 210 110" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="55" y1="110" x2="55" y2="95" stroke="#2c3e50" stroke-width="1"/>
+          <line x1="85" y1="110" x2="85" y2="90" stroke="#2c3e50" stroke-width="1.5"/>
+          <line x1="120" y1="110" x2="120" y2="85" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="155" y1="110" x2="155" y2="90" stroke="#2c3e50" stroke-width="1.5"/>
+          <line x1="185" y1="110" x2="185" y2="95" stroke="#2c3e50" stroke-width="1"/>
+          <circle cx="120" cy="110" r="4" fill="#e74c3c"/>
+          <polygon points="140,95 145,110 135,110" fill="#e74c3c"/>
+          <text x="120" y="130" font-size="12" fill="#e74c3c" text-anchor="middle" font-weight="bold">▲ Center Mark</text>
+          <text x="120" y="145" font-size="9" fill="#666" text-anchor="middle">(indicated by arrow)</text>
+        </svg>`;
+      },
+      Q2: function() {
+        return `<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="130" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <path d="M 30 110 A 80 80 0 0 1 210 110" stroke="#2c3e50" stroke-width="2" fill="none"/>
+          <path d="M 30 110 L 210 110" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="55" y1="110" x2="55" y2="95" stroke="#2c3e50" stroke-width="1"/>
+          <line x1="85" y1="110" x2="85" y2="90" stroke="#2c3e50" stroke-width="1.5"/>
+          <line x1="120" y1="110" x2="120" y2="85" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="155" y1="110" x2="155" y2="90" stroke="#2c3e50" stroke-width="1.5"/>
+          <line x1="185" y1="110" x2="185" y2="95" stroke="#2c3e50" stroke-width="1"/>
+          <polygon points="175,80 170,95 180,95" fill="#e74c3c"/>
+          <text x="155" y="75" font-size="12" fill="#e74c3c" text-anchor="middle" font-weight="bold">▲ Degree Mark</text>
+          <text x="155" y="68" font-size="9" fill="#666" text-anchor="middle">(indicated by arrow)</text>
+          <text x="155" y="100" font-size="10" fill="#333" text-anchor="middle">155°</text>
+        </svg>`;
+      },
+      Q3: function() {
+        return `<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="130" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <path d="M 30 110 A 80 80 0 0 1 210 110" stroke="#2c3e50" stroke-width="2" fill="none"/>
+          <path d="M 30 110 L 210 110" stroke="#2c3e50" stroke-width="2"/>
+          <path d="M 30 110 L 30 85" stroke="#e74c3c" stroke-width="3"/>
+          <path d="M 210 110 L 210 85" stroke="#e74c3c" stroke-width="3"/>
+          <text x="30" y="80" font-size="12" fill="#e74c3c" text-anchor="middle" font-weight="bold">▲ Zero Edge</text>
+          <text x="210" y="80" font-size="12" fill="#e74c3c" text-anchor="middle" font-weight="bold">▲ Zero Edge</text>
+          <text x="120" y="140" font-size="10" fill="#666" text-anchor="middle">Zero edges (indicated by arrows)</text>
+        </svg>`;
+      },
+      Q4: function() {
+        return `<svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="160" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <line x1="60" y1="140" x2="140" y2="40" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="60" y1="140" x2="220" y2="140" stroke="#2c3e50" stroke-width="2"/>
+          <path d="M 100 120 A 50 50 0 0 1 140 90" stroke="#e74c3c" stroke-width="2" fill="none"/>
+          <text x="120" y="100" font-size="14" fill="#e74c3c" font-weight="bold">θ</text>
+          <text x="130" y="30" font-size="16" fill="#2980b9" font-weight="bold">P</text>
+          <text x="50" y="155" font-size="16" fill="#2980b9" font-weight="bold">Q</text>
+          <text x="225" y="155" font-size="16" fill="#2980b9" font-weight="bold">R</text>
+          <text x="140" y="165" font-size="11" fill="#666">∠PQR (vertex at Q)</text>
+        </svg>`;
+      },
+      Q5: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <line x1="50" y1="130" x2="240" y2="30" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="50" y1="30" x2="240" y2="130" stroke="#2c3e50" stroke-width="2"/>
+          <circle cx="140" cy="80" r="5" fill="#e74c3c"/>
+          <text x="140" y="100" font-size="16" fill="#e74c3c" text-anchor="middle" font-weight="bold">N</text>
+          <text x="140" y="115" font-size="11" fill="#666" text-anchor="middle">(Vertex)</text>
+          <polygon points="160,75 165,90 155,90" fill="#e74c3c"/>
+        </svg>`;
+      },
+      Q6: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <line x1="80" y1="120" x2="160" y2="40" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="80" y1="120" x2="230" y2="120" stroke="#2c3e50" stroke-width="2"/>
+          <text x="155" y="35" font-size="15" fill="#2980b9" font-weight="bold">C</text>
+          <text x="70" y="135" font-size="15" fill="#2980b9" font-weight="bold">H</text>
+          <text x="235" y="135" font-size="15" fill="#2980b9" font-weight="bold">K</text>
+          <polygon points="155,42 160,55 150,55" fill="#2c3e50"/>
+          <polygon points="225,122 230,135 220,135" fill="#2c3e50"/>
+          <text x="140" y="150" font-size="11" fill="#666">Ray CH and Ray CK</text>
+        </svg>`;
+      },
+      Q7: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <line x1="60" y1="130" x2="210" y2="130" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="60" y1="130" x2="200" y2="40" stroke="#2c3e50" stroke-width="2"/>
+          <path d="M 90 120 A 40 40 0 0 1 140 95" stroke="#e74c3c" stroke-width="2" fill="none"/>
+          <text x="115" y="100" font-size="14" fill="#e74c3c" font-weight="bold">45°</text>
+          <text x="140" y="150" font-size="12" fill="#666">Acute angle (less than 90°)</text>
+        </svg>`;
+      },
+      Q8: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <line x1="60" y1="130" x2="210" y2="130" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="60" y1="130" x2="60" y2="30" stroke="#2c3e50" stroke-width="2"/>
+          <rect x="60" y="110" width="20" height="20" fill="none" stroke="#e74c3c" stroke-width="2"/>
+          <text x="80" y="100" font-size="14" fill="#e74c3c" font-weight="bold">90°</text>
+          <text x="140" y="150" font-size="12" fill="#666">Right angle (exactly 90°)</text>
+        </svg>`;
+      },
+      Q9: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <line x1="60" y1="130" x2="210" y2="130" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="60" y1="130" x2="180" y2="30" stroke="#2c3e50" stroke-width="2"/>
+          <path d="M 90 120 A 50 50 0 0 1 130 80" stroke="#e74c3c" stroke-width="2" fill="none"/>
+          <text x="115" y="95" font-size="14" fill="#e74c3c" font-weight="bold">150°</text>
+          <text x="195" y="125" font-size="15" fill="#2980b9" font-weight="bold">S</text>
+          <text x="50" y="145" font-size="15" fill="#2980b9" font-weight="bold">U</text>
+          <text x="185" y="25" font-size="15" fill="#2980b9" font-weight="bold">N</text>
+          <text x="140" y="155" font-size="11" fill="#666">∠SUN = 150° (Obtuse)</text>
+        </svg>`;
+      },
+      Q10: function() {
+        return `<svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="120" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <line x1="30" y1="70" x2="270" y2="70" stroke="#2c3e50" stroke-width="3"/>
+          <path d="M 50 70 A 20 20 0 0 1 250 70" stroke="#e74c3c" stroke-width="2" fill="none"/>
+          <text x="150" y="100" font-size="14" fill="#e74c3c" text-anchor="middle" font-weight="bold">180°</text>
+          <text x="150" y="115" font-size="12" fill="#666" text-anchor="middle">Straight angle (exactly 180°)</text>
+        </svg>`;
+      },
+      Q11: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <polygon points="80,120 150,50 220,120 80,120" stroke="#2c3e50" stroke-width="2" fill="none"/>
+          <polygon points="80,120 150,50 150,120" stroke="#e74c3c" stroke-width="2" fill="none"/>
+          <path d="M 100 110 A 25 25 0 0 1 125 90" stroke="#e74c3c" stroke-width="1.5" fill="none"/>
+          <path d="M 115 110 A 25 25 0 0 1 130 85" stroke="#e74c3c" stroke-width="1.5" fill="none"/>
+          <text x="125" y="100" font-size="11" fill="#e74c3c" font-weight="bold">2 acute</text>
+          <text x="140" y="145" font-size="11" fill="#666">Two acute angles (both &lt; 90°)</text>
+        </svg>`;
+      },
+      Q12: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <rect x="50" y="40" width="200" height="90" stroke="#2c3e50" stroke-width="2" fill="none"/>
+          <line x1="100" y1="40" x2="100" y2="130" stroke="#2c3e50" stroke-width="1.5"/>
+          <line x1="150" y1="40" x2="150" y2="130" stroke="#2c3e50" stroke-width="1.5"/>
+          <line x1="200" y1="40" x2="200" y2="130" stroke="#2c3e50" stroke-width="1.5"/>
+          <rect x="50" y="40" width="20" height="20" fill="none" stroke="#e74c3c" stroke-width="1.5"/>
+          <rect x="100" y="40" width="20" height="20" fill="none" stroke="#e74c3c" stroke-width="1.5"/>
+          <rect x="150" y="40" width="20" height="20" fill="none" stroke="#e74c3c" stroke-width="1.5"/>
+          <text x="140" y="145" font-size="11" fill="#666" text-anchor="middle">12 right angles in grid</text>
+        </svg>`;
+      },
+      Q13: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <path d="M 30 130 A 100 100 0 0 1 220 130" stroke="#2c3e50" stroke-width="2" fill="none"/>
+          <path d="M 30 130 L 30 115" stroke="#2c3e50" stroke-width="1.5"/>
+          <path d="M 50 130 L 50 118" stroke="#2c3e50" stroke-width="1"/>
+          <path d="M 70 130 L 70 115" stroke="#2c3e50" stroke-width="1"/>
+          <path d="M 90 130 L 90 115" stroke="#2c3e50" stroke-width="1"/>
+          <path d="M 110 130 L 110 115" stroke="#2c3e50" stroke-width="1"/>
+          <path d="M 130 130 L 130 112" stroke="#2c3e50" stroke-width="1.5"/>
+          <path d="M 150 130 L 150 115" stroke="#2c3e50" stroke-width="1"/>
+          <path d="M 170 130 L 170 115" stroke="#2c3e50" stroke-width="1"/>
+          <path d="M 190 130 L 190 115" stroke="#2c3e50" stroke-width="1"/>
+          <path d="M 210 130 L 210 118" stroke="#2c3e50" stroke-width="1"/>
+          <line x1="30" y1="130" x2="180" y2="30" stroke="#e74c3c" stroke-width="2.5"/>
+          <path d="M 60 125 A 40 40 0 0 1 100 105" stroke="#e74c3c" stroke-width="2" fill="none"/>
+          <text x="80" y="108" font-size="14" fill="#e74c3c" font-weight="bold">105°</text>
+          <text x="140" y="152" font-size="11" fill="#666" text-anchor="middle">Angle reads 105°</text>
+        </svg>`;
+      },
+      Q14: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <line x1="60" y1="130" x2="210" y2="130" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="60" y1="130" x2="170" y2="35" stroke="#2c3e50" stroke-width="2"/>
+          <path d="M 90 120 A 50 50 0 0 1 125 80" stroke="#e74c3c" stroke-width="2" fill="none"/>
+          <text x="110" y="95" font-size="16" fill="#e74c3c" font-weight="bold">b̂</text>
+          <text x="130" y="35" font-size="15" fill="#2980b9" font-weight="bold">A</text>
+          <text x="50" y="145" font-size="15" fill="#2980b9" font-weight="bold">B</text>
+          <text x="215" y="145" font-size="15" fill="#2980b9" font-weight="bold">C</text>
+          <text x="110" y="155" font-size="11" fill="#666">Find angle b̂ = 42°</text>
+        </svg>`;
+      },
+      Q15: function() {
+        return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="280" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+          <line x1="60" y1="130" x2="220" y2="130" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="60" y1="130" x2="180" y2="30" stroke="#2c3e50" stroke-width="2"/>
+          <path d="M 90 120 A 55 55 0 0 1 135 80" stroke="#e74c3c" stroke-width="2" fill="none"/>
+          <text x="115" y="95" font-size="16" fill="#e74c3c" font-weight="bold">â</text>
+          <text x="140" y="155" font-size="11" fill="#666">Find angle â = 144°</text>
+        </svg>`;
+      }
+    };
+
+    // ============================================
+    // GAME LOGIC
+    // ============================================
     const questions = [
-      { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
-      { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 15 },
-      { q: "3) Name the part of protractor indicated by the arrow.", img: "Q3.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 2, time: 15 },
-      { q: "4) Name the angle.", img: "Q4.jpg", choices: ["a) angle PQR", "b) angle RPQ", "c) angle QRP"], correct: 0, time: 15 },
-      { q: "5) Name the vertex.", img: "Q5.jpg", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], correct: 2, time: 15 },
-      { q: "6) Name the arms.", img: "Q6.jpg", choices: ["a) line segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 15 },
-      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", img: "Q7.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 15 },
-      { q: "8) What type of angle is 90°?", img: "Q8.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 1, time: 15 },
-      { q: "9) What type of angle is ∠SUN = 150° ?", img: "Q9.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 2, time: 20 },
-      { q: "10) ……. is an angle measures exactly 180°.", img: "Q10.jpg", choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 20 },
-      { q: "11) Look at the figure. How many acute angles?", img: "Q11.jpg", choices: ["a) 1", "b) 2", "c) 3"], correct: 1, time: 20 },
-      { q: "12) Look at the figure. How many right angles?", img: "Q12.jpg", choices: ["a) 3", "b) 12", "c) 14"], correct: 1, time: 20 },
-      { q: "13) Measure and read the angle shown.", img: "Q13.jpg", choices: ["a) 50°", "b) 105°", "c) 165°"], correct: 1, time: 30 },
-      { q: "14) Find angle b̂.", img: "Q14.jpg", choices: ["a) 30°", "b) 42°", "c) 52°"], correct: 1, time: 30 },
-      { q: "15) Find angle â.", img: "Q15.jpg", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 30 }
+      { q: "1) Name the part of protractor indicated by the arrow.", diagram: "Q1", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
+      { q: "2) Name the part of protractor indicated by the arrow.", diagram: "Q2", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 15 },
+      { q: "3) Name the part of protractor indicated by the arrow.", diagram: "Q3", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 2, time: 15 },
+      { q: "4) Name the angle.", diagram: "Q4", choices: ["a) angle PQR", "b) angle RPQ", "c) angle QRP"], correct: 0, time: 15 },
+      { q: "5) Name the vertex.", diagram: "Q5", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], correct: 2, time: 15 },
+      { q: "6) Name the arms.", diagram: "Q6", choices: ["a) line segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 15 },
+      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", diagram: "Q7", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 15 },
+      { q: "8) What type of angle is 90°?", diagram: "Q8", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 1, time: 15 },
+      { q: "9) What type of angle is ∠SUN = 150° ?", diagram: "Q9", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 2, time: 20 },
+      { q: "10) ……. is an angle measures exactly 180°.", diagram: "Q10", choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 20 },
+      { q: "11) Look at the figure. How many acute angles?", diagram: "Q11", choices: ["a) 1", "b) 2", "c) 3"], correct: 1, time: 20 },
+      { q: "12) Look at the figure. How many right angles?", diagram: "Q12", choices: ["a) 3", "b) 12", "c) 14"], correct: 1, time: 20 },
+      { q: "13) Measure and read the angle shown.", diagram: "Q13", choices: ["a) 50°", "b) 105°", "c) 165°"], correct: 1, time: 30 },
+      { q: "14) Find angle b̂.", diagram: "Q14", choices: ["a) 30°", "b) 42°", "c) 52°"], correct: 1, time: 30 },
+      { q: "15) Find angle â.", diagram: "Q15", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 30 }
     ];
 
-    // ---------- GAME STATE ----------
+    // GAME STATE
     let currentIndex = 0;
-    // team states
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let gameLocked = false;
+    
     const teams = {
       boys: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false },
       girls: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false }
@@ -381,84 +839,109 @@
     const girlsNextBtn = document.getElementById('girlsNextBtn');
     const boysTotalSpan = document.getElementById('boysTotal');
     const girlsTotalSpan = document.getElementById('girlsTotal');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionProgress = document.getElementById('questionProgress');
+    const boysZone = document.getElementById('boysZone');
+    const girlsZone = document.getElementById('girlsZone');
+    const musicToggle = document.getElementById('musicToggle');
 
-    // sound fx (simple web audio)
-    function playSound(type) {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        if (type === 'correct') {
-          osc.frequency.value = 880;
-          gain.gain.value = 0.15;
-          osc.start();
-          setTimeout(() => { osc.frequency.value = 1100; }, 100);
-          setTimeout(() => { osc.stop(); }, 300);
-        } else if (type === 'wrong') {
-          osc.frequency.value = 300;
-          gain.gain.value = 0.2;
-          osc.start();
-          setTimeout(() => { osc.frequency.value = 200; }, 150);
-          setTimeout(() => { osc.stop(); }, 400);
-        } else if (type === 'tick') {
-          osc.frequency.value = 700;
-          gain.gain.value = 0.08;
-          osc.start();
-          setTimeout(() => { osc.stop(); }, 60);
-        } else if (type === 'victory') {
-          osc.frequency.value = 523;
-          gain.gain.value = 0.12;
-          osc.start();
-          setTimeout(() => { osc.frequency.value = 659; }, 120);
-          setTimeout(() => { osc.frequency.value = 784; }, 240);
-          setTimeout(() => { osc.stop(); }, 400);
-        } else { // roll stop
-          osc.frequency.value = 440;
-          gain.gain.value = 0.1;
-          osc.start();
-          setTimeout(() => { osc.stop(); }, 150);
+    // Music toggle
+    musicToggle.addEventListener('click', function() {
+      const isOn = audio.toggleMusic();
+      this.textContent = isOn ? '🔊 Music' : '🔇 Muted';
+    });
+
+    // Start background music after user interaction
+    document.addEventListener('click', function initAudio() {
+      audio.startMusic();
+      document.removeEventListener('click', initAudio);
+    }, { once: true });
+
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      timerSeconds = seconds;
+      timerDisplay.textContent = seconds + 's';
+      timerDisplay.classList.remove('urgent');
+      
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        timerDisplay.textContent = timerSeconds + 's';
+        if (timerSeconds <= 5 && timerSeconds > 0) {
+          timerDisplay.classList.add('urgent');
+          audio.playTimerTick();
         }
-      } catch(e) {}
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerDisplay.textContent = '⏰';
+          if (!teams.boys.answered && !teams.girls.answered) {
+            lockBothTeams('⏰ Time\'s up!');
+          }
+        }
+      }, 1000);
     }
 
-    // render question for both teams
+    function lockBothTeams(message) {
+      teams.boys.lock = true;
+      teams.girls.lock = true;
+      teams.boys.answered = true;
+      teams.girls.answered = true;
+      boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+      girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+      boysStatus.textContent = message;
+      girlsStatus.textContent = message;
+      boysStatus.className = 'turn-indicator team-wrong';
+      girlsStatus.className = 'turn-indicator team-wrong';
+      setTimeout(() => {
+        boysNextBtn.disabled = false;
+        girlsNextBtn.disabled = false;
+      }, 1000);
+    }
+
     function renderQuestion(index) {
       const q = questions[index];
       if (!q) return;
-      // update text & diagram (using placeholder images)
+      
+      questionProgress.textContent = `Q${index+1}/${questions.length}`;
+      
       boysQtext.textContent = q.q;
       girlsQtext.textContent = q.q;
-      // diagram
-      const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:170px;">` : `<div class="diagram-placeholder">📐 ${q.img || 'diagram'}</div>`;
-      boysDiagram.innerHTML = imgHtml;
-      girlsDiagram.innerHTML = imgHtml;
+      
+      // Use SVG diagrams
+      const svgContent = diagramGenerators[q.diagram] ? diagramGenerators[q.diagram]() : `<div class="diagram-placeholder">📐 Diagram: ${q.diagram}</div>`;
+      boysDiagram.innerHTML = svgContent;
+      girlsDiagram.innerHTML = svgContent;
 
-      // choices
       renderChoices('boys', q.choices, q.correct);
       renderChoices('girls', q.choices, q.correct);
 
-      // reset team states for this question
       teams.boys.answered = false;
       teams.girls.answered = false;
       teams.boys.lock = false;
       teams.girls.lock = false;
       teams.boys.choiceLocked = false;
       teams.girls.choiceLocked = false;
-      boysStatus.textContent = '⏳ tap answer';
-      girlsStatus.textContent = '⏳ tap answer';
+      
+      boysStatus.textContent = '⏳ Tap answer!';
+      girlsStatus.textContent = '⏳ Tap answer!';
+      boysStatus.className = 'turn-indicator team-waiting';
+      girlsStatus.className = 'turn-indicator team-waiting';
+      
+      boysZone.classList.remove('team-winner', 'team-locked');
+      girlsZone.classList.remove('team-winner', 'team-locked');
+      
       boysRollBtn.disabled = true;
       girlsRollBtn.disabled = true;
       boysNextBtn.disabled = true;
       girlsNextBtn.disabled = true;
-      // reset roll display
+      
       boysRollDisplay.textContent = '0';
       girlsRollDisplay.textContent = '0';
       teams.boys.rollActive = false;
       teams.girls.rollActive = false;
       if (teams.boys.rollInterval) clearInterval(teams.boys.rollInterval);
       if (teams.girls.rollInterval) clearInterval(teams.girls.rollInterval);
+      
+      startTimer(q.time);
     }
 
     function renderChoices(team, choiceTexts, correctIdx) {
@@ -477,60 +960,91 @@
 
     function handleChoice(team, idx, correctIdx, btnEl) {
       const state = teams[team];
-      if (state.lock || state.answered) return;
-      // check if other team already answered correctly (global lock)
+      if (state.lock || state.answered || gameLocked) return;
+      
       const other = team === 'boys' ? 'girls' : 'boys';
       if (teams[other].answered && teams[other].lock) {
-        // other team got it first, block
         state.lock = true;
         return;
       }
-      // lock this team answer
+      
       state.lock = true;
       state.answered = true;
       const isCorrect = (idx === correctIdx);
-      // reveal correct/wrong
+      
       const allBtns = team === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
       allBtns.forEach(b => b.classList.add('disabled'));
+      
       if (isCorrect) {
         btnEl.classList.add('correct-reveal');
-        playSound('correct');
-        // victory sound for team
-        setTimeout(() => playSound('victory'), 200);
-        // enable roll for this team
-        if (team === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 correct! roll score'; }
-        else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 correct! roll score'; }
-        // lock other team from answering
+        audio.playCorrect();
+        setTimeout(() => audio.playVictory(), 300);
+        
+        if (team === 'boys') {
+          boysRollBtn.disabled = false;
+          boysStatus.textContent = '🎯 Correct! Roll score!';
+          boysStatus.className = 'turn-indicator team-correct';
+          boysZone.classList.add('team-winner');
+          girlsZone.classList.add('team-locked');
+        } else {
+          girlsRollBtn.disabled = false;
+          girlsStatus.textContent = '🎯 Correct! Roll score!';
+          girlsStatus.className = 'turn-indicator team-correct';
+          girlsZone.classList.add('team-winner');
+          boysZone.classList.add('team-locked');
+        }
+        
         teams[other].lock = true;
         teams[other].answered = true;
         const otherBtns = other === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
         otherBtns.forEach(b => b.classList.add('disabled'));
-        if (other === 'boys') boysStatus.textContent = '⛔ opponent answered';
-        else girlsStatus.textContent = '⛔ opponent answered';
-        // enable roll for correct team only
+        if (other === 'boys') {
+          boysStatus.textContent = '⛔ Opponent answered first';
+          boysStatus.className = 'turn-indicator team-wrong';
+        } else {
+          girlsStatus.textContent = '⛔ Opponent answered first';
+          girlsStatus.className = 'turn-indicator team-wrong';
+        }
+        
+        clearInterval(timerInterval);
+        timerDisplay.textContent = '✅';
+        
       } else {
         btnEl.classList.add('wrong-reveal');
-        playSound('wrong');
-        // wrong answer: team cannot roll, but other team may still answer if not locked
-        state.lock = true; // but not answered correctly
-        // check if other team already correct? if not, they can still answer
-        if (!teams[other].answered) {
-          // other team can still try
-          if (other === 'boys') boysStatus.textContent = '❌ wrong, other can answer';
-          else girlsStatus.textContent = '❌ wrong, other can answer';
+        audio.playWrong();
+        
+        if (team === 'boys') {
+          boysStatus.textContent = '❌ Wrong! Other team can try';
+          boysStatus.className = 'turn-indicator team-wrong';
         } else {
-          // both wrong or other correct already
+          girlsStatus.textContent = '❌ Wrong! Other team can try';
+          girlsStatus.className = 'turn-indicator team-wrong';
         }
-        // if other team already answered correctly, they get roll
+        
+        if (!teams[other].answered) {
+          if (other === 'boys') {
+            boysStatus.textContent = '⏳ Still your chance!';
+            boysStatus.className = 'turn-indicator team-waiting';
+          } else {
+            girlsStatus.textContent = '⏳ Still your chance!';
+            girlsStatus.className = 'turn-indicator team-waiting';
+          }
+        }
+        
         if (teams[other].answered && teams[other].lock) {
-          // enable roll for other
-          if (other === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 opponent correct! roll'; }
-          else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 opponent correct! roll'; }
+          if (other === 'boys') {
+            boysRollBtn.disabled = false;
+            boysStatus.textContent = '🎯 Opponent correct! Roll!';
+            boysStatus.className = 'turn-indicator team-correct';
+          } else {
+            girlsRollBtn.disabled = false;
+            girlsStatus.textContent = '🎯 Opponent correct! Roll!';
+            girlsStatus.className = 'turn-indicator team-correct';
+          }
         }
       }
     }
 
-    // ---------- ROLL SCORE (slot machine) ----------
     function initRoll(team) {
       const state = teams[team];
       if (state.rollActive) return;
@@ -538,16 +1052,16 @@
       const display = team === 'boys' ? boysRollDisplay : girlsRollDisplay;
       const btn = team === 'boys' ? boysRollBtn : girlsRollBtn;
       btn.disabled = true;
-      // possible scores (including bias 50000 for difficult)
+      
       const pool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000];
       let interval = setInterval(() => {
         const val = pool[Math.floor(Math.random() * pool.length)];
         display.textContent = val;
         state.rollValue = val;
-        playSound('tick');
+        audio.playRollTick();
       }, 120);
       state.rollInterval = interval;
-      // click again to stop
+      
       btn.textContent = '⏹️ STOP';
       btn.disabled = false;
       btn.onclick = function stopRoll() {
@@ -555,37 +1069,40 @@
         clearInterval(state.rollInterval);
         state.rollActive = false;
         const finalVal = parseInt(display.textContent) || 0;
-        // add to score
-        if (team === 'boys') { boysTotal += finalVal; boysTotalSpan.textContent = boysTotal; }
-        else { girlsTotal += finalVal; girlsTotalSpan.textContent = girlsTotal; }
-        playSound('roll stop');
-        // update status
-        if (team === 'boys') { boysStatus.textContent = `➕ ${finalVal} added`; boysRollBtn.disabled = true; }
-        else { girlsStatus.textContent = `➕ ${finalVal} added`; girlsRollBtn.disabled = true; }
+        
+        if (team === 'boys') { 
+          boysTotal += finalVal; 
+          boysTotalSpan.textContent = boysTotal;
+          boysStatus.textContent = `➕ +${finalVal} points!`;
+        } else { 
+          girlsTotal += finalVal; 
+          girlsTotalSpan.textContent = girlsTotal;
+          girlsStatus.textContent = `➕ +${finalVal} points!`;
+        }
+        audio.playChord();
+        
         btn.textContent = '🎲 ROLL SCORE';
+        btn.disabled = true;
         btn.onclick = null;
-        // enable next for both
+        
         boysNextBtn.disabled = false;
         girlsNextBtn.disabled = false;
-        // if other team hasn't rolled yet, they can still roll if correct
+        
         const other = team === 'boys' ? 'girls' : 'boys';
         if (teams[other].answered && teams[other].lock && !teams[other].rollActive) {
-          // other team correct but not rolled? enable their roll
-          if (other === 'boys' && boysRollBtn.disabled) { boysRollBtn.disabled = false; boysStatus.textContent = '🎲 roll now!'; }
-          else if (other === 'girls' && girlsRollBtn.disabled) { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎲 roll now!'; }
+          if (other === 'boys' && boysRollBtn.disabled) { 
+            boysRollBtn.disabled = false; 
+            boysStatus.textContent = '🎲 Roll now!';
+          } else if (other === 'girls' && girlsRollBtn.disabled) { 
+            girlsRollBtn.disabled = false; 
+            girlsStatus.textContent = '🎲 Roll now!';
+          }
         }
-        // reset button text
-        if (team === 'boys') boysRollBtn.textContent = '🎲 ROLL SCORE';
-        else girlsRollBtn.textContent = '🎲 ROLL SCORE';
       };
     }
 
-    // attach roll events
     boysRollBtn.addEventListener('click', function(e) {
-      if (teams.boys.rollActive) {
-        // stop already handled by onclick override
-        return;
-      }
+      if (teams.boys.rollActive) return;
       if (!teams.boys.answered || teams.boys.lock === false) return;
       initRoll('boys');
     });
@@ -595,47 +1112,43 @@
       initRoll('girls');
     });
 
-    // next button logic
     function goNext() {
       if (currentIndex < questions.length - 1) {
         currentIndex++;
         renderQuestion(currentIndex);
-        // enable choices
         boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
         girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
         boysRollBtn.disabled = true;
         girlsRollBtn.disabled = true;
         boysNextBtn.disabled = true;
         girlsNextBtn.disabled = true;
-        boysStatus.textContent = '⏳ tap answer';
-        girlsStatus.textContent = '⏳ tap answer';
-        // reset roll display
         boysRollDisplay.textContent = '0';
         girlsRollDisplay.textContent = '0';
+        boysZone.classList.remove('team-winner', 'team-locked');
+        girlsZone.classList.remove('team-winner', 'team-locked');
       } else {
-        // game over
-        boysStatus.textContent = '🏁 GAME OVER';
-        girlsStatus.textContent = '🏁 GAME OVER';
+        boysStatus.textContent = '🏆 GAME OVER! 🏆';
+        girlsStatus.textContent = '🏆 GAME OVER! 🏆';
+        boysStatus.className = 'turn-indicator team-correct';
+        girlsStatus.className = 'turn-indicator team-correct';
         boysNextBtn.disabled = true;
         girlsNextBtn.disabled = true;
-        playSound('victory');
+        audio.playVictory();
+        setTimeout(() => audio.playVictory(), 800);
+        setTimeout(() => audio.playVictory(), 1600);
       }
     }
     boysNextBtn.addEventListener('click', goNext);
     girlsNextBtn.addEventListener('click', goNext);
 
-    // ---------- INIT ----------
+    // INIT
     renderQuestion(0);
-    // enable choices initially
     boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
     girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
     boysNextBtn.disabled = true;
     girlsNextBtn.disabled = true;
     boysRollBtn.disabled = true;
     girlsRollBtn.disabled = true;
-
-    // extra: if other team correct and roll not used, enable roll after first roll
-    // already handled in stopRoll
 
   })();
 </script>
