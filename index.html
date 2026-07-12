@@ -379,10 +379,12 @@
             min-width: 140px;
             opacity: 0.4;
             pointer-events: none;
+            transform: scale(0.95);
         }
         .team-select-btn.active {
             opacity: 1;
             pointer-events: auto;
+            transform: scale(1);
         }
         .team-select-btn:active {
             transform: translateY(3px);
@@ -744,7 +746,7 @@
             startTimerBtn.classList.add('running');
             startTimerBtn.disabled = true;
             
-            // Activate team selection buttons AFTER timer starts
+            // ACTIVATE TEAM SELECTION BUTTONS AFTER TIMER STARTS
             teamSelectionActive = true;
             boysSelectBtn.classList.add('active');
             girlsSelectBtn.classList.add('active');
@@ -866,7 +868,7 @@
             startTimerBtn.classList.remove('running');
             startTimerBtn.disabled = false;
             
-            // Deactivate team selection - only active after timer starts
+            // DEACTIVATE TEAM SELECTION - only active after timer starts
             boysSelectBtn.classList.remove('active');
             girlsSelectBtn.classList.remove('active');
             boysSelectBtn.classList.remove('selected');
@@ -1146,7 +1148,7 @@
         // ---------- INIT ----------
         renderQuestion(0);
         selectedTeam = 'boys';
-        console.log('Game initialized - START button must be pressed first!');
+        console.log('Game initialized - START button must be pressed first to activate team buttons!');
     })();
 </script>
 </body>
