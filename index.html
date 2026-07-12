@@ -377,7 +377,7 @@
             box-shadow: 0 4px 0 rgba(0,0,0,0.3);
             position: relative;
             min-width: 140px;
-            opacity: 0.5;
+            opacity: 0.4;
             pointer-events: none;
         }
         .team-select-btn.active {
@@ -634,7 +634,7 @@
         let rollValue = 0;
         let hasRolled = false;
         let timerStarted = false;
-        let teamSelectionActive = false; // NEW: Track if team selection is active
+        let teamSelectionActive = false;
         const scores = { boys: 0, girls: 0 };
 
         // DOM refs
@@ -748,6 +748,7 @@
             teamSelectionActive = true;
             boysSelectBtn.classList.add('active');
             girlsSelectBtn.classList.add('active');
+            statusMsg.innerHTML = `⏱️ Timer running! Select a team (BOYS or GIRLS) then tap an answer!`;
             
             // Enable choices
             document.querySelectorAll('.choice-btn').forEach(btn => {
@@ -807,7 +808,6 @@
             startTimerBtn.textContent = '⏰ DONE';
             startTimerBtn.classList.remove('running');
             startTimerBtn.disabled = true;
-            // Deactivate team selection
             teamSelectionActive = false;
             boysSelectBtn.classList.remove('active');
             girlsSelectBtn.classList.remove('active');
@@ -823,7 +823,6 @@
             const q = questions[currentIndex];
             startTimer(q.time);
             playSound('starttimer');
-            statusMsg.innerHTML = `⏱️ Timer started! Select a team (BOYS or GIRLS) then tap an answer!`;
         });
 
         // ---------- RENDER QUESTION ----------
@@ -872,7 +871,6 @@
             girlsSelectBtn.classList.remove('active');
             boysSelectBtn.classList.remove('selected');
             girlsSelectBtn.classList.remove('selected');
-            // Default to boys but not selected visually until timer starts
             selectedTeam = 'boys';
             
             statusMsg.innerHTML = `✅ ${difficultyLabels[q.difficulty]} question. Teacher: Click START to begin!`;
@@ -1148,7 +1146,7 @@
         // ---------- INIT ----------
         renderQuestion(0);
         selectedTeam = 'boys';
-        console.log('Game initialized - Timer must be started before team selection');
+        console.log('Game initialized - START button must be pressed first!');
     })();
 </script>
 </body>
