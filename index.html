@@ -124,15 +124,55 @@
         .score-value.boys-score { color: #7bb3ff; text-shadow: 0 0 12px #3d9eff; }
         .score-value.girls-score { color: #ff8ec4; text-shadow: 0 0 12px #ff4f9e; }
 
+        .timer-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 16px 4px 20px;
+            border-radius: 50px;
+            border: 1px solid #4a6a8a;
+        }
         .timer-display {
-            font-size: 1.1rem;
-            color: #b9d0f0;
+            font-size: 1.4rem;
+            color: #76ff03;
             background: #0e1d2b;
-            padding: 4px 20px;
+            padding: 4px 18px;
             border-radius: 40px;
             font-weight: 700;
-            min-width: 80px;
+            min-width: 70px;
             text-align: center;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 2px;
+        }
+        .start-timer-btn {
+            background: #4caf50;
+            border: none;
+            border-radius: 40px;
+            padding: 6px 20px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: #0d1f2e;
+            box-shadow: 0 3px 0 #2e7d32;
+            cursor: pointer;
+            transition: 0.06s linear;
+            border: 1px solid #81c784;
+            white-space: nowrap;
+        }
+        .start-timer-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 0 #2e7d32;
+        }
+        .start-timer-btn:disabled {
+            opacity: 0.4;
+            transform: translateY(3px);
+            box-shadow: 0 0 0 #2e7d32;
+            pointer-events: none;
+        }
+        .start-timer-btn.running {
+            background: #ff9800;
+            box-shadow: 0 3px 0 #e65100;
+            border-color: #ffb74d;
         }
 
         .question-area {
@@ -403,6 +443,7 @@
         @media (max-width: 650px) {
             .scoreboard { flex-direction: column; align-items: stretch; gap: 8px; }
             .team-score { justify-content: center; }
+            .timer-section { justify-content: center; }
             .choices { grid-template-columns: 1fr; }
             .action-row { flex-direction: column; }
             .roll-score-btn, .next-btn { width: 100%; }
@@ -414,7 +455,11 @@
 <div class="game-wrapper" id="app">
     <div class="scoreboard">
         <div class="team-score"><span class="team-badge boys">⚔️ BOYS</span><span class="score-value boys-score" id="boysTotal">0</span></div>
-        <div class="timer-display" id="timerDisplay">⏳ 20s</div>
+        <div class="timer-section">
+            <span style="color:#b9d0f0; font-weight:600;">⏱️</span>
+            <span class="timer-display" id="timerDisplay">⏳ 20</span>
+            <button class="start-timer-btn" id="startTimerBtn">▶ START</button>
+        </div>
         <div class="team-score"><span class="team-badge girls">🌸 GIRLS</span><span class="score-value girls-score" id="girlsTotal">0</span></div>
     </div>
 
@@ -436,7 +481,7 @@
         <button class="team-select-btn girls-btn" id="girlsSelectBtn">🌸 GIRLS</button>
     </div>
 
-    <div class="turn-indicator" id="statusMsg">✅ Select a team, then tap an answer!</div>
+    <div class="turn-indicator" id="statusMsg">✅ Select a team, teacher clicks START to begin!</div>
 </div>
 
 <button class="music-control" id="musicToggle">🎵 Music: ON</button>
@@ -565,6 +610,7 @@
         let rollInterval = null;
         let rollValue = 0;
         let hasRolled = false;
+        let timerStarted = false;
         const scores = { boys: 0, girls: 0 };
 
         // DOM refs
@@ -578,6 +624,7 @@
         const boysTotalSpan = document.getElementById('boysTotal');
         const girlsTotalSpan = document.getElementById('girlsTotal');
         const timerDisplay = document.getElementById('timerDisplay');
+        const startTimerBtn = document.getElementById('startTimerBtn');
         const boysSelectBtn = document.getElementById('boysSelectBtn');
         const girlsSelectBtn = document.getElementById('girlsSelectBtn');
 
@@ -644,6 +691,14 @@
                             osc.stop(ctx.currentTime + i * 0.12 + 0.2);
                         });
                         break;
+                    case 'starttimer':
+                        oscillator.frequency.setValueAtTime(600, ctx.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.2);
+                        gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                        oscillator.start(ctx.currentTime);
+                        oscillator.stop(ctx.currentTime + 0.25);
+                        break;
                     default:
                         oscillator.frequency.setValueAtTime(440, ctx.currentTime);
                         gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
@@ -654,17 +709,35 @@
             } catch(e) {}
         }
 
-        // ---------- TIMER ----------
+        // ---------- TIMER FUNCTIONS ----------
         function startTimer(seconds) {
             if (timerInterval) clearInterval(timerInterval);
             timeLeft = seconds;
-            timerDisplay.textContent = `⏳ ${timeLeft}s`;
+            timerDisplay.textContent = `⏳ ${timeLeft}`;
+            timerStarted = true;
+            startTimerBtn.textContent = '⏳ RUNNING';
+            startTimerBtn.classList.add('running');
+            startTimerBtn.disabled = true;
+            
+            // Enable choices when timer starts
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                if (!btn.classList.contains('disabled')) {
+                    btn.style.pointerEvents = 'auto';
+                }
+            });
+            
             timerInterval = setInterval(() => {
                 timeLeft -= 1;
-                timerDisplay.textContent = `⏳ ${timeLeft}s`;
+                timerDisplay.textContent = `⏳ ${timeLeft}`;
+                if (timeLeft <= 3 && timeLeft > 0) {
+                    playSound('tick');
+                }
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    timerDisplay.textContent = '⏰ 0s';
+                    timerDisplay.textContent = '⏰ 0';
+                    startTimerBtn.textContent = '⏰ DONE';
+                    startTimerBtn.classList.remove('running');
+                    startTimerBtn.disabled = true;
                     if (!questionLocked) {
                         questionLocked = true;
                         revealCorrectAnswer();
@@ -672,6 +745,17 @@
                     }
                 }
             }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timerStarted = false;
+            startTimerBtn.textContent = '▶ START';
+            startTimerBtn.classList.remove('running');
+            startTimerBtn.disabled = false;
         }
 
         function revealCorrectAnswer() {
@@ -687,16 +771,40 @@
             statusMsg.textContent = '⏰ Time up! Correct answer shown.';
             rollBtn.disabled = true;
             nextBtn.disabled = false;
+            startTimerBtn.textContent = '⏰ DONE';
+            startTimerBtn.classList.remove('running');
+            startTimerBtn.disabled = true;
         }
+
+        // ---------- START TIMER BUTTON ----------
+        startTimerBtn.addEventListener('click', function() {
+            if (timerStarted) return;
+            if (questionLocked) {
+                statusMsg.textContent = '⛔ Question already answered! Click NEXT.';
+                return;
+            }
+            // Check if a team is selected
+            const q = questions[currentIndex];
+            startTimer(q.time);
+            playSound('starttimer');
+            statusMsg.innerHTML = `⏱️ Timer started! <strong>${selectedTeam.toUpperCase()}</strong> selected. Tap an answer!`;
+        });
 
         // ---------- RENDER QUESTION ----------
         function renderQuestion(index) {
             const q = questions[index];
             if (!q) return;
             
+            // Stop any running timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
             questionLocked = false;
             rollActive = false;
             hasRolled = false;
+            timerStarted = false;
             if (rollInterval) clearInterval(rollInterval);
             
             questionText.textContent = q.q;
@@ -710,13 +818,23 @@
             rollBtn.textContent = '🎲 ROLL SCORE';
             rollDisplay.textContent = '0';
             nextBtn.disabled = true;
-            statusMsg.innerHTML = `✅ Select a team below, then tap an answer! Currently: <strong>${selectedTeam.toUpperCase()}</strong>`;
+            
+            // Reset timer display
+            timerDisplay.textContent = `⏳ ${q.time}`;
+            startTimerBtn.textContent = '▶ START';
+            startTimerBtn.classList.remove('running');
+            startTimerBtn.disabled = false;
+            
+            statusMsg.innerHTML = `✅ Select a team, teacher clicks START to begin! Currently: <strong>${selectedTeam.toUpperCase()}</strong>`;
             
             boysSelectBtn.disabled = false;
             girlsSelectBtn.disabled = false;
             updateTeamSelection();
-
-            startTimer(q.time);
+            
+            // Disable choices initially until timer starts
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.style.pointerEvents = 'none';
+            });
         }
 
         function renderChoices(choiceTexts, correctIdx) {
@@ -727,6 +845,7 @@
                 btn.textContent = text;
                 btn.dataset.idx = idx;
                 btn.dataset.correct = correctIdx;
+                btn.style.pointerEvents = 'none'; // Disabled until timer starts
                 btn.addEventListener('click', (e) => handleChoice(idx, correctIdx, btn));
                 choicesContainer.appendChild(btn);
             });
@@ -735,6 +854,10 @@
         // ---------- HANDLE CHOICE ----------
         function handleChoice(idx, correctIdx, btnEl) {
             if (questionLocked) return;
+            if (!timerStarted) {
+                statusMsg.textContent = '⏳ Teacher must click START first!';
+                return;
+            }
             
             const isCorrect = (idx === correctIdx);
             
@@ -745,6 +868,16 @@
                 playSound('correct');
                 questionLocked = true;
                 
+                // Stop the timer
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                timerDisplay.textContent = '✅ DONE';
+                startTimerBtn.textContent = '✅ DONE';
+                startTimerBtn.classList.remove('running');
+                startTimerBtn.disabled = true;
+                
                 statusMsg.innerHTML = `✅ Correct! <strong>${selectedTeam.toUpperCase()}</strong> can now roll for points!`;
                 rollBtn.disabled = false;
                 hasRolled = false;
@@ -754,22 +887,29 @@
                 playSound('wrong');
                 statusMsg.textContent = '❌ Wrong! Correct answer revealed.';
                 questionLocked = true;
+                // Stop timer
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                timerDisplay.textContent = '❌ DONE';
+                startTimerBtn.textContent = '❌ DONE';
+                startTimerBtn.classList.remove('running');
+                startTimerBtn.disabled = true;
                 revealCorrectAnswer();
             }
         }
 
-        // ---------- TEAM SELECTION - FIXED ----------
+        // ---------- TEAM SELECTION ----------
         function updateTeamSelection() {
             boysSelectBtn.classList.toggle('selected', selectedTeam === 'boys');
             girlsSelectBtn.classList.toggle('selected', selectedTeam === 'girls');
         }
 
-        // BOYS BUTTON - Working
         boysSelectBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            // If question is locked and not rolled yet, allow team change but show message
             if (questionLocked && !hasRolled) {
                 selectedTeam = 'boys';
                 updateTeamSelection();
@@ -778,24 +918,26 @@
                 return;
             }
             
-            // If already rolled, prevent change
             if (hasRolled) {
                 statusMsg.textContent = '⛔ Already rolled! Click NEXT to continue.';
                 return;
             }
             
+            if (timerStarted) {
+                statusMsg.textContent = '⛔ Timer is running! Wait or answer first.';
+                return;
+            }
+            
             selectedTeam = 'boys';
             updateTeamSelection();
-            statusMsg.innerHTML = `⚔️ BOYS selected! Tap an answer to earn points for BOYS.`;
+            statusMsg.innerHTML = `⚔️ BOYS selected! Teacher clicks START to begin!`;
             playSound('tick');
         });
 
-        // GIRLS BUTTON - FIXED: Now working properly
         girlsSelectBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            // If question is locked and not rolled yet, allow team change but show message
             if (questionLocked && !hasRolled) {
                 selectedTeam = 'girls';
                 updateTeamSelection();
@@ -804,21 +946,24 @@
                 return;
             }
             
-            // If already rolled, prevent change
             if (hasRolled) {
                 statusMsg.textContent = '⛔ Already rolled! Click NEXT to continue.';
                 return;
             }
             
+            if (timerStarted) {
+                statusMsg.textContent = '⛔ Timer is running! Wait or answer first.';
+                return;
+            }
+            
             selectedTeam = 'girls';
             updateTeamSelection();
-            statusMsg.innerHTML = `🌸 GIRLS selected! Tap an answer to earn points for GIRLS.`;
+            statusMsg.innerHTML = `🌸 GIRLS selected! Teacher clicks START to begin!`;
             playSound('tick');
         });
 
         // ---------- ROLL SCORE ----------
         rollBtn.addEventListener('click', function() {
-            // If roll is active, stop it
             if (rollActive) {
                 if (rollInterval) {
                     clearInterval(rollInterval);
@@ -843,15 +988,11 @@
                 nextBtn.disabled = false;
                 hasRolled = true;
                 
-                if (timerInterval) clearInterval(timerInterval);
-                timerDisplay.textContent = '✅ Done';
-                
                 boysSelectBtn.disabled = true;
                 girlsSelectBtn.disabled = true;
                 return;
             }
             
-            // Start rolling
             if (rollBtn.disabled) {
                 statusMsg.textContent = '⛔ You need to answer correctly first!';
                 return;
@@ -891,6 +1032,13 @@
 
         // ---------- NEXT ----------
         function goNext() {
+            // Stop any running timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timerStarted = false;
+            
             if (currentIndex < questions.length - 1) {
                 currentIndex++;
                 renderQuestion(currentIndex);
@@ -904,6 +1052,8 @@
                 nextBtn.disabled = true;
                 playSound('victory');
                 timerDisplay.textContent = '🎉 FINISH';
+                startTimerBtn.textContent = '🏁 END';
+                startTimerBtn.disabled = true;
             }
         }
         nextBtn.addEventListener('click', goNext);
@@ -911,20 +1061,28 @@
         // ---------- RESET (Press R) ----------
         document.addEventListener('keydown', (e) => {
             if (e.key === 'r' || e.key === 'R') {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
                 scores.boys = 0;
                 scores.girls = 0;
                 boysTotalSpan.textContent = '0';
                 girlsTotalSpan.textContent = '0';
                 currentIndex = 0;
                 hasRolled = false;
+                timerStarted = false;
                 renderQuestion(0);
                 timerDisplay.textContent = '⏳ Reset';
+                startTimerBtn.textContent = '▶ START';
+                startTimerBtn.classList.remove('running');
+                startTimerBtn.disabled = false;
                 playSound('tick');
                 boysSelectBtn.disabled = false;
                 girlsSelectBtn.disabled = false;
                 selectedTeam = 'boys';
                 updateTeamSelection();
-                statusMsg.textContent = '🔄 Game reset! Select a team and answer!';
+                statusMsg.textContent = '🔄 Game reset! Select a team and click START!';
             }
         });
 
@@ -932,7 +1090,7 @@
         renderQuestion(0);
         selectedTeam = 'boys';
         updateTeamSelection();
-        console.log('Game initialized - Both team buttons working');
+        console.log('Game initialized - Teacher controls the timer!');
     })();
 </script>
 </body>
