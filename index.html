@@ -120,9 +120,18 @@
             min-width: 90px;
             text-align: center;
             letter-spacing: 2px;
+            transition: all 0.3s ease;
         }
         .score-value.boys-score { color: #7bb3ff; text-shadow: 0 0 12px #3d9eff; }
         .score-value.girls-score { color: #ff8ec4; text-shadow: 0 0 12px #ff4f9e; }
+        .score-value.pop {
+            animation: scorePop 0.5s ease;
+        }
+        @keyframes scorePop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); color: #ffd700; text-shadow: 0 0 30px #ffd700; }
+            100% { transform: scale(1); }
+        }
 
         .timer-section {
             display: flex;
@@ -175,7 +184,6 @@
             border-color: #ffb74d;
         }
 
-        /* HIDDEN DIFFICULTY BADGE */
         .difficulty-badge {
             display: none !important;
         }
@@ -351,6 +359,15 @@
             text-align: center;
             border: 1px solid #f7c948;
             font-family: 'Fredoka One', cursive;
+            transition: all 0.1s ease;
+        }
+        .roll-display.spinning {
+            animation: spinGlow 0.1s ease infinite alternate;
+        }
+        @keyframes spinGlow {
+            0% { color: #ffd966; border-color: #f7c948; }
+            50% { color: #ff6b6b; border-color: #ff6b6b; }
+            100% { color: #69db7c; border-color: #69db7c; }
         }
 
         .team-selector {
@@ -432,6 +449,25 @@
             padding: 10px 16px;
             font-size: 1.05rem;
             border: 1px solid #3a5a7a;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .turn-indicator.big-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+        .turn-indicator.celebrate {
+            background: #1a3a2a;
+            border-color: #ffd700;
+            box-shadow: 0 0 30px #ffd70033;
+        }
+        .turn-indicator.bad-luck {
+            background: #3a1a1a;
+            border-color: #ff4444;
+            box-shadow: 0 0 30px #ff444433;
         }
 
         .music-control {
@@ -464,6 +500,7 @@
             .roll-score-btn, .next-btn { width: 100%; }
             .team-select-btn { padding: 10px 20px; font-size: 1rem; min-width: 100px; }
             .q-text { font-size: 1rem; }
+            .turn-indicator.big-text { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -619,6 +656,71 @@
             { q: "15) Find angle a.", img: "Q15.jpg", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 60, difficulty: 'difficult' }
         ];
 
+        // ---------- FUNNY SCORE MESSAGES ----------
+        const funnyMessages = {
+            positive: [
+                "🎉 JACKPOT! You're on fire! 🔥",
+                "⭐ LEGENDARY! The crowd goes wild! 🎊",
+                "💪 POWER MOVE! You're unstoppable! 🚀",
+                "🏆 CHAMPION! That's how you do it! 👑",
+                "✨ AMAZING! Your brain is huge! 🧠",
+                "🎯 PERFECT! You're a math genius! 📐",
+                "🚀 TO THE MOON! Incredible! 🌙",
+                "💎 DIAMOND HANDS! You're crushing it! 💪",
+                "🌟 SUPERSTAR! You're on fire! 🔥",
+                "🎊 CELEBRATION! Party time! 🎉"
+            ],
+            negative: [
+                "😱 OH NO! That's a big oops! 💀",
+                "🤡 YIKES! Better luck next time! 🎪",
+                "💔 OOF! That hurts! 😭",
+                "🐌 OOPS! You're moving like a snail! 🐌",
+                "😅 AWKWARD! Maybe stick to angles! 📐",
+                "🤦 OOPSIE! That was a big mistake! 🙈",
+                "💀 BRUTAL! That was painful! 😱",
+                "🎪 CLOWN MOMENT! Happens to the best! 🤡",
+                "😬 YIKES! That's a lot of points lost! 💔",
+                "🫣 OOF! You're in the negative zone! 📉"
+            ],
+            neutral: [
+                "😐 MEH! Could be better, could be worse! 🤷",
+                "📏 AVERAGE! Just like a straight angle! 📐",
+                "🤔 HMM! Not bad, not great! 😐",
+                "📐 MEASURED! Right in the middle! ⚖️",
+                "🎯 DECENT! You're getting there! 📈"
+            ],
+            special: [
+                "🤯 MIND BLOWN! That's insane! 🧠💥",
+                "🏅 YOU WIN! Everyone clap! 👏",
+                "🎰 CASINO LUCK! You're gambling like a pro! 🎲",
+                "🍀 LUCKY SEVEN! That's your lucky number! ✨",
+                "🎪 CIRCUS TIME! What a show! 🎭"
+            ]
+        };
+
+        function getFunnyMessage(score, team) {
+            const absScore = Math.abs(score);
+            const teamEmoji = team === 'boys' ? '⚔️' : '🌸';
+            const teamName = team === 'boys' ? 'BOYS' : 'GIRLS';
+            
+            if (score >= 20000) {
+                return funnyMessages.special[Math.floor(Math.random() * funnyMessages.special.length)] + ` ${teamEmoji} ${teamName} are LEGENDS!`;
+            } else if (score >= 10000) {
+                return funnyMessages.positive[Math.floor(Math.random() * funnyMessages.positive.length)] + ` ${teamEmoji} ${teamName} are on FIRE!`;
+            } else if (score >= 5000) {
+                return funnyMessages.positive[Math.floor(Math.random() * funnyMessages.positive.length)] + ` ${teamEmoji}`;
+            } else if (score > 0 && score < 5000) {
+                return funnyMessages.positive[Math.floor(Math.random() * funnyMessages.positive.length)];
+            } else if (score === 0) {
+                return funnyMessages.neutral[Math.floor(Math.random() * funnyMessages.neutral.length)] + ` ${teamEmoji}`;
+            } else if (score < 0 && score >= -3000) {
+                return funnyMessages.negative[Math.floor(Math.random() * funnyMessages.negative.length)] + ` ${teamEmoji} ${teamName} need a hug! 🫂`;
+            } else if (score < -3000) {
+                return funnyMessages.negative[Math.floor(Math.random() * funnyMessages.negative.length)] + ` ${teamEmoji} YIKES! That's a lot of points! 💀`;
+            }
+            return `🎯 ${teamEmoji} ${teamName} got ${score} points!`;
+        }
+
         // ---------- GAME STATE ----------
         let currentIndex = 0;
         let timerInterval = null;
@@ -740,13 +842,11 @@
             startTimerBtn.classList.add('running');
             startTimerBtn.disabled = true;
             
-            // ACTIVATE TEAM SELECTION BUTTONS AFTER TIMER STARTS
             teamSelectionActive = true;
             boysSelectBtn.classList.add('active');
             girlsSelectBtn.classList.add('active');
             statusMsg.innerHTML = `⏱️ Timer running! Select a team (BOYS or GIRLS) then tap an answer!`;
             
-            // Enable choices
             document.querySelectorAll('.choice-btn').forEach(btn => {
                 if (!btn.classList.contains('disabled')) {
                     btn.style.pointerEvents = 'auto';
@@ -838,9 +938,7 @@
             teamSelectionActive = false;
             if (rollInterval) clearInterval(rollInterval);
             
-            // REMOVE DIFFICULTY BADGE - just show question text
             questionText.innerHTML = `<span>${q.q}</span>`;
-            // The difficulty badge is hidden via CSS (display: none !important)
 
             const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:200px;">` : `<div class="diagram-placeholder">📐 No diagram</div>`;
             diagramContainer.innerHTML = imgHtml;
@@ -850,6 +948,7 @@
             rollBtn.disabled = true;
             rollBtn.textContent = '🎲 ROLL SCORE';
             rollDisplay.textContent = '0';
+            rollDisplay.classList.remove('spinning');
             nextBtn.disabled = true;
             
             timerDisplay.textContent = `⏳ ${q.time}`;
@@ -857,7 +956,6 @@
             startTimerBtn.classList.remove('running');
             startTimerBtn.disabled = false;
             
-            // DEACTIVATE TEAM SELECTION - only active after timer starts
             boysSelectBtn.classList.remove('active');
             girlsSelectBtn.classList.remove('active');
             boysSelectBtn.classList.remove('selected');
@@ -865,6 +963,7 @@
             selectedTeam = 'boys';
             
             statusMsg.innerHTML = `✅ Teacher: Click START to begin!`;
+            statusMsg.className = 'turn-indicator';
             
             boysSelectBtn.disabled = false;
             girlsSelectBtn.disabled = false;
@@ -896,7 +995,6 @@
                 return;
             }
             
-            // Check if a team has been selected
             if (!boysSelectBtn.classList.contains('selected') && !girlsSelectBtn.classList.contains('selected')) {
                 statusMsg.textContent = '⚠️ Select a team (BOYS or GIRLS) first!';
                 return;
@@ -921,6 +1019,7 @@
                 startTimerBtn.disabled = true;
                 
                 statusMsg.innerHTML = `✅ Correct! <strong>${selectedTeam.toUpperCase()}</strong> can now roll for points!`;
+                statusMsg.className = 'turn-indicator celebrate';
                 rollBtn.disabled = false;
                 hasRolled = false;
                 playSound('victory');
@@ -928,6 +1027,7 @@
                 btnEl.classList.add('wrong-reveal');
                 playSound('wrong');
                 statusMsg.textContent = '❌ Wrong! Correct answer revealed.';
+                statusMsg.className = 'turn-indicator bad-luck';
                 questionLocked = true;
                 if (timerInterval) {
                     clearInterval(timerInterval);
@@ -951,7 +1051,6 @@
             e.preventDefault();
             e.stopPropagation();
             
-            // Only allow selection after timer starts (teamSelectionActive = true)
             if (!teamSelectionActive) {
                 statusMsg.textContent = '⏳ Teacher must click START first before selecting a team!';
                 return;
@@ -980,7 +1079,6 @@
             e.preventDefault();
             e.stopPropagation();
             
-            // Only allow selection after timer starts (teamSelectionActive = true)
             if (!teamSelectionActive) {
                 statusMsg.textContent = '⏳ Teacher must click START first before selecting a team!';
                 return;
@@ -1005,7 +1103,7 @@
             playSound('tick');
         });
 
-        // ---------- ROLL SCORE ----------
+        // ---------- ROLL SCORE WITH FUNNY MESSAGES ----------
         rollBtn.addEventListener('click', function() {
             if (rollActive) {
                 if (rollInterval) {
@@ -1014,18 +1112,32 @@
                 }
                 rollActive = false;
                 const finalVal = parseInt(rollDisplay.textContent) || 0;
+                rollDisplay.classList.remove('spinning');
                 
                 if (selectedTeam === 'boys') {
                     scores.boys += finalVal;
                     boysTotalSpan.textContent = scores.boys;
+                    boysTotalSpan.classList.remove('pop');
+                    void boysTotalSpan.offsetWidth;
+                    boysTotalSpan.classList.add('pop');
                 } else {
                     scores.girls += finalVal;
                     girlsTotalSpan.textContent = scores.girls;
+                    girlsTotalSpan.classList.remove('pop');
+                    void girlsTotalSpan.offsetWidth;
+                    girlsTotalSpan.classList.add('pop');
                 }
                 
                 playSound('rollstop');
                 const teamName = selectedTeam.toUpperCase();
-                statusMsg.innerHTML = `🎯 <strong>${teamName}</strong> got ${finalVal >= 0 ? '+' : ''}${finalVal} points!`;
+                
+                // Get funny message
+                const funnyMsg = getFunnyMessage(finalVal, selectedTeam);
+                const emoji = finalVal >= 0 ? '🎉' : '😅';
+                
+                statusMsg.innerHTML = `${emoji} <strong>${teamName}</strong> got ${finalVal >= 0 ? '+' : ''}${finalVal} points!<br><span style="font-size:0.8rem; display:block; margin-top:4px;">${funnyMsg}</span>`;
+                statusMsg.className = finalVal >= 0 ? 'turn-indicator celebrate big-text' : 'turn-indicator bad-luck big-text';
+                
                 rollBtn.textContent = '🎲 ROLL SCORE';
                 rollBtn.disabled = true;
                 nextBtn.disabled = false;
@@ -1064,6 +1176,8 @@
                 rollInterval = null;
             }
             
+            rollDisplay.classList.add('spinning');
+            
             rollInterval = setInterval(() => {
                 const val = pool[Math.floor(Math.random() * pool.length)];
                 rollDisplay.textContent = val;
@@ -1073,6 +1187,7 @@
             
             rollBtn.textContent = '⏹️ STOP';
             statusMsg.textContent = `🎰 Rolling for ${selectedTeam.toUpperCase()}... press STOP to lock in your score!`;
+            statusMsg.className = 'turn-indicator';
         });
 
         // ---------- NEXT ----------
@@ -1094,7 +1209,11 @@
                 hasRolled = false;
                 playSound('tick');
             } else {
-                statusMsg.textContent = '🏆 GAME OVER! Great job everyone! 🎉';
+                const finalMsg = scores.boys > scores.girls ? '🎉 BOYS WIN! 🎉' : 
+                                scores.girls > scores.boys ? '🌸 GIRLS WIN! 🌸' : 
+                                '🤝 IT\'S A TIE! 🤝';
+                statusMsg.innerHTML = `🏆 GAME OVER! ${finalMsg}<br><span style="font-size:0.8rem; display:block; margin-top:4px;">BOYS: ${scores.boys} | GIRLS: ${scores.girls}</span>`;
+                statusMsg.className = 'turn-indicator celebrate big-text';
                 nextBtn.disabled = true;
                 playSound('victory');
                 timerDisplay.textContent = '🎉 FINISH';
@@ -1131,13 +1250,14 @@
                 girlsSelectBtn.classList.remove('active');
                 selectedTeam = 'boys';
                 statusMsg.textContent = '🔄 Game reset! Teacher: Click START to begin!';
+                statusMsg.className = 'turn-indicator';
             }
         });
 
         // ---------- INIT ----------
         renderQuestion(0);
         selectedTeam = 'boys';
-        console.log('Game initialized - Difficulty badges hidden!');
+        console.log('Game initialized - Funny score messages activated!');
     })();
 </script>
 </body>
