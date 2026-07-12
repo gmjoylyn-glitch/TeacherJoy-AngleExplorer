@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Angle Arena · Boys vs Girls</title>
-  <!-- Font & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
@@ -33,7 +32,6 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 1px 3px rgba(255,255,255,0.1);
       border: 1px solid rgba(255,215,0,0.2);
     }
-    /* scoreboard row */
     .scoreboard {
       display: flex;
       justify-content: space-between;
@@ -84,7 +82,15 @@
     .score-value.boys-score { color: #7bb3ff; text-shadow: 0 0 12px #3d9eff; }
     .score-value.girls-score { color: #ff8ec4; text-shadow: 0 0 12px #ff4f9e; }
 
-    /* main grid */
+    .question-progress {
+      font-size: 1rem;
+      color: #b9d0f0;
+      background: #0e1d2b;
+      padding: 4px 20px;
+      border-radius: 40px;
+      font-weight: 600;
+    }
+
     .game-grid {
       display: flex;
       gap: 15px;
@@ -97,11 +103,28 @@
       padding: 18px 12px 20px;
       backdrop-filter: blur(2px);
       border: 1px solid #566b84;
-      transition: all 0.2s;
+      transition: all 0.3s;
       box-shadow: 0 8px 0 #111d2b;
+      position: relative;
     }
     .team-zone.boys-zone { border-top: 6px solid #3d9eff; }
     .team-zone.girls-zone { border-top: 6px solid #ff7eb3; }
+    
+    .team-zone.team-winner {
+      border-color: #ffd700;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+    }
+    
+    .team-zone.team-locked {
+      opacity: 0.7;
+      filter: grayscale(0.3);
+    }
+    
+    .team-zone.team-wrong-attempt {
+      border-color: #ff4444;
+      box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+    }
+    
     .zone-title {
       font-size: 1.6rem;
       font-weight: 700;
@@ -115,7 +138,6 @@
     .zone-title.boys-title { color: #9ac7ff; }
     .zone-title.girls-title { color: #ffb3d1; }
 
-    /* question & diagram */
     .question-area {
       background: #1c2a3b;
       border-radius: 28px;
@@ -141,26 +163,25 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 120px;
+      min-height: 180px;
       border: 2px solid #b9cfec;
     }
     .diagram-container img {
       max-width: 100%;
       max-height: 170px;
       object-fit: contain;
-      border-radius: 16px;
+      border-radius: 8px;
       background: white;
-      padding: 6px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      padding: 4px;
     }
     .diagram-placeholder {
       font-size: 1.2rem;
       color: #2b4a6b;
       font-weight: 600;
       padding: 10px;
+      text-align: center;
     }
 
-    /* choices */
     .choices {
       display: flex;
       flex-direction: column;
@@ -181,6 +202,7 @@
       cursor: pointer;
       letter-spacing: 0.5px;
       border: 1px solid #6f8aa8;
+      position: relative;
     }
     .choice-btn:active {
       transform: translateY(4px);
@@ -195,10 +217,21 @@
       background: #2a9d8f;
       border-color: #b8f2e6;
       box-shadow: 0 0 20px #2a9d8faa;
+      animation: pulse-green 0.5s ease-in-out;
     }
     .choice-btn.wrong-reveal {
       background: #b13e4b;
       border-color: #ffb3b3;
+      animation: pulse-red 0.5s ease-in-out;
+    }
+    
+    @keyframes pulse-green {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); background: #35b5a5; }
+    }
+    @keyframes pulse-red {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); background: #d14552; }
     }
 
     .action-row {
@@ -269,7 +302,6 @@
       font-family: 'Fredoka One', cursive;
     }
 
-    /* status */
     .turn-indicator {
       text-align: center;
       margin-top: 8px;
@@ -277,30 +309,106 @@
       color: #bdd4f0;
       background: #142433;
       border-radius: 40px;
-      padding: 6px;
-      font-size: 0.9rem;
+      padding: 8px;
+      font-size: 1rem;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+    .turn-indicator.team-correct {
+      background: #1a5a4a;
+      color: #8fffd6;
+      border: 1px solid #2a9d8f;
+    }
+    .turn-indicator.team-wrong {
+      background: #5a2a2a;
+      color: #ffb3b3;
+      border: 1px solid #b13e4b;
+    }
+    .turn-indicator.team-waiting {
+      background: #1a2a4a;
+      color: #8fcbff;
+      border: 1px solid #3d9eff;
+      animation: pulse-blue 1s ease-in-out infinite;
+    }
+    .turn-indicator.team-opportunity {
+      background: #4a3a1a;
+      color: #ffd966;
+      border: 1px solid #f7c948;
+      animation: pulse-gold 0.8s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-blue {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; background: #1a3a6a; }
+    }
+    @keyframes pulse-gold {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; background: #3a2a1a; }
+    }
+
     .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .timer-display {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ff6b6b;
+      background: #1a0a0a;
+      padding: 0 20px;
+      border-radius: 40px;
+      border: 2px solid #ff4444;
+      min-width: 60px;
+      text-align: center;
+      font-family: 'Fredoka One', cursive;
+    }
+    .timer-display.urgent {
+      animation: blink-red 0.5s ease-in-out infinite;
+    }
+    @keyframes blink-red {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .music-toggle {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid #f7d44a;
+      border-radius: 40px;
+      padding: 6px 16px;
+      color: #ffd966;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    .music-toggle:hover {
+      background: rgba(255,215,0,0.2);
+    }
 
     @media (max-width: 850px) {
       .scoreboard { flex-direction: column; align-items: stretch; gap: 10px; }
       .team-score { justify-content: center; }
     }
-    /* hidden helper */
-    .hidden { display: none; }
   </style>
 </head>
 <body>
 <div class="game-wrapper" id="app">
-  <!-- Scoreboard -->
   <div class="scoreboard">
-    <div class="team-score"><span class="team-badge boys">⚔️ BOYS</span><span class="score-value boys-score" id="boysTotal">0</span></div>
-    <div style="font-size:1.1rem; color:#b9d0f0; background:#0e1d2b; padding:4px 20px; border-radius:40px;">⏳ 15s / 20s / 30s</div>
-    <div class="team-score"><span class="team-badge girls">🌸 GIRLS</span><span class="score-value girls-score" id="girlsTotal">0</span></div>
+    <div class="team-score">
+      <span class="team-badge boys">⚔️ BOYS</span>
+      <span class="score-value boys-score" id="boysTotal">0</span>
+    </div>
+    <div style="display:flex; gap:15px; align-items:center;">
+      <span class="question-progress" id="questionProgress">Q1/15</span>
+      <span class="timer-display" id="timerDisplay">15s</span>
+      <button class="music-toggle" id="musicToggle">🔊 Music</button>
+    </div>
+    <div class="team-score">
+      <span class="team-badge girls">🌸 GIRLS</span>
+      <span class="score-value girls-score" id="girlsTotal">0</span>
+    </div>
   </div>
 
   <div class="game-grid">
-    <!-- BOYS ZONE -->
     <div class="team-zone boys-zone" id="boysZone">
       <div class="zone-title boys-title">⚡ BOYS</div>
       <div class="question-area" id="boysQuestionArea">
@@ -316,7 +424,6 @@
       <div class="turn-indicator" id="boysStatus">✅ ready</div>
     </div>
 
-    <!-- GIRLS ZONE -->
     <div class="team-zone girls-zone" id="girlsZone">
       <div class="zone-title girls-title">🌸 GIRLS</div>
       <div class="question-area" id="girlsQuestionArea">
@@ -336,7 +443,139 @@
 
 <script>
   (function() {
-    // ---------- QUESTIONS DATA (all 15, using images from attachments) ----------
+    // ============================================
+    // AUDIO SYSTEM
+    // ============================================
+    class AudioManager {
+      constructor() {
+        this.ctx = null;
+        this.isMusicOn = true;
+        this.musicInterval = null;
+        this.initAudio();
+      }
+
+      initAudio() {
+        try {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch(e) {
+          console.warn('Web Audio not supported');
+        }
+      }
+
+      playTone(freq, duration, type = 'square', volume = 0.15) {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.value = freq;
+          gain.gain.value = volume;
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+          return osc;
+        } catch(e) {
+          return null;
+        }
+      }
+
+      playCorrect() {
+        this.playTone(880, 0.15, 'sine', 0.15);
+        setTimeout(() => this.playTone(1100, 0.2, 'sine', 0.15), 120);
+        setTimeout(() => this.playTone(1320, 0.25, 'sine', 0.12), 250);
+      }
+
+      playWrong() {
+        this.playTone(400, 0.2, 'sawtooth', 0.1);
+        setTimeout(() => this.playTone(300, 0.25, 'sawtooth', 0.1), 150);
+        setTimeout(() => this.playTone(200, 0.3, 'sawtooth', 0.08), 300);
+      }
+
+      playVictory() {
+        if (!this.ctx) return;
+        const melody = [523, 523, 523, 659, 784, 659, 784, 880];
+        melody.forEach((freq, i) => {
+          setTimeout(() => {
+            this.playTone(freq, 0.2, 'square', 0.1);
+          }, i * 130);
+        });
+        setTimeout(() => {
+          [523, 659, 784, 1047].forEach((freq, i) => {
+            setTimeout(() => this.playTone(freq, 0.3, 'sine', 0.12), i * 100);
+          });
+        }, 800);
+      }
+
+      playRollTick() {
+        this.playTone(600 + Math.random() * 400, 0.05, 'sine', 0.05);
+      }
+
+      playTimerTick() {
+        this.playTone(440, 0.08, 'square', 0.08);
+      }
+
+      toggleMusic() {
+        this.isMusicOn = !this.isMusicOn;
+        if (this.isMusicOn) {
+          this.startMusic();
+        } else {
+          this.stopMusic();
+        }
+        return this.isMusicOn;
+      }
+
+      startMusic() {
+        if (this.musicInterval) return;
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        
+        let pattern = [
+          { note: 523, dur: 0.15 }, { note: 0, dur: 0.05 },
+          { note: 587, dur: 0.15 }, { note: 0, dur: 0.05 },
+          { note: 659, dur: 0.15 }, { note: 0, dur: 0.05 },
+          { note: 523, dur: 0.2 }, { note: 0, dur: 0.1 },
+          { note: 523, dur: 0.15 }, { note: 0, dur: 0.05 },
+          { note: 587, dur: 0.15 }, { note: 0, dur: 0.05 },
+          { note: 659, dur: 0.15 }, { note: 0, dur: 0.05 },
+          { note: 523, dur: 0.2 }, { note: 0, dur: 0.1 },
+        ];
+
+        let index = 0;
+        this.musicInterval = setInterval(() => {
+          if (!this.isMusicOn) {
+            this.stopMusic();
+            return;
+          }
+          if (!this.ctx) return;
+          const p = pattern[index % pattern.length];
+          if (p.note > 0) {
+            this.playTone(p.note, p.dur * 0.8, 'square', 0.04);
+          }
+          index++;
+        }, 220);
+      }
+
+      stopMusic() {
+        if (this.musicInterval) {
+          clearInterval(this.musicInterval);
+          this.musicInterval = null;
+        }
+      }
+    }
+
+    const audio = new AudioManager();
+
+    // ============================================
+    // GAME QUESTIONS - using GitHub images
+    // ============================================
+    // Replace with your actual GitHub image URLs
+    // Example format: https://raw.githubusercontent.com/yourusername/yourrepo/main/Q1.jpg
+    const GITHUB_BASE = 'https://raw.githubusercontent.com/yourusername/yourrepo/main/'; // CHANGE THIS
+    
     const questions = [
       { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
       { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 15 },
@@ -355,12 +594,18 @@
       { q: "15) Find angle â.", img: "Q15.jpg", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 30 }
     ];
 
-    // ---------- GAME STATE ----------
+    // ============================================
+    // GAME STATE
+    // ============================================
     let currentIndex = 0;
-    // team states
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let gameLocked = false;
+    let questionLocked = false; // Global lock for the question
+    
     const teams = {
-      boys: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false },
-      girls: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false }
+      boys: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, wrongAttempt: false },
+      girls: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, wrongAttempt: false }
     };
     let boysTotal = 0, girlsTotal = 0;
 
@@ -381,84 +626,116 @@
     const girlsNextBtn = document.getElementById('girlsNextBtn');
     const boysTotalSpan = document.getElementById('boysTotal');
     const girlsTotalSpan = document.getElementById('girlsTotal');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionProgress = document.getElementById('questionProgress');
+    const boysZone = document.getElementById('boysZone');
+    const girlsZone = document.getElementById('girlsZone');
+    const musicToggle = document.getElementById('musicToggle');
 
-    // sound fx (simple web audio)
-    function playSound(type) {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        if (type === 'correct') {
-          osc.frequency.value = 880;
-          gain.gain.value = 0.15;
-          osc.start();
-          setTimeout(() => { osc.frequency.value = 1100; }, 100);
-          setTimeout(() => { osc.stop(); }, 300);
-        } else if (type === 'wrong') {
-          osc.frequency.value = 300;
-          gain.gain.value = 0.2;
-          osc.start();
-          setTimeout(() => { osc.frequency.value = 200; }, 150);
-          setTimeout(() => { osc.stop(); }, 400);
-        } else if (type === 'tick') {
-          osc.frequency.value = 700;
-          gain.gain.value = 0.08;
-          osc.start();
-          setTimeout(() => { osc.stop(); }, 60);
-        } else if (type === 'victory') {
-          osc.frequency.value = 523;
-          gain.gain.value = 0.12;
-          osc.start();
-          setTimeout(() => { osc.frequency.value = 659; }, 120);
-          setTimeout(() => { osc.frequency.value = 784; }, 240);
-          setTimeout(() => { osc.stop(); }, 400);
-        } else { // roll stop
-          osc.frequency.value = 440;
-          gain.gain.value = 0.1;
-          osc.start();
-          setTimeout(() => { osc.stop(); }, 150);
+    // Music toggle
+    musicToggle.addEventListener('click', function() {
+      const isOn = audio.toggleMusic();
+      this.textContent = isOn ? '🔊 Music' : '🔇 Muted';
+    });
+
+    document.addEventListener('click', function initAudio() {
+      audio.startMusic();
+      document.removeEventListener('click', initAudio);
+    }, { once: true });
+
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      timerSeconds = seconds;
+      timerDisplay.textContent = seconds + 's';
+      timerDisplay.classList.remove('urgent');
+      
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        timerDisplay.textContent = timerSeconds + 's';
+        if (timerSeconds <= 5 && timerSeconds > 0) {
+          timerDisplay.classList.add('urgent');
+          audio.playTimerTick();
         }
-      } catch(e) {}
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerDisplay.textContent = '⏰';
+          if (!teams.boys.answered && !teams.girls.answered) {
+            lockBothTeams('⏰ Time\'s up!');
+          }
+        }
+      }, 1000);
     }
 
-    // render question for both teams
+    function lockBothTeams(message) {
+      questionLocked = true;
+      teams.boys.lock = true;
+      teams.girls.lock = true;
+      teams.boys.answered = true;
+      teams.girls.answered = true;
+      boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+      girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+      boysStatus.textContent = message;
+      girlsStatus.textContent = message;
+      boysStatus.className = 'turn-indicator team-wrong';
+      girlsStatus.className = 'turn-indicator team-wrong';
+      setTimeout(() => {
+        boysNextBtn.disabled = false;
+        girlsNextBtn.disabled = false;
+      }, 1000);
+    }
+
     function renderQuestion(index) {
       const q = questions[index];
       if (!q) return;
-      // update text & diagram (using placeholder images)
+      
+      questionLocked = false;
+      questionProgress.textContent = `Q${index+1}/${questions.length}`;
+      
       boysQtext.textContent = q.q;
       girlsQtext.textContent = q.q;
-      // diagram
-      const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:170px;">` : `<div class="diagram-placeholder">📐 ${q.img || 'diagram'}</div>`;
+      
+      // Use GitHub images
+      const imgUrl = `${GITHUB_BASE}${q.img}`;
+      const imgHtml = `<img src="${imgUrl}" alt="diagram" onerror="this.parentElement.innerHTML='<div class=\\'diagram-placeholder\\'>📐 Image not found: ${q.img}</div>'">`;
       boysDiagram.innerHTML = imgHtml;
       girlsDiagram.innerHTML = imgHtml;
 
-      // choices
       renderChoices('boys', q.choices, q.correct);
       renderChoices('girls', q.choices, q.correct);
 
-      // reset team states for this question
+      // Reset team states
       teams.boys.answered = false;
       teams.girls.answered = false;
       teams.boys.lock = false;
       teams.girls.lock = false;
-      teams.boys.choiceLocked = false;
-      teams.girls.choiceLocked = false;
-      boysStatus.textContent = '⏳ tap answer';
-      girlsStatus.textContent = '⏳ tap answer';
+      teams.boys.wrongAttempt = false;
+      teams.girls.wrongAttempt = false;
+      
+      boysStatus.textContent = '⏳ Tap answer!';
+      girlsStatus.textContent = '⏳ Tap answer!';
+      boysStatus.className = 'turn-indicator team-waiting';
+      girlsStatus.className = 'turn-indicator team-waiting';
+      
+      boysZone.classList.remove('team-winner', 'team-locked', 'team-wrong-attempt');
+      girlsZone.classList.remove('team-winner', 'team-locked', 'team-wrong-attempt');
+      
       boysRollBtn.disabled = true;
       girlsRollBtn.disabled = true;
       boysNextBtn.disabled = true;
       girlsNextBtn.disabled = true;
-      // reset roll display
+      
       boysRollDisplay.textContent = '0';
       girlsRollDisplay.textContent = '0';
       teams.boys.rollActive = false;
       teams.girls.rollActive = false;
       if (teams.boys.rollInterval) clearInterval(teams.boys.rollInterval);
       if (teams.girls.rollInterval) clearInterval(teams.girls.rollInterval);
+      
+      // Enable choices
+      boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+      girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+      
+      startTimer(q.time);
     }
 
     function renderChoices(team, choiceTexts, correctIdx) {
@@ -476,168 +753,58 @@
     }
 
     function handleChoice(team, idx, correctIdx, btnEl) {
+      // If question is locked or team already answered, ignore
+      if (questionLocked) return;
+      
       const state = teams[team];
       if (state.lock || state.answered) return;
-      // check if other team already answered correctly (global lock)
+      
+      // Check if other team already answered correctly
       const other = team === 'boys' ? 'girls' : 'boys';
       if (teams[other].answered && teams[other].lock) {
-        // other team got it first, block
         state.lock = true;
         return;
       }
-      // lock this team answer
+      
+      // Lock this team from further clicks
       state.lock = true;
       state.answered = true;
       const isCorrect = (idx === correctIdx);
-      // reveal correct/wrong
+      
+      // Disable all choices for this team
       const allBtns = team === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
       allBtns.forEach(b => b.classList.add('disabled'));
+      
       if (isCorrect) {
+        // CORRECT ANSWER
         btnEl.classList.add('correct-reveal');
-        playSound('correct');
-        // victory sound for team
-        setTimeout(() => playSound('victory'), 200);
-        // enable roll for this team
-        if (team === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 correct! roll score'; }
-        else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 correct! roll score'; }
-        // lock other team from answering
+        audio.playCorrect();
+        setTimeout(() => audio.playVictory(), 300);
+        
+        // Lock the question so the other team can't answer
+        questionLocked = true;
+        
+        // Show correct status for this team
+        if (team === 'boys') {
+          boysRollBtn.disabled = false;
+          boysStatus.textContent = '🎯 Correct! Roll score!';
+          boysStatus.className = 'turn-indicator team-correct';
+          boysZone.classList.add('team-winner');
+          girlsZone.classList.add('team-locked');
+          girlsStatus.textContent = '⛔ Opponent answered correctly';
+          girlsStatus.className = 'turn-indicator team-wrong';
+        } else {
+          girlsRollBtn.disabled = false;
+          girlsStatus.textContent = '🎯 Correct! Roll score!';
+          girlsStatus.className = 'turn-indicator team-correct';
+          girlsZone.classList.add('team-winner');
+          boysZone.classList.add('team-locked');
+          boysStatus.textContent = '⛔ Opponent answered correctly';
+          boysStatus.className = 'turn-indicator team-wrong';
+        }
+        
+        // Lock the other team
         teams[other].lock = true;
         teams[other].answered = true;
         const otherBtns = other === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
-        otherBtns.forEach(b => b.classList.add('disabled'));
-        if (other === 'boys') boysStatus.textContent = '⛔ opponent answered';
-        else girlsStatus.textContent = '⛔ opponent answered';
-        // enable roll for correct team only
-      } else {
-        btnEl.classList.add('wrong-reveal');
-        playSound('wrong');
-        // wrong answer: team cannot roll, but other team may still answer if not locked
-        state.lock = true; // but not answered correctly
-        // check if other team already correct? if not, they can still answer
-        if (!teams[other].answered) {
-          // other team can still try
-          if (other === 'boys') boysStatus.textContent = '❌ wrong, other can answer';
-          else girlsStatus.textContent = '❌ wrong, other can answer';
-        } else {
-          // both wrong or other correct already
-        }
-        // if other team already answered correctly, they get roll
-        if (teams[other].answered && teams[other].lock) {
-          // enable roll for other
-          if (other === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 opponent correct! roll'; }
-          else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 opponent correct! roll'; }
-        }
-      }
-    }
-
-    // ---------- ROLL SCORE (slot machine) ----------
-    function initRoll(team) {
-      const state = teams[team];
-      if (state.rollActive) return;
-      state.rollActive = true;
-      const display = team === 'boys' ? boysRollDisplay : girlsRollDisplay;
-      const btn = team === 'boys' ? boysRollBtn : girlsRollBtn;
-      btn.disabled = true;
-      // possible scores (including bias 50000 for difficult)
-      const pool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000];
-      let interval = setInterval(() => {
-        const val = pool[Math.floor(Math.random() * pool.length)];
-        display.textContent = val;
-        state.rollValue = val;
-        playSound('tick');
-      }, 120);
-      state.rollInterval = interval;
-      // click again to stop
-      btn.textContent = '⏹️ STOP';
-      btn.disabled = false;
-      btn.onclick = function stopRoll() {
-        if (!state.rollActive) return;
-        clearInterval(state.rollInterval);
-        state.rollActive = false;
-        const finalVal = parseInt(display.textContent) || 0;
-        // add to score
-        if (team === 'boys') { boysTotal += finalVal; boysTotalSpan.textContent = boysTotal; }
-        else { girlsTotal += finalVal; girlsTotalSpan.textContent = girlsTotal; }
-        playSound('roll stop');
-        // update status
-        if (team === 'boys') { boysStatus.textContent = `➕ ${finalVal} added`; boysRollBtn.disabled = true; }
-        else { girlsStatus.textContent = `➕ ${finalVal} added`; girlsRollBtn.disabled = true; }
-        btn.textContent = '🎲 ROLL SCORE';
-        btn.onclick = null;
-        // enable next for both
-        boysNextBtn.disabled = false;
-        girlsNextBtn.disabled = false;
-        // if other team hasn't rolled yet, they can still roll if correct
-        const other = team === 'boys' ? 'girls' : 'boys';
-        if (teams[other].answered && teams[other].lock && !teams[other].rollActive) {
-          // other team correct but not rolled? enable their roll
-          if (other === 'boys' && boysRollBtn.disabled) { boysRollBtn.disabled = false; boysStatus.textContent = '🎲 roll now!'; }
-          else if (other === 'girls' && girlsRollBtn.disabled) { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎲 roll now!'; }
-        }
-        // reset button text
-        if (team === 'boys') boysRollBtn.textContent = '🎲 ROLL SCORE';
-        else girlsRollBtn.textContent = '🎲 ROLL SCORE';
-      };
-    }
-
-    // attach roll events
-    boysRollBtn.addEventListener('click', function(e) {
-      if (teams.boys.rollActive) {
-        // stop already handled by onclick override
-        return;
-      }
-      if (!teams.boys.answered || teams.boys.lock === false) return;
-      initRoll('boys');
-    });
-    girlsRollBtn.addEventListener('click', function(e) {
-      if (teams.girls.rollActive) return;
-      if (!teams.girls.answered || teams.girls.lock === false) return;
-      initRoll('girls');
-    });
-
-    // next button logic
-    function goNext() {
-      if (currentIndex < questions.length - 1) {
-        currentIndex++;
-        renderQuestion(currentIndex);
-        // enable choices
-        boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
-        girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
-        boysRollBtn.disabled = true;
-        girlsRollBtn.disabled = true;
-        boysNextBtn.disabled = true;
-        girlsNextBtn.disabled = true;
-        boysStatus.textContent = '⏳ tap answer';
-        girlsStatus.textContent = '⏳ tap answer';
-        // reset roll display
-        boysRollDisplay.textContent = '0';
-        girlsRollDisplay.textContent = '0';
-      } else {
-        // game over
-        boysStatus.textContent = '🏁 GAME OVER';
-        girlsStatus.textContent = '🏁 GAME OVER';
-        boysNextBtn.disabled = true;
-        girlsNextBtn.disabled = true;
-        playSound('victory');
-      }
-    }
-    boysNextBtn.addEventListener('click', goNext);
-    girlsNextBtn.addEventListener('click', goNext);
-
-    // ---------- INIT ----------
-    renderQuestion(0);
-    // enable choices initially
-    boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
-    girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
-    boysNextBtn.disabled = true;
-    girlsNextBtn.disabled = true;
-    boysRollBtn.disabled = true;
-    girlsRollBtn.disabled = true;
-
-    // extra: if other team correct and roll not used, enable roll after first roll
-    // already handled in stopRoll
-
-  })();
-</script>
-</body>
-</html>
+        other
