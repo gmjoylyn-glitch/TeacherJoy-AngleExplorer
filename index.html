@@ -23,7 +23,7 @@
             padding: 16px;
         }
         .game-wrapper {
-            max-width: 1000px;
+            max-width: 900px;
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(4px);
@@ -187,7 +187,7 @@
             padding: 10px;
         }
 
-        /* Choices */
+        /* Choices - 3 buttons in a row */
         .choices {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -313,20 +313,21 @@
         /* Team Selection Buttons */
         .team-selector {
             display: flex;
-            gap: 12px;
+            gap: 15px;
             justify-content: center;
-            margin: 12px 0 6px;
+            margin: 14px 0 8px;
             flex-wrap: wrap;
         }
         .team-select-btn {
-            padding: 10px 30px;
+            padding: 12px 40px;
             border-radius: 50px;
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             border: 3px solid transparent;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
             box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+            position: relative;
         }
         .team-select-btn:active {
             transform: translateY(3px);
@@ -344,7 +345,8 @@
         .team-select-btn.boys-btn.selected {
             background: #3d9eff;
             color: #0b1a2e;
-            box-shadow: 0 0 20px #3d9effaa;
+            box-shadow: 0 0 30px #3d9effaa, 0 4px 0 #1a3a6a;
+            transform: scale(1.05);
         }
         .team-select-btn.girls-btn {
             background: #6b2f5c;
@@ -358,7 +360,8 @@
         .team-select-btn.girls-btn.selected {
             background: #ff7eb3;
             color: #2a1a22;
-            box-shadow: 0 0 20px #ff7eb3aa;
+            box-shadow: 0 0 30px #ff7eb3aa, 0 4px 0 #6a2f5c;
+            transform: scale(1.05);
         }
         .team-select-btn:disabled {
             opacity: 0.4;
@@ -373,8 +376,9 @@
             color: #bdd4f0;
             background: #142433;
             border-radius: 40px;
-            padding: 8px;
-            font-size: 1rem;
+            padding: 10px 16px;
+            font-size: 1.05rem;
+            border: 1px solid #3a5a7a;
         }
 
         /* Music Control */
@@ -399,12 +403,13 @@
             transform: scale(1.05);
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 650px) {
             .scoreboard { flex-direction: column; align-items: stretch; gap: 8px; }
             .team-score { justify-content: center; }
             .choices { grid-template-columns: 1fr; }
             .action-row { flex-direction: column; }
             .roll-score-btn, .next-btn { width: 100%; }
+            .team-select-btn { padding: 10px 20px; font-size: 1rem; }
         }
     </style>
 </head>
@@ -423,12 +428,12 @@
         <div class="diagram-container" id="diagramContainer"><div class="diagram-placeholder">📐 Diagram</div></div>
     </div>
 
-    <!-- Choices -->
+    <!-- 3 Choices -->
     <div class="choices" id="choicesContainer"></div>
 
     <!-- Action Row -->
     <div class="action-row">
-        <button class="roll-score-btn" id="rollBtn">🎲 ROLL</button>
+        <button class="roll-score-btn" id="rollBtn">🎲 ROLL SCORE</button>
         <span class="roll-display" id="rollDisplay">0</span>
         <button class="next-btn" id="nextBtn">⏩ NEXT</button>
     </div>
@@ -439,7 +444,7 @@
         <button class="team-select-btn girls-btn" id="girlsSelectBtn">🌸 GIRLS</button>
     </div>
 
-    <div class="turn-indicator" id="statusMsg">✅ Tap an answer to start!</div>
+    <div class="turn-indicator" id="statusMsg">✅ Select a team, then tap an answer!</div>
 </div>
 
 <!-- Music Control -->
@@ -549,13 +554,11 @@
         let timerInterval = null;
         let timeLeft = 20;
         let questionLocked = false;
-        let roundWinner = null; // 'boys' or 'girls' or null
-        let selectedTeam = 'boys'; // which team will get the roll
-
-        const scores = { boys: 0, girls: 0 };
+        let selectedTeam = 'boys';
         let rollActive = false;
         let rollInterval = null;
         let rollValue = 0;
+        const scores = { boys: 0, girls: 0 };
 
         // DOM refs
         const questionText = document.getElementById('questionText');
@@ -655,7 +658,6 @@
             if (!q) return;
             
             questionLocked = false;
-            roundWinner = null;
             rollActive = false;
             if (rollInterval) clearInterval(rollInterval);
             
@@ -667,10 +669,10 @@
             renderChoices(q.choices, q.correct);
 
             rollBtn.disabled = true;
-            rollBtn.textContent = '🎲 ROLL';
+            rollBtn.textContent = '🎲 ROLL SCORE';
             rollDisplay.textContent = '0';
             nextBtn.disabled = true;
-            statusMsg.textContent = '⏳ Tap an answer!';
+            statusMsg.innerHTML = `✅ Select a team below, then tap an answer! Currently: <strong>${selectedTeam.toUpperCase()}</strong>`;
             
             // Enable team selection
             boysSelectBtn.disabled = false;
@@ -706,9 +708,8 @@
                 btnEl.classList.add('correct-reveal');
                 playSound('correct');
                 questionLocked = true;
-                roundWinner = selectedTeam; // the team that was selected gets the win
                 
-                statusMsg.innerHTML = `✅ Correct! <strong>${selectedTeam === 'boys' ? 'BOYS' : 'GIRLS'}</strong> can roll!`;
+                statusMsg.innerHTML = `✅ Correct! <strong>${selectedTeam.toUpperCase()}</strong> can now roll for points!`;
                 rollBtn.disabled = false;
                 playSound('victory');
             } else {
@@ -727,17 +728,23 @@
         }
 
         boysSelectBtn.addEventListener('click', function() {
-            if (questionLocked) return;
+            if (questionLocked) {
+                statusMsg.textContent = '⛔ Question already answered! Click NEXT to continue.';
+                return;
+            }
             selectedTeam = 'boys';
             updateTeamSelection();
-            statusMsg.textContent = '⚔️ BOYS selected for next correct answer!';
+            statusMsg.innerHTML = `⚔️ BOYS selected! Tap an answer to earn points for BOYS.`;
         });
 
         girlsSelectBtn.addEventListener('click', function() {
-            if (questionLocked) return;
+            if (questionLocked) {
+                statusMsg.textContent = '⛔ Question already answered! Click NEXT to continue.';
+                return;
+            }
             selectedTeam = 'girls';
             updateTeamSelection();
-            statusMsg.textContent = '🌸 GIRLS selected for next correct answer!';
+            statusMsg.innerHTML = `🌸 GIRLS selected! Tap an answer to earn points for GIRLS.`;
         });
 
         // ---------- ROLL SCORE ----------
@@ -758,8 +765,8 @@
                 }
                 
                 playSound('roll stop');
-                statusMsg.innerHTML = `🎯 <strong>${selectedTeam === 'boys' ? 'BOYS' : 'GIRLS'}</strong> got ${finalVal >= 0 ? '+' : ''}${finalVal}!`;
-                rollBtn.textContent = '🎲 ROLL';
+                statusMsg.innerHTML = `🎯 <strong>${selectedTeam.toUpperCase()}</strong> got ${finalVal >= 0 ? '+' : ''}${finalVal} points!`;
+                rollBtn.textContent = '🎲 ROLL SCORE';
                 rollBtn.disabled = true;
                 nextBtn.disabled = false;
                 
@@ -774,7 +781,10 @@
             
             // Start rolling
             if (rollBtn.disabled) return;
-            if (questionLocked === false) return;
+            if (!questionLocked) {
+                statusMsg.textContent = '⛔ Answer the question first!';
+                return;
+            }
             
             rollActive = true;
             const pool = [1000, 2000, 3000, 4000, 5000, -1000, -2000, -3000, -5000, 10000, 20000, 50000];
@@ -790,7 +800,7 @@
             }, 80);
             
             rollBtn.textContent = '⏹️ STOP';
-            statusMsg.textContent = '🎰 Rolling... press STOP to lock!';
+            statusMsg.textContent = '🎰 Rolling... press STOP to lock in your score!';
         });
 
         // ---------- NEXT ----------
@@ -826,6 +836,7 @@
                 girlsSelectBtn.disabled = false;
                 selectedTeam = 'boys';
                 updateTeamSelection();
+                statusMsg.textContent = '🔄 Game reset! Select a team and answer!';
             }
         });
 
