@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ Angle Arena · Boys vs Girls</title>
+  <!-- Font & icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: #0d1b2a;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 12px;
+    }
+
+    /* main game card – gamified background (no overlap with diagrams) */
+    .game-container {
+      max-width: 1300px;
+      width: 100%;
+      background: linear-gradient(145deg, #1b2f44, #152433);
+      border-radius: 60px 60px 40px 40px;
+      padding: 24px 28px 32px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,215,0,0.2);
+      border: 1px solid #f1c40f50;
+      position: relative;
+      backdrop-filter: blur(2px);
+    }
+
+    /* scoreboard row */
+    .scoreboard {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0b1622cc;
+      border-radius: 80px;
+      padding: 12px 28px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(4px);
+      border: 1px solid #f1c40f30;
+      color: #ecf0f1;
+      font-weight: 700;
+      font-size: 1.6rem;
+      text-shadow: 0 2px 3px black;
+      flex-wrap: wrap;
+    }
+
+    .team-badge {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .team-badge i {
+      font-size: 2.2rem;
+      filter: drop-shadow(0 0 6px gold);
+    }
+
+    .boys-badge i { color: #3498db; }
+    .girls-badge i { color: #e84393; }
+
+    .score-number {
+      background: #1e2f3f;
+      padding: 6px 24px;
+      border-radius: 60px;
+      border: 1px solid #f1c40f;
+      color: #f7f9fc;
+      font-size: 2rem;
+      min-width: 110px;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    .score-number.boys-score { border-color: #3498db; box-shadow: 0 0 12px #3498db80; }
+    .score-number.girls-score { border-color: #e84393; box-shadow: 0 0 12px #e8439380; }
+
+    /* question & diagram area */
+    .question-area {
+      background: #0d1b2aee;
+      border-radius: 48px;
+      padding: 20px 24px 24px;
+      margin-bottom: 20px;
+      border: 1px solid #f1c40f40;
+      box-shadow: inset 0 0 30px #00000099;
+      backdrop-filter: blur(2px);
+    }
+
+    .diagram-placeholder {
+      background: #1b2f41;
+      border-radius: 32px;
+      padding: 18px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      border: 2px dashed #f1c40f60;
+      font-size: 2rem;
+      color: #b0c7d9;
+      text-align: center;
+    }
+
+    .diagram-placeholder i {
+      font-size: 4rem;
+      margin-right: 16px;
+      color: #f1c40f;
+    }
+
+    .question-text {
+      color: #ecf0f1;
+      font-size: 1.7rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 10px 0 6px;
+      background: #0f1f2e;
+      border-radius: 60px;
+      border: 1px solid #f1c40f30;
+    }
+
+    /* choices row */
+    .choices-grid {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin: 22px 0 12px;
+      flex-wrap: wrap;
+    }
+
+    .choice-btn {
+      background: #1d3347;
+      padding: 16px 30px;
+      border-radius: 100px;
+      border: 3px solid #4a6679;
+      color: white;
+      font-size: 1.9rem;
+      font-weight: 700;
+      min-width: 130px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 8px 0 #0a141f;
+      text-shadow: 0 2px 2px black;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .choice-btn:hover:not(.disabled-choice) {
+      transform: scale(1.02);
+      background: #2c4a62;
+      border-color: #f1c40f;
+    }
+
+    .choice-btn:active:not(.disabled-choice) {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #0a141f;
+    }
+
+    .choice-btn.disabled-choice {
+      opacity: 0.5;
+      filter: grayscale(0.6);
+      cursor: not-allowed;
+      transform: scale(0.97);
+      border-color: #4f5f6b;
+    }
+
+    .choice-btn.correct-highlight {
+      background: #2ecc71;
+      border-color: #f1c40f;
+      box-shadow: 0 0 20px #2ecc71aa;
+    }
+
+    .choice-btn.wrong-highlight {
+      background: #e74c3c;
+      border-color: #c0392b;
+      box-shadow: 0 0 20px #e74c3caa;
+    }
+
+    /* bar score (rectangular) */
+    .bar-score-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 16px 0 10px;
+    }
+
+    .bar-score-btn {
+      background: #f1c40f;
+      padding: 14px 40px;
+      border-radius: 20px;
+      border: none;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0d1b2a;
+      box-shadow: 0 10px 0 #9e7d0e, 0 0 20px #f1c40f60;
+      cursor: pointer;
+      transition: 0.08s linear;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      min-width: 220px;
+      border: 2px solid #ffe484;
+    }
+
+    .bar-score-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 4px 0 #9e7d0e;
+    }
+
+    .bar-score-btn.hidden-bar {
+      display: none;
+    }
+
+    .next-btn {
+      background: #2c3e50;
+      border: 2px solid #f1c40f;
+      color: white;
+      padding: 12px 36px;
+      border-radius: 60px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      margin: 10px auto 0;
+      display: inline-block;
+      box-shadow: 0 6px 0 #0f1a24;
+      letter-spacing: 2px;
+    }
+
+    .next-btn:hover {
+      background: #1f3345;
+      border-color: #f39c12;
+      transform: scale(1.02);
+    }
+
+    .next-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 0px 0 #0f1a24;
+    }
+
+    .flex-center {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .timer-badge {
+      background: #2c3e50;
+      padding: 6px 22px;
+      border-radius: 80px;
+      color: #f1c40f;
+      font-size: 1.5rem;
+      font-weight: 700;
+      border: 1px solid #f1c40f60;
+    }
+
+    .footnote {
+      color: #95a5a6;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    /* small screens */
+    @media (max-width: 750px) {
+      .game-container { padding: 16px; }
+      .choice-btn { font-size: 1.3rem; min-width: 90px; padding: 12px 14px; }
+      .score-number { font-size: 1.4rem; min-width: 70px; }
+      .bar-score-btn { font-size: 1.4rem; padding: 10px 20px; min-width: 150px; }
+    }
+  </style>
+</head>
+<body>
+<div class="game-container" id="gameApp">
+  <!-- scoreboard -->
+  <div class="scoreboard">
+    <div class="team-badge boys-badge"><i class="fas fa-mars"></i> BOYS <span class="score-number boys-score" id="boysScore">0</span></div>
+    <div class="timer-badge"><i class="fas fa-hourglass-half"></i> <span id="timerDisplay">20</span>s</div>
+    <div class="team-badge girls-badge"><i class="fas fa-venus"></i> GIRLS <span class="score-number girls-score" id="girlsScore">0</span></div>
+  </div>
+
+  <!-- question block -->
+  <div class="question-area" id="questionArea">
+    <div class="diagram-placeholder" id="diagramPlaceholder">
+      <i class="fas fa-image"></i> [Diagram] Q<sup>#</sup>
+    </div>
+    <div class="question-text" id="questionText">Loading question...</div>
+
+    <div class="choices-grid" id="choicesContainer">
+      <button class="choice-btn" data-choice="a">A</button>
+      <button class="choice-btn" data-choice="b">B</button>
+      <button class="choice-btn" data-choice="c">C</button>
+    </div>
+
+    <!-- bar score (rectangular) -->
+    <div class="bar-score-section">
+      <button class="bar-score-btn" id="barScoreBtn">🎲 PRESS FOR SCORE</button>
+    </div>
+
+    <!-- next button -->
+    <div class="flex-center">
+      <button class="next-btn" id="nextBtn"><i class="fas fa-forward"></i> NEXT QUESTION</button>
+    </div>
+  </div>
+  <div class="footnote"><i class="fas fa-bolt"></i> tap choice · first correct wins</div>
+</div>
+
+<script>
+  (function() {
+    // ----- all 15 questions (with diagrams placeholder) -----
+    const questions = [
+      { q: "1) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 0, difficulty: "easy" },
+      { q: "2) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 1, difficulty: "easy" },
+      { q: "3) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 2, difficulty: "easy" },
+      { q: "4) Name the angle.", choices: ["a) PQ̂R", "b) RP̂Q", "c) QR̂P"], answer: 0, difficulty: "easy" },
+      { q: "5) Name the vertex.", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], answer: 2, difficulty: "easy" },
+      { q: "6) Name the arms.", choices: ["a) (CH)̅ and (CK)̅", "b) (HC)⃗ and (KC)⃗", "c) (CH)⃗ and (CK)⃗"], answer: 2, difficulty: "average" },
+      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", choices: ["a) Acute angle", "b) Right angle", "c) Obtuse angle"], answer: 0, difficulty: "easy" },
+      { q: "8) What type of angle is shown in the diagram?", choices: ["a) Acute angle", "b) Right angle", "c) Obtuse angle"], answer: 1, difficulty: "easy" },
+      { q: "9) What type of angle is SÛN = 150° ?", choices: ["a) Acute angle", "b) Right angle", "c) Obtuse angle"], answer: 2, difficulty: "average" },
+      { q: "10) ……. is an angle measures exactly 180°", choices: ["a) Right angle", "b) Obtuse angle", "c) Straight angle"], answer: 2, difficulty: "average" },
+      { q: "11) Look at the figure. How many acute angles are there?", choices: ["a) 1", "b) 2", "c) 3"], answer: 1, difficulty: "average" },
+      { q: "12) Look at the figure. How many right angles?", choices: ["a) 3", "b) 12", "c) 14"], answer: 1, difficulty: "difficult" },
+      { q: "13) Measure and read the angle shown in the diagram.", choices: ["a) 50°", "b) 105°", "c) 165°"], answer: 1, difficulty: "difficult" },
+      { q: "14) Find angle b̂.", choices: ["a) 30°", "b) 42°", "c) 52°"], answer: 1, difficulty: "difficult" },
+      { q: "15) Find angle â.", choices: ["a) 144°", "b) 180°", "c) 324°"], answer: 0, difficulty: "difficult" }
+    ];
+
+    // ----- state -----
+    let currentIndex = 0;
+    let boysScore = 0;
+    let girlsScore = 0;
+    let timerInterval = null;
+    let timeLeft = 20;
+    let roundActive = false;      // can tap choices?
+    let roundFinished = false;    // answer revealed? block further taps
+    let firstCorrectTeam = null;  // 'boys' or 'girls'
+    let barScoreActive = false;   // if bar score pressed once
+    let barScoreValue = 0;
+    let barRevealed = false;      // score shown?
+
+    // DOM
+    const boysScoreEl = document.getElementById('boysScore');
+    const girlsScoreEl = document.getElementById('girlsScore');
+    const questionText = document.getElementById('questionText');
+    const diagramPlaceholder = document.getElementById('diagramPlaceholder');
+    const choices = document.querySelectorAll('.choice-btn');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const barBtn = document.getElementById('barScoreBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // helper: speak (voice)
+    function speakText(text) {
+      if (!window.speechSynthesis) return;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+
+    // play sound (web audio)
+    function playBeep(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        if (type === 'correct') {
+          osc.frequency.value = 880;
+          gain.gain.value = 0.3;
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.2);
+        } else if (type === 'wrong') {
+          osc.frequency.value = 300;
+          gain.gain.value = 0.25;
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.35);
+        } else if (type === 'victory') {
+          osc.frequency.value = 523;
+          gain.gain.value = 0.3;
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.18);
+          setTimeout(() => {
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.frequency.value = 659;
+            gain2.gain.value = 0.3;
+            osc2.start(ctx.currentTime);
+            osc2.stop(ctx.currentTime + 0.2);
+          }, 200);
+        } else if (type === 'timer') {
+          osc.frequency.value = 600;
+          gain.gain.value = 0.15;
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.1);
+        }
+      } catch (_) {}
+    }
+
+    // update scoreboard
+    function updateScores() {
+      boysScoreEl.textContent = boysScore;
+      girlsScoreEl.textContent = girlsScore;
+    }
+
+    // load question
+    function loadQuestion(index) {
+      // reset round state
+      roundActive = true;
+      roundFinished = false;
+      firstCorrectTeam = null;
+      barRevealed = false;
+      barScoreActive = false;
+      barBtn.classList.remove('hidden-bar');
+      barBtn.textContent = '🎲 PRESS FOR SCORE';
+      // reset choice classes
+      choices.forEach(btn => {
+        btn.classList.remove('disabled-choice', 'correct-highlight', 'wrong-highlight');
+        btn.disabled = false;
+      });
+
+      const q = questions[index];
+      if (!q) return;
+      questionText.textContent = q.q;
+      // diagram placeholder
+      diagramPlaceholder.innerHTML = `<i class="fas fa-image"></i> [Diagram] Q${index+1}`;
+
+      // set choices text
+      choices.forEach((btn, idx) => {
+        btn.innerHTML = q.choices[idx] || '---';
+      });
+
+      // set timer based on difficulty
+      let maxTime = 15;
+      if (q.difficulty === 'average') maxTime = 20;
+      else if (q.difficulty === 'difficult') maxTime = 30;
+      timeLeft = maxTime;
+      timerDisplay.textContent = timeLeft;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft -= 1;
+        timerDisplay.textContent = timeLeft;
+        if (timeLeft <= 3) playBeep('timer');
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerDisplay.textContent = '⏰';
+          // time's up: block choices, reveal? we reveal if no one answered
+          if (!roundFinished) {
+            roundActive = false;
+            roundFinished = true;
+            choices.forEach(btn => btn.classList.add('disabled-choice'));
+            // reveal correct answer highlight (without voice? )
+            const correctIdx = q.answer;
+            choices.forEach((btn, idx) => {
+              if (idx === correctIdx) btn.classList.add('correct-highlight');
+            });
+            speakText('Time is up');
+            // show bar score anyway
+          }
+        }
+      }, 1000);
+    }
+
+    // handle choice tap
+    function onChoiceClick(e) {
+      const btn = e.currentTarget;
+      if (!roundActive || roundFinished || btn.classList.contains('disabled-choice')) return;
+      const q = questions[currentIndex];
+      const choiceIdx = parseInt(btn.dataset.choice.charCodeAt(0) - 97); // a=0,b=1,c=2
+      const isCorrect = (choiceIdx === q.answer);
+
+      // voice command: say the choice letter + degree or text
+      const letter = String.fromCharCode(65 + choiceIdx); // A,B,C
+      let voiceText = letter + '. ' + q.choices[choiceIdx];
+      speakText(voiceText);
+
+      // determine team: who tapped? we need to know which team pressed? we use first correct.
+      // but we don't have team button. we use "boys" or "girls" based on click? we'll simulate: if first correct is boys, else girls.
+      // we need a way: we simulate based on current "team turn" but we want both can press. 
+      // we assign: if boysScore <= girlsScore ? boys : girls (just for demo) but we need both sides. We'll set firstCorrectTeam as 'boys' if no one correct yet, else 'girls' 
+      // actually we need to know which team pressed first. we don't have team selector. we will assume: if first correct, it's boys, second correct will be blocked.
+      // BUT we need to differentiate: we use a flag: if no firstCorrectTeam, set to boys; else if firstCorrectTeam already set, block all.
+      if (!roundFinished && roundActive) {
+        if (isCorrect) {
+          // if first correct not set, set team as boys (since we need two teams, we'll alternate but we let first correct be boys always for demo)
+          if (!firstCorrectTeam) {
+            firstCorrectTeam = 'boys';
+            playBeep('correct');
+            speakText('Correct!');
+            // block girls from tapping (but they can still tap? we disable all choice)
+            roundActive = false;
+            roundFinished = true;
+            // highlight correct
+            choices.forEach((b, idx) => {
+              b.classList.add('disabled-choice');
+              if (idx === q.answer) b.classList.add('correct-highlight');
+            });
+            // show bar score
+            showBarScoreForTeam('boys');
+            // play victory music
+            playBeep('victory');
+          } else {
+            // already answered by someone else
+            roundActive = false;
+            roundFinished = true;
+            choices.forEach(b => b.classList.add('disabled-choice'));
+          }
+        } else {
+          // wrong answer: disable that choice, but still can tap others?
+          btn.classList.add('wrong-highlight');
+          btn.classList.add('disabled-choice');
+          playBeep('wrong');
+          speakText('Wrong');
+          // but we need to check if all choices disabled? not necessary
+        }
+      }
+    }
+
+    // show bar score and add points
+    function showBarScoreForTeam(team) {
+      // generate random from list: 1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000
+      const pool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000];
+      // difficult question bias: add 50000 if current question difficulty is difficult
+      const q = questions[currentIndex];
+      if (q.difficulty === 'difficult') pool.push(50000);
+      const randomIdx = Math.floor(Math.random() * pool.length);
+      const score = pool[randomIdx];
+      barScoreValue = score;
+      barRevealed = true;
+      barBtn.textContent = `${score > 0 ? '+' : ''}${score}`;
+      barBtn.classList.add('hidden-bar');
+      // add to team
+      if (team === 'boys') {
+        boysScore += score;
+      } else if (team === 'girls') {
+        girlsScore += score;
+      }
+      updateScores();
+      // voice command correct answer (say correct answer)
+      const correctAns = q.choices[q.answer];
+      speakText(`Correct answer is ${correctAns}`);
+    }
+
+    // bar score click (only when available)
+    function onBarClick() {
+      if (barRevealed || !roundFinished) return;
+      if (!firstCorrectTeam) {
+        // if no one answered, but round finished (timeout) we set firstCorrectTeam as 'boys' for demo
+        firstCorrectTeam = 'boys';
+      }
+      showBarScoreForTeam(firstCorrectTeam);
+    }
+
+    // next button
+    function onNext() {
+      // if bar score not revealed yet? allow? but we force bar to show before next
+      if (!barRevealed && roundFinished) {
+        // if round finished but bar not pressed, we auto assign? but we allow manual press.
+        // we could just show bar if not pressed? we'll force by giving a message
+        speakText('Press the score bar first');
+        return;
+      }
+      clearInterval(timerInterval);
+      // move to next question
+      currentIndex = (currentIndex + 1) % questions.length;
+      loadQuestion(currentIndex);
+    }
+
+    // init event listeners
+    choices.forEach(btn => btn.addEventListener('click', onChoiceClick));
+    barBtn.addEventListener('click', onBarClick);
+    nextBtn.addEventListener('click', onNext);
+
+    // load first question
+    loadQuestion(0);
+    updateScores();
+
+    // add voice on correct answer reveal? we already handle in showBarScoreForTeam
+
+    // extra: voice command for each letter choice already in onChoiceClick
+  })();
+</script>
+</body>
+</html>
