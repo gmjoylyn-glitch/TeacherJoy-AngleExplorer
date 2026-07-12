@@ -34,7 +34,6 @@
             position: relative;
             overflow: hidden;
         }
-        /* Gamified background */
         .game-wrapper::before {
             content: "🎵 ♪ ♫ ♬";
             position: absolute;
@@ -136,7 +135,6 @@
             text-align: center;
         }
 
-        /* Single Question Area */
         .question-area {
             background: #1c2a3b;
             border-radius: 28px;
@@ -187,7 +185,6 @@
             padding: 10px;
         }
 
-        /* Choices - 3 buttons in a row */
         .choices {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -239,7 +236,6 @@
             75% { transform: translateX(10px); }
         }
 
-        /* Action Row */
         .action-row {
             display: flex;
             justify-content: space-between;
@@ -310,7 +306,6 @@
             font-family: 'Fredoka One', cursive;
         }
 
-        /* Team Selection Buttons - FIXED */
         .team-selector {
             display: flex;
             gap: 15px;
@@ -384,7 +379,6 @@
             border: 1px solid #3a5a7a;
         }
 
-        /* Music Control */
         .music-control {
             position: fixed;
             bottom: 20px;
@@ -418,30 +412,25 @@
 </head>
 <body>
 <div class="game-wrapper" id="app">
-    <!-- Scoreboard -->
     <div class="scoreboard">
         <div class="team-score"><span class="team-badge boys">⚔️ BOYS</span><span class="score-value boys-score" id="boysTotal">0</span></div>
         <div class="timer-display" id="timerDisplay">⏳ 20s</div>
         <div class="team-score"><span class="team-badge girls">🌸 GIRLS</span><span class="score-value girls-score" id="girlsTotal">0</span></div>
     </div>
 
-    <!-- Single Question Area -->
     <div class="question-area">
         <div class="q-text" id="questionText">Question loads here</div>
         <div class="diagram-container" id="diagramContainer"><div class="diagram-placeholder">📐 Diagram</div></div>
     </div>
 
-    <!-- 3 Choices -->
     <div class="choices" id="choicesContainer"></div>
 
-    <!-- Action Row -->
     <div class="action-row">
         <button class="roll-score-btn" id="rollBtn">🎲 ROLL SCORE</button>
         <span class="roll-display" id="rollDisplay">0</span>
         <button class="next-btn" id="nextBtn">⏩ NEXT</button>
     </div>
 
-    <!-- Team Selector - FIXED with proper event handling -->
     <div class="team-selector">
         <button class="team-select-btn boys-btn selected" id="boysSelectBtn">⚔️ BOYS</button>
         <button class="team-select-btn girls-btn" id="girlsSelectBtn">🌸 GIRLS</button>
@@ -450,7 +439,6 @@
     <div class="turn-indicator" id="statusMsg">✅ Select a team, then tap an answer!</div>
 </div>
 
-<!-- Music Control -->
 <button class="music-control" id="musicToggle">🎵 Music: ON</button>
 
 <script>
@@ -470,7 +458,6 @@
                 musicGain = musicCtx.createGain();
                 musicGain.gain.value = 0.06;
                 musicGain.connect(musicCtx.destination);
-
                 playMusicNote();
                 musicInterval = setInterval(() => {
                     if (musicEnabled && musicCtx && musicCtx.state === 'running') {
@@ -487,7 +474,6 @@
                 const gain = musicCtx.createGain();
                 osc.connect(gain);
                 gain.connect(musicGain);
-                
                 const note = musicNotes[noteIndex % musicNotes.length];
                 osc.frequency.value = note;
                 osc.type = 'sine';
@@ -495,7 +481,6 @@
                 gain.gain.exponentialRampToValueAtTime(0.01, musicCtx.currentTime + 0.35);
                 osc.start(musicCtx.currentTime);
                 osc.stop(musicCtx.currentTime + 0.35);
-                
                 const osc2 = musicCtx.createOscillator();
                 const gain2 = musicCtx.createGain();
                 osc2.connect(gain2);
@@ -506,7 +491,6 @@
                 gain2.gain.exponentialRampToValueAtTime(0.01, musicCtx.currentTime + 0.3);
                 osc2.start(musicCtx.currentTime + 0.05);
                 osc2.stop(musicCtx.currentTime + 0.35);
-                
                 noteIndex++;
             } catch(e) {}
         }
@@ -577,47 +561,88 @@
         const boysSelectBtn = document.getElementById('boysSelectBtn');
         const girlsSelectBtn = document.getElementById('girlsSelectBtn');
 
-        // Sound effects
+        // ---------- IMPROVED SOUND EFFECTS ----------
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioCtx;
+        }
+
         function playSound(type) {
             try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                if (type === 'correct') {
-                    osc.frequency.value = 880;
-                    gain.gain.value = 0.15;
-                    osc.start();
-                    setTimeout(() => { osc.frequency.value = 1100; }, 100);
-                    setTimeout(() => { osc.frequency.value = 1320; }, 200);
-                    setTimeout(() => { osc.stop(); }, 350);
-                } else if (type === 'wrong') {
-                    osc.frequency.value = 300;
-                    gain.gain.value = 0.2;
-                    osc.start();
-                    setTimeout(() => { osc.frequency.value = 200; }, 150);
-                    setTimeout(() => { osc.stop(); }, 400);
-                } else if (type === 'tick') {
-                    osc.frequency.value = 700;
-                    gain.gain.value = 0.08;
-                    osc.start();
-                    setTimeout(() => { osc.stop(); }, 60);
-                } else if (type === 'victory') {
-                    osc.frequency.value = 523;
-                    gain.gain.value = 0.12;
-                    osc.start();
-                    setTimeout(() => { osc.frequency.value = 659; }, 120);
-                    setTimeout(() => { osc.frequency.value = 784; }, 240);
-                    setTimeout(() => { osc.frequency.value = 1047; }, 360);
-                    setTimeout(() => { osc.stop(); }, 500);
-                } else {
-                    osc.frequency.value = 440;
-                    gain.gain.value = 0.1;
-                    osc.start();
-                    setTimeout(() => { osc.stop(); }, 150);
+                const ctx = getAudioContext();
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                switch(type) {
+                    case 'correct':
+                        oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.3);
+                        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                        oscillator.start(ctx.currentTime);
+                        oscillator.stop(ctx.currentTime + 0.35);
+                        break;
+                    case 'wrong':
+                        oscillator.frequency.setValueAtTime(300, ctx.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.3);
+                        gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                        oscillator.start(ctx.currentTime);
+                        oscillator.stop(ctx.currentTime + 0.35);
+                        break;
+                    case 'tick':
+                        oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+                        gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+                        oscillator.start(ctx.currentTime);
+                        oscillator.stop(ctx.currentTime + 0.08);
+                        break;
+                    case 'rollstop':
+                        oscillator.frequency.setValueAtTime(523, ctx.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(1047, ctx.currentTime + 0.3);
+                        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                        oscillator.start(ctx.currentTime);
+                        oscillator.stop(ctx.currentTime + 0.35);
+                        break;
+                    case 'victory':
+                        // Play a happy ascending melody
+                        [523, 659, 784, 1047].forEach((freq, i) => {
+                            const osc = ctx.createOscillator();
+                            const gain = ctx.createGain();
+                            osc.connect(gain);
+                            gain.connect(ctx.destination);
+                            osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.12);
+                            gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
+                            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.12 + 0.2);
+                            osc.start(ctx.currentTime + i * 0.12);
+                            osc.stop(ctx.currentTime + i * 0.12 + 0.2);
+                        });
+                        break;
+                    case 'wronganswer':
+                        oscillator.frequency.setValueAtTime(250, ctx.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.4);
+                        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                        oscillator.start(ctx.currentTime);
+                        oscillator.stop(ctx.currentTime + 0.4);
+                        break;
+                    default:
+                        oscillator.frequency.setValueAtTime(440, ctx.currentTime);
+                        gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                        oscillator.start(ctx.currentTime);
+                        oscillator.stop(ctx.currentTime + 0.15);
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.log('Sound error:', e);
+            }
         }
 
         // ---------- TIMER ----------
@@ -677,7 +702,6 @@
             nextBtn.disabled = true;
             statusMsg.innerHTML = `✅ Select a team below, then tap an answer! Currently: <strong>${selectedTeam.toUpperCase()}</strong>`;
             
-            // Enable team selection
             boysSelectBtn.disabled = false;
             girlsSelectBtn.disabled = false;
             updateTeamSelection();
@@ -704,7 +728,6 @@
             
             const isCorrect = (idx === correctIdx);
             
-            // Disable all choices
             document.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
 
             if (isCorrect) {
@@ -717,20 +740,19 @@
                 playSound('victory');
             } else {
                 btnEl.classList.add('wrong-reveal');
-                playSound('wrong');
+                playSound('wronganswer');
                 statusMsg.textContent = '❌ Wrong! Correct answer revealed.';
                 questionLocked = true;
                 revealCorrectAnswer();
             }
         }
 
-        // ---------- TEAM SELECTION - FIXED ----------
+        // ---------- TEAM SELECTION ----------
         function updateTeamSelection() {
             boysSelectBtn.classList.toggle('selected', selectedTeam === 'boys');
             girlsSelectBtn.classList.toggle('selected', selectedTeam === 'girls');
         }
 
-        // Boys button - properly working
         boysSelectBtn.addEventListener('click', function(e) {
             e.preventDefault();
             if (questionLocked) {
@@ -740,10 +762,9 @@
             selectedTeam = 'boys';
             updateTeamSelection();
             statusMsg.innerHTML = `⚔️ BOYS selected! Tap an answer to earn points for BOYS.`;
-            console.log('Boys selected');
+            playSound('tick');
         });
 
-        // Girls button - properly working
         girlsSelectBtn.addEventListener('click', function(e) {
             e.preventDefault();
             if (questionLocked) {
@@ -753,14 +774,18 @@
             selectedTeam = 'girls';
             updateTeamSelection();
             statusMsg.innerHTML = `🌸 GIRLS selected! Tap an answer to earn points for GIRLS.`;
-            console.log('Girls selected');
+            playSound('tick');
         });
 
-        // ---------- ROLL SCORE ----------
+        // ---------- ROLL SCORE - FIXED FOR BOTH TEAMS ----------
         rollBtn.addEventListener('click', function() {
+            // If roll is active, stop it
             if (rollActive) {
                 // Stop rolling
-                clearInterval(rollInterval);
+                if (rollInterval) {
+                    clearInterval(rollInterval);
+                    rollInterval = null;
+                }
                 rollActive = false;
                 const finalVal = parseInt(rollDisplay.textContent) || 0;
                 
@@ -773,8 +798,9 @@
                     girlsTotalSpan.textContent = scores.girls;
                 }
                 
-                playSound('roll stop');
-                statusMsg.innerHTML = `🎯 <strong>${selectedTeam.toUpperCase()}</strong> got ${finalVal >= 0 ? '+' : ''}${finalVal} points!`;
+                playSound('rollstop');
+                const teamName = selectedTeam.toUpperCase();
+                statusMsg.innerHTML = `🎯 <strong>${teamName}</strong> got ${finalVal >= 0 ? '+' : ''}${finalVal} points!`;
                 rollBtn.textContent = '🎲 ROLL SCORE';
                 rollBtn.disabled = true;
                 nextBtn.disabled = false;
@@ -782,23 +808,33 @@
                 if (timerInterval) clearInterval(timerInterval);
                 timerDisplay.textContent = '✅ Done';
                 
-                // Disable team selection after roll
                 boysSelectBtn.disabled = true;
                 girlsSelectBtn.disabled = true;
                 return;
             }
             
-            // Start rolling
-            if (rollBtn.disabled) return;
+            // Start rolling - check if button is enabled
+            if (rollBtn.disabled) {
+                statusMsg.textContent = '⛔ You need to answer correctly first!';
+                return;
+            }
+            
             if (!questionLocked) {
                 statusMsg.textContent = '⛔ Answer the question first!';
                 return;
             }
             
+            // Start the roll
             rollActive = true;
             const pool = [1000, 2000, 3000, 4000, 5000, -1000, -2000, -3000, -5000, 10000, 20000, 50000];
             if (questions[currentIndex].time >= 30) {
                 pool.push(50000);
+            }
+            
+            // Clear any existing interval
+            if (rollInterval) {
+                clearInterval(rollInterval);
+                rollInterval = null;
             }
             
             rollInterval = setInterval(() => {
@@ -809,7 +845,7 @@
             }, 80);
             
             rollBtn.textContent = '⏹️ STOP';
-            statusMsg.textContent = '🎰 Rolling... press STOP to lock in your score!';
+            statusMsg.textContent = `🎰 Rolling for ${selectedTeam.toUpperCase()}... press STOP to lock in your score!`;
         });
 
         // ---------- NEXT ----------
@@ -817,10 +853,10 @@
             if (currentIndex < questions.length - 1) {
                 currentIndex++;
                 renderQuestion(currentIndex);
-                // Re-enable team selection for new question
                 boysSelectBtn.disabled = false;
                 girlsSelectBtn.disabled = false;
                 updateTeamSelection();
+                playSound('tick');
             } else {
                 statusMsg.textContent = '🏆 GAME OVER! Great job everyone! 🎉';
                 nextBtn.disabled = true;
