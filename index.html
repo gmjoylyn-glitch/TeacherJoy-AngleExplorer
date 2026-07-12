@@ -125,6 +125,17 @@
       box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
     }
     
+    .team-zone.team-opportunity {
+      border-color: #ffd700;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+      animation: pulse-glow 1s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); }
+    }
+    
     .zone-title {
       font-size: 1.6rem;
       font-weight: 700;
@@ -348,7 +359,6 @@
       50% { opacity: 1; background: #3a2a1a; }
     }
 
-    .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .timer-display {
       font-size: 1.8rem;
       font-weight: 700;
@@ -444,7 +454,7 @@
 <script>
   (function() {
     // ============================================
-    // AUDIO SYSTEM
+    // AUDIO SYSTEM - Background Music & Sound Effects
     // ============================================
     class AudioManager {
       constructor() {
@@ -533,14 +543,23 @@
           this.ctx.resume();
         }
         
-        let pattern = [
-          { note: 523, dur: 0.15 }, { note: 0, dur: 0.05 },
-          { note: 587, dur: 0.15 }, { note: 0, dur: 0.05 },
-          { note: 659, dur: 0.15 }, { note: 0, dur: 0.05 },
-          { note: 523, dur: 0.2 }, { note: 0, dur: 0.1 },
-          { note: 523, dur: 0.15 }, { note: 0, dur: 0.05 },
-          { note: 587, dur: 0.15 }, { note: 0, dur: 0.05 },
-          { note: 659, dur: 0.15 }, { note: 0, dur: 0.05 },
+        // Upbeat game music pattern
+        const patterns = [
+          { note: 523, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 587, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 659, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 784, dur: 0.16 }, { note: 0, dur: 0.08 },
+          { note: 659, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 587, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 523, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 587, dur: 0.16 }, { note: 0, dur: 0.08 },
+          { note: 523, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 659, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 784, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 880, dur: 0.16 }, { note: 0, dur: 0.08 },
+          { note: 784, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 659, dur: 0.12 }, { note: 0, dur: 0.04 },
+          { note: 587, dur: 0.12 }, { note: 0, dur: 0.04 },
           { note: 523, dur: 0.2 }, { note: 0, dur: 0.1 },
         ];
 
@@ -551,12 +570,12 @@
             return;
           }
           if (!this.ctx) return;
-          const p = pattern[index % pattern.length];
+          const p = patterns[index % patterns.length];
           if (p.note > 0) {
-            this.playTone(p.note, p.dur * 0.8, 'square', 0.04);
+            this.playTone(p.note, p.dur * 0.7, 'square', 0.035);
           }
           index++;
-        }, 220);
+        }, 180);
       }
 
       stopMusic() {
@@ -570,11 +589,11 @@
     const audio = new AudioManager();
 
     // ============================================
-    // GAME QUESTIONS - using GitHub images
+    // GAME QUESTIONS - Using GitHub Images
     // ============================================
-    // Replace with your actual GitHub image URLs
-    // Example format: https://raw.githubusercontent.com/yourusername/yourrepo/main/Q1.jpg
-    const GITHUB_BASE = 'https://raw.githubusercontent.com/yourusername/yourrepo/main/'; // CHANGE THIS
+    // IMPORTANT: Replace with your actual GitHub repo URL
+    // Example: https://raw.githubusercontent.com/yourusername/yourrepo/main/
+    const GITHUB_BASE = 'https://raw.githubusercontent.com/yourusername/yourrepo/main/';
     
     const questions = [
       { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
@@ -600,12 +619,12 @@
     let currentIndex = 0;
     let timerInterval = null;
     let timerSeconds = 0;
-    let gameLocked = false;
     let questionLocked = false; // Global lock for the question
+    let waitingForNext = false; // Track if we're waiting for next button
     
     const teams = {
-      boys: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, wrongAttempt: false },
-      girls: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, wrongAttempt: false }
+      boys: { score: 0, answered: false, lock: false, rollActive: false, rollInterval: null, rollValue: 0, wrongAttempt: false },
+      girls: { score: 0, answered: false, lock: false, rollActive: false, rollInterval: null, rollValue: 0, wrongAttempt: false }
     };
     let boysTotal = 0, girlsTotal = 0;
 
@@ -638,6 +657,7 @@
       this.textContent = isOn ? '🔊 Music' : '🔇 Muted';
     });
 
+    // Start background music on first click
     document.addEventListener('click', function initAudio() {
       audio.startMusic();
       document.removeEventListener('click', initAudio);
@@ -681,6 +701,7 @@
       setTimeout(() => {
         boysNextBtn.disabled = false;
         girlsNextBtn.disabled = false;
+        waitingForNext = true;
       }, 1000);
     }
 
@@ -689,6 +710,7 @@
       if (!q) return;
       
       questionLocked = false;
+      waitingForNext = false;
       questionProgress.textContent = `Q${index+1}/${questions.length}`;
       
       boysQtext.textContent = q.q;
@@ -716,8 +738,8 @@
       boysStatus.className = 'turn-indicator team-waiting';
       girlsStatus.className = 'turn-indicator team-waiting';
       
-      boysZone.classList.remove('team-winner', 'team-locked', 'team-wrong-attempt');
-      girlsZone.classList.remove('team-winner', 'team-locked', 'team-wrong-attempt');
+      boysZone.classList.remove('team-winner', 'team-locked', 'team-wrong-attempt', 'team-opportunity');
+      girlsZone.classList.remove('team-winner', 'team-locked', 'team-wrong-attempt', 'team-opportunity');
       
       boysRollBtn.disabled = true;
       girlsRollBtn.disabled = true;
@@ -753,15 +775,15 @@
     }
 
     function handleChoice(team, idx, correctIdx, btnEl) {
-      // If question is locked or team already answered, ignore
-      if (questionLocked) return;
+      // If question is locked or waiting for next, ignore
+      if (questionLocked || waitingForNext) return;
       
       const state = teams[team];
       if (state.lock || state.answered) return;
       
       // Check if other team already answered correctly
       const other = team === 'boys' ? 'girls' : 'boys';
-      if (teams[other].answered && teams[other].lock) {
+      if (teams[other].answered && !teams[other].wrongAttempt) {
         state.lock = true;
         return;
       }
@@ -781,8 +803,9 @@
         audio.playCorrect();
         setTimeout(() => audio.playVictory(), 300);
         
-        // Lock the question so the other team can't answer
+        // Lock the question
         questionLocked = true;
+        waitingForNext = true;
         
         // Show correct status for this team
         if (team === 'boys') {
@@ -807,4 +830,181 @@
         teams[other].lock = true;
         teams[other].answered = true;
         const otherBtns = other === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
-        other
+        otherBtns.forEach(b => b.classList.add('disabled'));
+        
+        clearInterval(timerInterval);
+        timerDisplay.textContent = '✅';
+        
+      } else {
+        // WRONG ANSWER - Other team gets a chance
+        btnEl.classList.add('wrong-reveal');
+        audio.playWrong();
+        
+        state.wrongAttempt = true;
+        
+        if (team === 'boys') {
+          boysStatus.textContent = '❌ Wrong! Girls can try!';
+          boysStatus.className = 'turn-indicator team-wrong';
+          boysZone.classList.add('team-wrong-attempt');
+          // Give girls opportunity
+          if (!teams.girls.answered && !teams.girls.lock) {
+            girlsStatus.textContent = '🎯 Your chance! Tap answer!';
+            girlsStatus.className = 'turn-indicator team-opportunity';
+            girlsZone.classList.add('team-opportunity');
+            // Re-enable girls choices
+            girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+          }
+        } else {
+          girlsStatus.textContent = '❌ Wrong! Boys can try!';
+          girlsStatus.className = 'turn-indicator team-wrong';
+          girlsZone.classList.add('team-wrong-attempt');
+          // Give boys opportunity
+          if (!teams.boys.answered && !teams.boys.lock) {
+            boysStatus.textContent = '🎯 Your chance! Tap answer!';
+            boysStatus.className = 'turn-indicator team-opportunity';
+            boysZone.classList.add('team-opportunity');
+            // Re-enable boys choices
+            boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
+          }
+        }
+        
+        // If other team already answered (maybe they answered correctly), handle that
+        if (teams[other].answered && !teams[other].wrongAttempt) {
+          questionLocked = true;
+          waitingForNext = true;
+          if (other === 'boys') {
+            boysRollBtn.disabled = false;
+            boysStatus.textContent = '🎯 Opponent correct! Roll!';
+            boysStatus.className = 'turn-indicator team-correct';
+            boysZone.classList.add('team-winner');
+          } else {
+            girlsRollBtn.disabled = false;
+            girlsStatus.textContent = '🎯 Opponent correct! Roll!';
+            girlsStatus.className = 'turn-indicator team-correct';
+            girlsZone.classList.add('team-winner');
+          }
+        }
+      }
+    }
+
+    function initRoll(team) {
+      const state = teams[team];
+      if (state.rollActive) return;
+      state.rollActive = true;
+      const display = team === 'boys' ? boysRollDisplay : girlsRollDisplay;
+      const btn = team === 'boys' ? boysRollBtn : girlsRollBtn;
+      btn.disabled = true;
+      
+      const pool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000];
+      let interval = setInterval(() => {
+        const val = pool[Math.floor(Math.random() * pool.length)];
+        display.textContent = val;
+        state.rollValue = val;
+        audio.playRollTick();
+      }, 120);
+      state.rollInterval = interval;
+      
+      btn.textContent = '⏹️ STOP';
+      btn.disabled = false;
+      btn.onclick = function stopRoll() {
+        if (!state.rollActive) return;
+        clearInterval(state.rollInterval);
+        state.rollActive = false;
+        const finalVal = parseInt(display.textContent) || 0;
+        
+        if (team === 'boys') { 
+          boysTotal += finalVal; 
+          boysTotalSpan.textContent = boysTotal;
+          boysStatus.textContent = `➕ +${finalVal} points!`;
+          boysStatus.className = 'turn-indicator team-correct';
+        } else { 
+          girlsTotal += finalVal; 
+          girlsTotalSpan.textContent = girlsTotal;
+          girlsStatus.textContent = `➕ +${finalVal} points!`;
+          girlsStatus.className = 'turn-indicator team-correct';
+        }
+        audio.playVictory();
+        
+        btn.textContent = '🎲 ROLL SCORE';
+        btn.disabled = true;
+        btn.onclick = null;
+        
+        // Enable next buttons for both teams
+        boysNextBtn.disabled = false;
+        girlsNextBtn.disabled = false;
+        waitingForNext = true;
+        
+        // Check if other team also needs to roll
+        const other = team === 'boys' ? 'girls' : 'boys';
+        if (teams[other].answered && !teams[other].wrongAttempt && !teams[other].rollActive) {
+          if (other === 'boys' && boysRollBtn.disabled) { 
+            boysRollBtn.disabled = false; 
+            boysStatus.textContent = '🎲 Roll now!';
+            boysStatus.className = 'turn-indicator team-opportunity';
+          } else if (other === 'girls' && girlsRollBtn.disabled) { 
+            girlsRollBtn.disabled = false; 
+            girlsStatus.textContent = '🎲 Roll now!';
+            girlsStatus.className = 'turn-indicator team-opportunity';
+          }
+        }
+      };
+    }
+
+    // Roll button events
+    boysRollBtn.addEventListener('click', function(e) {
+      if (teams.boys.rollActive) return;
+      if (!teams.boys.answered || teams.boys.lock === false) return;
+      initRoll('boys');
+    });
+    girlsRollBtn.addEventListener('click', function(e) {
+      if (teams.girls.rollActive) return;
+      if (!teams.girls.answered || teams.girls.lock === false) return;
+      initRoll('girls');
+    });
+
+    // Next button functionality
+    function goNext() {
+      if (!waitingForNext) return;
+      
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion(currentIndex);
+        // Reset buttons
+        boysRollBtn.disabled = true;
+        girlsRollBtn.disabled = true;
+        boysNextBtn.disabled = true;
+        girlsNextBtn.disabled = true;
+        boysRollDisplay.textContent = '0';
+        girlsRollDisplay.textContent = '0';
+        boysZone.classList.remove('team-winner', 'team-locked', 'team-wrong-attempt', 'team-opportunity');
+        girlsZone.classList.remove('team-winner', 'team-locked', 'team-wrong-attempt', 'team-opportunity');
+        waitingForNext = false;
+      } else {
+        // Game Over
+        boysStatus.textContent = '🏆 GAME OVER! 🏆';
+        girlsStatus.textContent = '🏆 GAME OVER! 🏆';
+        boysStatus.className = 'turn-indicator team-correct';
+        girlsStatus.className = 'turn-indicator team-correct';
+        boysNextBtn.disabled = true;
+        girlsNextBtn.disabled = true;
+        audio.playVictory();
+        setTimeout(() => audio.playVictory(), 800);
+        setTimeout(() => audio.playVictory(), 1600);
+      }
+    }
+    boysNextBtn.addEventListener('click', goNext);
+    girlsNextBtn.addEventListener('click', goNext);
+
+    // ============================================
+    // INITIALIZE GAME
+    // ============================================
+    renderQuestion(0);
+    boysNextBtn.disabled = true;
+    girlsNextBtn.disabled = true;
+    boysRollBtn.disabled = true;
+    girlsRollBtn.disabled = true;
+
+  })();
+</script>
+</body>
+</html>
