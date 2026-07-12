@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>⚡ Angle Arena · Boys vs Girls</title>
-  <!-- Font & icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
@@ -35,7 +34,6 @@
       backdrop-filter: blur(2px);
     }
 
-    /* scoreboard */
     .scoreboard {
       display: flex;
       justify-content: space-between;
@@ -82,7 +80,6 @@
     .score-number.boys-score { border-color: #3498db; box-shadow: 0 0 12px #3498db80; }
     .score-number.girls-score { border-color: #e84393; box-shadow: 0 0 12px #e8439380; }
 
-    /* question & diagram */
     .question-area {
       background: #0d1b2aee;
       border-radius: 48px;
@@ -93,7 +90,7 @@
       backdrop-filter: blur(2px);
     }
 
-    .diagram-placeholder {
+    .diagram-container {
       background: #1b2f41;
       border-radius: 32px;
       padding: 18px;
@@ -101,10 +98,22 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 180px;
+      min-height: 200px;
       border: 2px dashed #f1c40f60;
-      font-size: 1.8rem;
+      position: relative;
+    }
+
+    .diagram-container img {
+      max-width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
+
+    .diagram-placeholder {
       color: #b0c7d9;
+      font-size: 1.8rem;
       text-align: center;
     }
 
@@ -125,7 +134,6 @@
       border: 1px solid #f1c40f30;
     }
 
-    /* two-team choices row */
     .team-choices-wrapper {
       display: flex;
       flex-direction: row;
@@ -235,7 +243,6 @@
       transform: scale(1.05);
     }
 
-    /* bar score */
     .bar-score-section {
       display: flex;
       justify-content: center;
@@ -258,6 +265,7 @@
       letter-spacing: 3px;
       min-width: 220px;
       border: 2px solid #ffe484;
+      position: relative;
     }
 
     .bar-score-btn:active {
@@ -267,6 +275,15 @@
 
     .bar-score-btn.hidden-bar {
       display: none;
+    }
+
+    .bar-score-btn.spinning {
+      animation: pulse-glow 0.3s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 10px 0 #9e7d0e, 0 0 20px #f1c40f60; }
+      100% { box-shadow: 0 10px 0 #9e7d0e, 0 0 40px #f1c40f, 0 0 80px #f1c40f80; }
     }
 
     .next-btn {
@@ -349,14 +366,17 @@
 
   <!-- question block -->
   <div class="question-area" id="questionArea">
-    <div class="diagram-placeholder" id="diagramPlaceholder">
-      <i class="fas fa-image"></i> [Diagram] Q<sup>#</sup>
+    <!-- diagram with image -->
+    <div class="diagram-container" id="diagramContainer">
+      <img id="questionImage" src="" alt="Question diagram" style="display:none;">
+      <div class="diagram-placeholder" id="diagramPlaceholder">
+        <i class="fas fa-image"></i> [Diagram] Q<span id="diagramNumber">1</span>
+      </div>
     </div>
     <div class="question-text" id="questionText">Loading question...</div>
 
-    <!-- two groups: boys & girls choices -->
+    <!-- two groups -->
     <div class="team-choices-wrapper">
-      <!-- BOYS group -->
       <div class="team-choice-group boys-group" id="boysGroup">
         <div class="team-label"><i class="fas fa-mars" style="color:#3498db;"></i> BOYS</div>
         <div class="choices-grid" id="boysChoices">
@@ -365,7 +385,6 @@
           <button class="choice-btn" data-team="boys" data-choice="c">C</button>
         </div>
       </div>
-      <!-- GIRLS group -->
       <div class="team-choice-group girls-group" id="girlsGroup">
         <div class="team-label"><i class="fas fa-venus" style="color:#e84393;"></i> GIRLS</div>
         <div class="choices-grid" id="girlsChoices">
@@ -376,15 +395,12 @@
       </div>
     </div>
 
-    <!-- status message -->
     <div class="status-msg" id="statusMsg">⏳ Waiting for answers...</div>
 
-    <!-- bar score -->
     <div class="bar-score-section">
       <button class="bar-score-btn" id="barScoreBtn">🎲 PRESS FOR SCORE</button>
     </div>
 
-    <!-- next button -->
     <div class="flex-center">
       <button class="next-btn" id="nextBtn"><i class="fas fa-forward"></i> NEXT QUESTION</button>
     </div>
@@ -394,55 +410,60 @@
 
 <script>
   (function() {
-    // ----- all 15 questions -----
+    // ----- All 15 questions with image paths -----
     const questions = [
-      { q: "1) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 0, difficulty: "easy" },
-      { q: "2) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 1, difficulty: "easy" },
-      { q: "3) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 2, difficulty: "easy" },
-      { q: "4) Name the angle.", choices: ["a) PQ̂R", "b) RP̂Q", "c) QR̂P"], answer: 0, difficulty: "easy" },
-      { q: "5) Name the vertex.", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], answer: 2, difficulty: "easy" },
-      { q: "6) Name the arms.", choices: ["a) (CH)̅ and (CK)̅", "b) (HC)⃗ and (KC)⃗", "c) (CH)⃗ and (CK)⃗"], answer: 2, difficulty: "average" },
-      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", choices: ["a) Acute angle", "b) Right angle", "c) Obtuse angle"], answer: 0, difficulty: "easy" },
-      { q: "8) What type of angle is shown in the diagram?", choices: ["a) Acute angle", "b) Right angle", "c) Obtuse angle"], answer: 1, difficulty: "easy" },
-      { q: "9) What type of angle is SÛN = 150° ?", choices: ["a) Acute angle", "b) Right angle", "c) Obtuse angle"], answer: 2, difficulty: "average" },
-      { q: "10) ……. is an angle measures exactly 180°", choices: ["a) Right angle", "b) Obtuse angle", "c) Straight angle"], answer: 2, difficulty: "average" },
-      { q: "11) Look at the figure. How many acute angles are there?", choices: ["a) 1", "b) 2", "c) 3"], answer: 1, difficulty: "average" },
-      { q: "12) Look at the figure. How many right angles?", choices: ["a) 3", "b) 12", "c) 14"], answer: 1, difficulty: "difficult" },
-      { q: "13) Measure and read the angle shown in the diagram.", choices: ["a) 50°", "b) 105°", "c) 165°"], answer: 1, difficulty: "difficult" },
-      { q: "14) Find angle b̂.", choices: ["a) 30°", "b) 42°", "c) 52°"], answer: 1, difficulty: "difficult" },
-      { q: "15) Find angle â.", choices: ["a) 144°", "b) 180°", "c) 324°"], answer: 0, difficulty: "difficult" }
+      { q: "1) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 0, difficulty: "easy", image: "images/protractor_center.jpg" },
+      { q: "2) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 1, difficulty: "easy", image: "images/protractor_degree.jpg" },
+      { q: "3) Name the part of protractor indicated by the arrow.", choices: ["a) a center mark", "b) a degree mark", "c) zero edges"], answer: 2, difficulty: "easy", image: "images/protractor_zero.jpg" },
+      { q: "4) Name the angle.", choices: ["a) PQ̂R", "b) RP̂Q", "c) QR̂P"], answer: 0, difficulty: "easy", image: "images/angle_pqr.jpg" },
+      { q: "5) Name the vertex.", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], answer: 2, difficulty: "easy", image: "images/vertex_n.jpg" },
+      { q: "6) Name the arms.", choices: ["a) (CH)̅ and (CK)̅", "b) (HC)⃗ and (KC)⃗", "c) (CH)⃗ and (CK)⃗"], answer: 2, difficulty: "average", image: "images/arms_ch_ck.jpg" },
+      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", choices: ["a) Acute angle", "b) Right angle", "c) Obtuse angle"], answer: 0, difficulty: "easy", image: "images/acute_angle.jpg" },
+      { q: "8) What type of angle is shown in the diagram?", choices: ["a) Acute angle", "b) Right angle", "c) Obtuse angle"], answer: 1, difficulty: "easy", image: "images/right_angle.jpg" },
+      { q: "9) What type of angle is SÛN = 150° ?", choices: ["a) Acute angle", "b) Right angle", "c) Obtuse angle"], answer: 2, difficulty: "average", image: "images/obtuse_150.jpg" },
+      { q: "10) ……. is an angle measures exactly 180°", choices: ["a) Right angle", "b) Obtuse angle", "c) Straight angle"], answer: 2, difficulty: "average", image: "images/straight_angle.jpg" },
+      { q: "11) Look at the figure. How many acute angles are there?", choices: ["a) 1", "b) 2", "c) 3"], answer: 1, difficulty: "average", image: "images/acute_count.jpg" },
+      { q: "12) Look at the figure. How many right angles?", choices: ["a) 3", "b) 12", "c) 14"], answer: 1, difficulty: "difficult", image: "images/right_count.jpg" },
+      { q: "13) Measure and read the angle shown in the diagram.", choices: ["a) 50°", "b) 105°", "c) 165°"], answer: 1, difficulty: "difficult", image: "images/angle_105.jpg" },
+      { q: "14) Find angle b̂.", choices: ["a) 30°", "b) 42°", "c) 52°"], answer: 1, difficulty: "difficult", image: "images/angle_b.jpg" },
+      { q: "15) Find angle â.", choices: ["a) 144°", "b) 180°", "c) 324°"], answer: 0, difficulty: "difficult", image: "images/angle_a.jpg" }
     ];
 
-    // ----- state -----
+    // ----- State -----
     let currentIndex = 0;
     let boysScore = 0;
     let girlsScore = 0;
     let timerInterval = null;
     let timeLeft = 20;
-    let roundActive = false;          // can teams tap?
-    let roundFinished = false;        // answer revealed
-    let winningTeam = null;           // 'boys' or 'girls' or null
+    let roundActive = false;
+    let roundFinished = false;
+    let winningTeam = null;
     let barRevealed = false;
     let barScoreValue = 0;
+    let barSpinning = false;
+    let spinInterval = null;
+    let isBarStopped = false;
 
     // DOM refs
     const boysScoreEl = document.getElementById('boysScore');
     const girlsScoreEl = document.getElementById('girlsScore');
     const questionText = document.getElementById('questionText');
+    const questionImage = document.getElementById('questionImage');
     const diagramPlaceholder = document.getElementById('diagramPlaceholder');
+    const diagramNumber = document.getElementById('diagramNumber');
     const timerDisplay = document.getElementById('timerDisplay');
     const barBtn = document.getElementById('barScoreBtn');
     const nextBtn = document.getElementById('nextBtn');
     const statusMsg = document.getElementById('statusMsg');
 
-    // all choice buttons (both teams)
     const allChoiceBtns = document.querySelectorAll('.choice-btn');
-
-    // team containers
     const boysChoices = document.querySelectorAll('#boysChoices .choice-btn');
     const girlsChoices = document.querySelectorAll('#girlsChoices .choice-btn');
 
-    // ----- helpers -----
+    // Score pool
+    const scorePool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000];
+
+    // ----- Helpers -----
     function speakText(text) {
       if (!window.speechSynthesis) return;
       const utterance = new SpeechSynthesisUtterance(text);
@@ -490,6 +511,11 @@
           gain.gain.value = 0.15;
           osc.start(ctx.currentTime);
           osc.stop(ctx.currentTime + 0.1);
+        } else if (type === 'spin') {
+          osc.frequency.value = 440;
+          gain.gain.value = 0.1;
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.05);
         }
       } catch (_) {}
     }
@@ -499,7 +525,6 @@
       girlsScoreEl.textContent = girlsScore;
     }
 
-    // reset all choice buttons (both teams)
     function resetChoices() {
       allChoiceBtns.forEach(btn => {
         btn.classList.remove('disabled-choice', 'correct-highlight', 'wrong-highlight', 'team-winner');
@@ -507,7 +532,6 @@
       });
     }
 
-    // disable all choices
     function disableAllChoices() {
       allChoiceBtns.forEach(btn => {
         btn.classList.add('disabled-choice');
@@ -515,28 +539,26 @@
       });
     }
 
-    // highlight correct/wrong for a specific team's buttons
-    function highlightTeamChoices(team, correctIdx, wrongIdx = null) {
-      const btns = team === 'boys' ? boysChoices : girlsChoices;
-      btns.forEach((btn, idx) => {
-        if (idx === correctIdx) {
-          btn.classList.add('correct-highlight');
-        } else if (idx === wrongIdx) {
-          btn.classList.add('wrong-highlight');
-        }
-        btn.classList.add('disabled-choice');
-        btn.disabled = true;
-      });
+    function getRandomScore() {
+      const q = questions[currentIndex];
+      let pool = [...scorePool];
+      if (q.difficulty === 'difficult') pool.push(50000);
+      return pool[Math.floor(Math.random() * pool.length)];
     }
 
-    // load question
+    // ----- Load Question -----
     function loadQuestion(index) {
-      // reset state
       roundActive = true;
       roundFinished = false;
       winningTeam = null;
       barRevealed = false;
-      barBtn.classList.remove('hidden-bar');
+      isBarStopped = false;
+      barSpinning = false;
+      if (spinInterval) {
+        clearInterval(spinInterval);
+        spinInterval = null;
+      }
+      barBtn.classList.remove('hidden-bar', 'spinning');
       barBtn.textContent = '🎲 PRESS FOR SCORE';
       statusMsg.textContent = '⏳ Waiting for answers...';
       resetChoices();
@@ -544,16 +566,32 @@
       const q = questions[index];
       if (!q) return;
       questionText.textContent = q.q;
-      diagramPlaceholder.innerHTML = `<i class="fas fa-image"></i> [Diagram] Q${index+1}`;
+      diagramNumber.textContent = index + 1;
 
-      // set choices text for both teams
+      if (q.image && q.image.trim() !== '') {
+        questionImage.src = q.image;
+        questionImage.style.display = 'block';
+        diagramPlaceholder.style.display = 'none';
+        questionImage.onerror = function() {
+          this.style.display = 'none';
+          diagramPlaceholder.style.display = 'flex';
+          diagramPlaceholder.innerHTML = `<i class="fas fa-image"></i> [Diagram] Q${index+1} (image not found)`;
+        };
+        questionImage.onload = function() {
+          // Image loaded
+        };
+      } else {
+        questionImage.style.display = 'none';
+        diagramPlaceholder.style.display = 'flex';
+        diagramPlaceholder.innerHTML = `<i class="fas fa-image"></i> [Diagram] Q${index+1}`;
+      }
+
       const allBtns = document.querySelectorAll('.choice-btn');
       allBtns.forEach((btn, idx) => {
-        const choiceIndex = idx % 3; // a,b,c
+        const choiceIndex = idx % 3;
         btn.innerHTML = q.choices[choiceIndex] || '---';
       });
 
-      // timer
       let maxTime = 15;
       if (q.difficulty === 'average') maxTime = 20;
       else if (q.difficulty === 'difficult') maxTime = 30;
@@ -567,13 +605,11 @@
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           timerDisplay.textContent = '⏰';
-          // time's up: if not finished, reveal correct answer
           if (!roundFinished) {
             roundActive = false;
             roundFinished = true;
             disableAllChoices();
             const correctIdx = q.answer;
-            // highlight correct on both teams
             boysChoices.forEach((btn, idx) => {
               if (idx === correctIdx) btn.classList.add('correct-highlight');
               btn.classList.add('disabled-choice');
@@ -586,33 +622,29 @@
             });
             statusMsg.textContent = '⏰ Time is up! No one scored.';
             speakText('Time is up');
-            // bar still available but no team wins
             winningTeam = null;
-            // but we still show bar? we allow bar press but no team add? we'll handle
+            // Still allow bar press but no team
           }
         }
       }, 1000);
     }
 
-    // handle team choice click
+    // ----- Choice Click -----
     function onChoiceClick(e) {
       const btn = e.currentTarget;
       if (!roundActive || roundFinished || btn.classList.contains('disabled-choice')) return;
 
-      const team = btn.dataset.team; // 'boys' or 'girls'
-      const choiceLetter = btn.dataset.choice; // 'a','b','c'
-      const choiceIdx = choiceLetter.charCodeAt(0) - 97; // 0,1,2
+      const team = btn.dataset.team;
+      const choiceLetter = btn.dataset.choice;
+      const choiceIdx = choiceLetter.charCodeAt(0) - 97;
       const q = questions[currentIndex];
       const isCorrect = (choiceIdx === q.answer);
 
-      // voice: say the choice letter + text
       const letter = choiceLetter.toUpperCase();
       let voiceText = letter + '. ' + q.choices[choiceIdx];
       speakText(voiceText);
 
-      // if correct
       if (isCorrect) {
-        // if no winner yet, this team wins
         if (!winningTeam) {
           winningTeam = team;
           roundActive = false;
@@ -621,11 +653,9 @@
           speakText('Correct!');
           statusMsg.textContent = `🏆 ${team.toUpperCase()} wins this round!`;
 
-          // highlight correct on winner, show correct on both teams but winner gets gold glow
           const winnerBtns = team === 'boys' ? boysChoices : girlsChoices;
           const loserBtns = team === 'boys' ? girlsChoices : boysChoices;
 
-          // winner: highlight correct + team-winner glow
           winnerBtns.forEach((b, idx) => {
             b.classList.add('disabled-choice');
             b.disabled = true;
@@ -633,7 +663,6 @@
               b.classList.add('correct-highlight', 'team-winner');
             }
           });
-          // loser: show correct answer but no glow
           loserBtns.forEach((b, idx) => {
             b.classList.add('disabled-choice');
             b.disabled = true;
@@ -643,28 +672,24 @@
           });
 
           playBeep('victory');
-          // show bar for score
-          // bar will be available
           barBtn.classList.remove('hidden-bar');
           barBtn.textContent = '🎲 PRESS FOR SCORE';
+          isBarStopped = false;
         } else {
-          // already a winner, block everything
           roundActive = false;
           roundFinished = true;
           disableAllChoices();
           statusMsg.textContent = `⛔ Already answered by ${winningTeam.toUpperCase()}`;
         }
       } else {
-        // wrong: highlight wrong on that team's button only
         btn.classList.add('wrong-highlight', 'disabled-choice');
         btn.disabled = true;
         playBeep('wrong');
         speakText('Wrong');
-        // check if all buttons of that team are disabled? optional
       }
     }
 
-    // bar score click
+    // ----- Bar Score with Spinning -----
     function onBarClick() {
       if (barRevealed) return;
       if (!roundFinished) {
@@ -672,52 +697,91 @@
         speakText('Wait for the round to finish');
         return;
       }
-      // if no winningTeam (timeout) we can still give score to random? we'll give to boys as default
-      const targetTeam = winningTeam || 'boys';
-      // generate random score from pool
-      const pool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000];
-      const q = questions[currentIndex];
-      if (q.difficulty === 'difficult') pool.push(50000);
-      const randomIdx = Math.floor(Math.random() * pool.length);
-      const score = pool[randomIdx];
-      barScoreValue = score;
-      barRevealed = true;
-      barBtn.textContent = `${score > 0 ? '+' : ''}${score}`;
-      barBtn.classList.add('hidden-bar');
-
-      // add to team
-      if (targetTeam === 'boys') {
-        boysScore += score;
-        statusMsg.textContent = `➕ BOYS ${score > 0 ? '+' : ''}${score}`;
-      } else {
-        girlsScore += score;
-        statusMsg.textContent = `➕ GIRLS ${score > 0 ? '+' : ''}${score}`;
+      if (!winningTeam) {
+        // If no winner (timeout), we still allow spin but add to nobody? We'll add to boys as default
+        // But we set a default winner
+        winningTeam = 'boys';
+        statusMsg.textContent = '⏰ No winner, defaulting to BOYS';
       }
-      updateScores();
-      // speak correct answer
-      const correctAns = q.choices[q.answer];
-      speakText(`Score added. Correct answer is ${correctAns}`);
+
+      // If already spinning, stop it
+      if (barSpinning) {
+        // Stop spinning
+        barSpinning = false;
+        barBtn.classList.remove('spinning');
+        if (spinInterval) {
+          clearInterval(spinInterval);
+          spinInterval = null;
+        }
+        // The current displayed value is the final score
+        const finalScore = parseInt(barBtn.textContent.replace(/[^0-9-]/g, '')) || 0;
+        barScoreValue = finalScore;
+        barRevealed = true;
+        barBtn.classList.add('hidden-bar');
+
+        // Add to winning team
+        if (winningTeam === 'boys') {
+          boysScore += finalScore;
+          statusMsg.textContent = `➕ BOYS ${finalScore > 0 ? '+' : ''}${finalScore}`;
+        } else {
+          girlsScore += finalScore;
+          statusMsg.textContent = `➕ GIRLS ${finalScore > 0 ? '+' : ''}${finalScore}`;
+        }
+        updateScores();
+        const q = questions[currentIndex];
+        const correctAns = q.choices[q.answer];
+        speakText(`Score added: ${finalScore}. Correct answer is ${correctAns}`);
+        playBeep('correct');
+        return;
+      }
+
+      // Start spinning
+      barSpinning = true;
+      barBtn.classList.add('spinning');
+      // Generate a random starting score
+      let currentScore = getRandomScore();
+      barBtn.textContent = currentScore;
+
+      // Spin faster - update every 80ms
+      if (spinInterval) clearInterval(spinInterval);
+      spinInterval = setInterval(() => {
+        if (!barSpinning) return;
+        // Generate random score from pool
+        const newScore = getRandomScore();
+        barBtn.textContent = newScore;
+        playBeep('spin');
+      }, 80);
     }
 
-    // next button
+    // ----- Next -----
     function onNext() {
       if (!barRevealed && roundFinished) {
-        // if round finished but bar not pressed, we still allow? we give warning
         speakText('Press the score bar first');
         statusMsg.textContent = '⚠️ Press the score bar first!';
         return;
       }
+      if (barSpinning) {
+        speakText('Stop the score spinner first');
+        statusMsg.textContent = '⚠️ Stop the score spinner first!';
+        return;
+      }
       clearInterval(timerInterval);
+      if (spinInterval) {
+        clearInterval(spinInterval);
+        spinInterval = null;
+      }
+      barSpinning = false;
+      barBtn.classList.remove('spinning');
       currentIndex = (currentIndex + 1) % questions.length;
       loadQuestion(currentIndex);
     }
 
-    // attach events to all choice buttons
+    // ----- Event Listeners -----
     allChoiceBtns.forEach(btn => btn.addEventListener('click', onChoiceClick));
     barBtn.addEventListener('click', onBarClick);
     nextBtn.addEventListener('click', onNext);
 
-    // load first
+    // ----- Start -----
     loadQuestion(0);
     updateScores();
   })();
