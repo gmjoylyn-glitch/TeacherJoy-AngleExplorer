@@ -174,17 +174,11 @@
             box-shadow: 0 3px 0 #e65100;
             border-color: #ffb74d;
         }
+
+        /* HIDDEN DIFFICULTY BADGE */
         .difficulty-badge {
-            font-size: 0.7rem;
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: none !important;
         }
-        .difficulty-badge.easy { background: #4caf50; color: #0d1f2e; }
-        .difficulty-badge.average { background: #ff9800; color: #0d1f2e; }
-        .difficulty-badge.difficult { background: #f44336; color: #fff; }
 
         .question-area {
             background: #1c2a3b;
@@ -844,14 +838,9 @@
             teamSelectionActive = false;
             if (rollInterval) clearInterval(rollInterval);
             
-            // Update question text with difficulty badge
-            const difficultyLabels = { easy: 'EASY', average: 'AVERAGE', difficult: 'DIFFICULT' };
-            const difficultyColors = { easy: 'easy', average: 'average', difficult: 'difficult' };
-            difficultyBadge.textContent = difficultyLabels[q.difficulty] || 'EASY';
-            difficultyBadge.className = `difficulty-badge ${difficultyColors[q.difficulty] || 'easy'}`;
-            
+            // REMOVE DIFFICULTY BADGE - just show question text
             questionText.innerHTML = `<span>${q.q}</span>`;
-            questionText.appendChild(difficultyBadge);
+            // The difficulty badge is hidden via CSS (display: none !important)
 
             const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:200px;">` : `<div class="diagram-placeholder">📐 No diagram</div>`;
             diagramContainer.innerHTML = imgHtml;
@@ -875,7 +864,7 @@
             girlsSelectBtn.classList.remove('selected');
             selectedTeam = 'boys';
             
-            statusMsg.innerHTML = `✅ ${difficultyLabels[q.difficulty]} question. Teacher: Click START to begin!`;
+            statusMsg.innerHTML = `✅ Teacher: Click START to begin!`;
             
             boysSelectBtn.disabled = false;
             girlsSelectBtn.disabled = false;
@@ -1148,7 +1137,7 @@
         // ---------- INIT ----------
         renderQuestion(0);
         selectedTeam = 'boys';
-        console.log('Game initialized - START button must be pressed first to activate team buttons!');
+        console.log('Game initialized - Difficulty badges hidden!');
     })();
 </script>
 </body>
