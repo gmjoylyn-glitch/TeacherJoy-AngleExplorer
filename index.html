@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Angle Arena · Boys vs Girls</title>
-  <!-- Font & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
@@ -24,7 +23,7 @@
       padding: 16px;
     }
     .game-wrapper {
-      max-width: 1300px;
+      max-width: 1400px;
       width: 100%;
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(4px);
@@ -133,6 +132,10 @@
       text-align: center;
       margin-bottom: 12px;
       border: 1px solid #4b6f8f;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .diagram-container {
       background: #f2f6fc;
@@ -282,12 +285,24 @@
     }
     .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+    /* Timer display in scoreboard */
+    .timer-display {
+      font-size: 1.1rem;
+      color: #b9d0f0;
+      background: #0e1d2b;
+      padding: 4px 20px;
+      border-radius: 40px;
+      font-weight: 700;
+      min-width: 80px;
+      text-align: center;
+    }
+
     @media (max-width: 850px) {
       .scoreboard { flex-direction: column; align-items: stretch; gap: 10px; }
       .team-score { justify-content: center; }
+      .game-grid { flex-direction: column; }
+      .team-zone { flex: 1 1 auto; }
     }
-    /* hidden helper */
-    .hidden { display: none; }
   </style>
 </head>
 <body>
@@ -295,7 +310,7 @@
   <!-- Scoreboard -->
   <div class="scoreboard">
     <div class="team-score"><span class="team-badge boys">⚔️ BOYS</span><span class="score-value boys-score" id="boysTotal">0</span></div>
-    <div style="font-size:1.1rem; color:#b9d0f0; background:#0e1d2b; padding:4px 20px; border-radius:40px;">⏳ 15s / 20s / 30s</div>
+    <div class="timer-display" id="timerDisplay">⏳ 20s</div>
     <div class="team-score"><span class="team-badge girls">🌸 GIRLS</span><span class="score-value girls-score" id="girlsTotal">0</span></div>
   </div>
 
@@ -309,7 +324,7 @@
       </div>
       <div class="choices" id="boysChoices"></div>
       <div class="action-row">
-        <button class="roll-score-btn" id="boysRollBtn">🎲 ROLL SCORE</button>
+        <button class="roll-score-btn" id="boysRollBtn">🎲 ROLL</button>
         <span class="roll-display" id="boysRollDisplay">0</span>
         <button class="next-btn" id="boysNextBtn">⏩ NEXT</button>
       </div>
@@ -325,7 +340,7 @@
       </div>
       <div class="choices" id="girlsChoices"></div>
       <div class="action-row">
-        <button class="roll-score-btn" id="girlsRollBtn">🎲 ROLL SCORE</button>
+        <button class="roll-score-btn" id="girlsRollBtn">🎲 ROLL</button>
         <span class="roll-display" id="girlsRollDisplay">0</span>
         <button class="next-btn" id="girlsNextBtn">⏩ NEXT</button>
       </div>
@@ -336,18 +351,18 @@
 
 <script>
   (function() {
-    // ---------- QUESTIONS DATA (all 15, using images from attachments) ----------
+    // ---------- QUESTIONS DATA (all 15) ----------
     const questions = [
       { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
       { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 15 },
       { q: "3) Name the part of protractor indicated by the arrow.", img: "Q3.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 2, time: 15 },
-      { q: "4) Name the angle.", img: "Q4.jpg", choices: ["a) angle PQR", "b) angle RPQ", "c) angle QRP"], correct: 0, time: 15 },
+      { q: "4) Name the angle.", img: "Q4.jpg", choices: ["a) ∠PQR", "b) ∠RPQ", "c) ∠QRP"], correct: 0, time: 15 },
       { q: "5) Name the vertex.", img: "Q5.jpg", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], correct: 2, time: 15 },
-      { q: "6) Name the arms.", img: "Q6.jpg", choices: ["a) line segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 15 },
-      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", img: "Q7.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 15 },
+      { q: "6) Name the arms.", img: "Q6.jpg", choices: ["a) segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 15 },
+      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", img: null, choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 15 },
       { q: "8) What type of angle is 90°?", img: "Q8.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 1, time: 15 },
       { q: "9) What type of angle is ∠SUN = 150° ?", img: "Q9.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 2, time: 20 },
-      { q: "10) ……. is an angle measures exactly 180°.", img: "Q10.jpg", choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 20 },
+      { q: "10) ……. is an angle measures exactly 180°.", img: null, choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 20 },
       { q: "11) Look at the figure. How many acute angles?", img: "Q11.jpg", choices: ["a) 1", "b) 2", "c) 3"], correct: 1, time: 20 },
       { q: "12) Look at the figure. How many right angles?", img: "Q12.jpg", choices: ["a) 3", "b) 12", "c) 14"], correct: 1, time: 20 },
       { q: "13) Measure and read the angle shown.", img: "Q13.jpg", choices: ["a) 50°", "b) 105°", "c) 165°"], correct: 1, time: 30 },
@@ -357,12 +372,14 @@
 
     // ---------- GAME STATE ----------
     let currentIndex = 0;
-    // team states
+    let timerInterval = null;
+    let timeLeft = 20;
+    let questionLocked = false; // global lock when any team answers correctly
+
     const teams = {
-      boys: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false },
-      girls: { score: 0, answered: false, lock: false, timer: null, rollActive: false, rollInterval: null, rollValue: 0, choiceLocked: false }
+      boys: { score: 0, answered: false, locked: false, rollActive: false, rollInterval: null, rollValue: 0 },
+      girls: { score: 0, answered: false, locked: false, rollActive: false, rollInterval: null, rollValue: 0 }
     };
-    let boysTotal = 0, girlsTotal = 0;
 
     // DOM refs
     const boysQtext = document.getElementById('boysQtext');
@@ -381,8 +398,9 @@
     const girlsNextBtn = document.getElementById('girlsNextBtn');
     const boysTotalSpan = document.getElementById('boysTotal');
     const girlsTotalSpan = document.getElementById('girlsTotal');
+    const timerDisplay = document.getElementById('timerDisplay');
 
-    // sound fx (simple web audio)
+    // Sound effects
     function playSound(type) {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -414,7 +432,7 @@
           setTimeout(() => { osc.frequency.value = 659; }, 120);
           setTimeout(() => { osc.frequency.value = 784; }, 240);
           setTimeout(() => { osc.stop(); }, 400);
-        } else { // roll stop
+        } else {
           osc.frequency.value = 440;
           gain.gain.value = 0.1;
           osc.start();
@@ -423,42 +441,91 @@
       } catch(e) {}
     }
 
-    // render question for both teams
+    // ---------- TIMER ----------
+    function startTimer(seconds) {
+      if (timerInterval) clearInterval(timerInterval);
+      timeLeft = seconds;
+      timerDisplay.textContent = `⏳ ${timeLeft}s`;
+      timerInterval = setInterval(() => {
+        timeLeft -= 1;
+        timerDisplay.textContent = `⏳ ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerDisplay.textContent = '⏰ 0s';
+          // Time's up - reveal correct answer for both teams
+          if (!questionLocked) {
+            questionLocked = true;
+            revealCorrectForBoth();
+            playSound('wrong');
+          }
+        }
+      }, 1000);
+    }
+
+    function revealCorrectForBoth() {
+      const q = questions[currentIndex];
+      const correctIdx = q.correct;
+      // Disable all choices and show correct
+      document.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.classList.add('disabled');
+        const idx = parseInt(btn.dataset.idx);
+        if (idx === correctIdx) {
+          btn.classList.add('correct-reveal');
+        }
+      });
+      boysStatus.textContent = '⏰ Time up!';
+      girlsStatus.textContent = '⏰ Time up!';
+      // Enable Next only, no roll
+      boysRollBtn.disabled = true;
+      girlsRollBtn.disabled = true;
+      boysNextBtn.disabled = false;
+      girlsNextBtn.disabled = false;
+    }
+
+    // ---------- RENDER QUESTION ----------
     function renderQuestion(index) {
       const q = questions[index];
       if (!q) return;
-      // update text & diagram (using placeholder images)
+      
+      // Reset team states
+      teams.boys.answered = false;
+      teams.boys.locked = false;
+      teams.boys.rollActive = false;
+      teams.girls.answered = false;
+      teams.girls.locked = false;
+      teams.girls.rollActive = false;
+      questionLocked = false;
+      
+      if (teams.boys.rollInterval) clearInterval(teams.boys.rollInterval);
+      if (teams.girls.rollInterval) clearInterval(teams.girls.rollInterval);
+
+      // Update text
       boysQtext.textContent = q.q;
       girlsQtext.textContent = q.q;
-      // diagram
-      const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:170px;">` : `<div class="diagram-placeholder">📐 ${q.img || 'diagram'}</div>`;
+
+      // Diagram
+      const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:170px;">` : `<div class="diagram-placeholder">📐 No diagram</div>`;
       boysDiagram.innerHTML = imgHtml;
       girlsDiagram.innerHTML = imgHtml;
 
-      // choices
+      // Choices
       renderChoices('boys', q.choices, q.correct);
       renderChoices('girls', q.choices, q.correct);
 
-      // reset team states for this question
-      teams.boys.answered = false;
-      teams.girls.answered = false;
-      teams.boys.lock = false;
-      teams.girls.lock = false;
-      teams.boys.choiceLocked = false;
-      teams.girls.choiceLocked = false;
-      boysStatus.textContent = '⏳ tap answer';
-      girlsStatus.textContent = '⏳ tap answer';
+      // Reset UI
       boysRollBtn.disabled = true;
       girlsRollBtn.disabled = true;
-      boysNextBtn.disabled = true;
-      girlsNextBtn.disabled = true;
-      // reset roll display
+      boysRollBtn.textContent = '🎲 ROLL';
+      girlsRollBtn.textContent = '🎲 ROLL';
       boysRollDisplay.textContent = '0';
       girlsRollDisplay.textContent = '0';
-      teams.boys.rollActive = false;
-      teams.girls.rollActive = false;
-      if (teams.boys.rollInterval) clearInterval(teams.boys.rollInterval);
-      if (teams.girls.rollInterval) clearInterval(teams.girls.rollInterval);
+      boysNextBtn.disabled = true;
+      girlsNextBtn.disabled = true;
+      boysStatus.textContent = '⏳ Tap answer!';
+      girlsStatus.textContent = '⏳ Tap answer!';
+
+      // Start timer
+      startTimer(q.time);
     }
 
     function renderChoices(team, choiceTexts, correctIdx) {
@@ -475,57 +542,68 @@
       });
     }
 
+    // ---------- HANDLE CHOICE ----------
     function handleChoice(team, idx, correctIdx, btnEl) {
+      if (questionLocked) return;
       const state = teams[team];
-      if (state.lock || state.answered) return;
-      // check if other team already answered correctly (global lock)
-      const other = team === 'boys' ? 'girls' : 'boys';
-      if (teams[other].answered && teams[other].lock) {
-        // other team got it first, block
-        state.lock = true;
-        return;
-      }
-      // lock this team answer
-      state.lock = true;
+      if (state.locked || state.answered) return;
+
+      // Lock this team's answer
+      state.locked = true;
       state.answered = true;
       const isCorrect = (idx === correctIdx);
-      // reveal correct/wrong
-      const allBtns = team === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
-      allBtns.forEach(b => b.classList.add('disabled'));
+
+      // Disable all choices for this team
+      const container = team === 'boys' ? boysChoices : girlsChoices;
+      container.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+
       if (isCorrect) {
         btnEl.classList.add('correct-reveal');
         playSound('correct');
-        // victory sound for team
-        setTimeout(() => playSound('victory'), 200);
-        // enable roll for this team
-        if (team === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 correct! roll score'; }
-        else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 correct! roll score'; }
-        // lock other team from answering
-        teams[other].lock = true;
-        teams[other].answered = true;
-        const otherBtns = other === 'boys' ? boysChoices.querySelectorAll('.choice-btn') : girlsChoices.querySelectorAll('.choice-btn');
-        otherBtns.forEach(b => b.classList.add('disabled'));
-        if (other === 'boys') boysStatus.textContent = '⛔ opponent answered';
-        else girlsStatus.textContent = '⛔ opponent answered';
-        // enable roll for correct team only
+        // Check if other team already answered correctly
+        const other = team === 'boys' ? 'girls' : 'boys';
+        if (!teams[other].answered || !teams[other].locked) {
+          // This team got it first!
+          questionLocked = true;
+          // Lock other team's choices
+          const otherContainer = other === 'boys' ? boysChoices : girlsChoices;
+          otherContainer.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+          teams[other].locked = true;
+          teams[other].answered = true;
+          if (other === 'boys') boysStatus.textContent = '⛔ Opponent answered first';
+          else girlsStatus.textContent = '⛔ Opponent answered first';
+          
+          // Enable roll for this team
+          if (team === 'boys') {
+            boysRollBtn.disabled = false;
+            boysStatus.textContent = '🎯 Correct! Roll score!';
+          } else {
+            girlsRollBtn.disabled = false;
+            girlsStatus.textContent = '🎯 Correct! Roll score!';
+          }
+          playSound('victory');
+        } else {
+          // Other team already answered correctly
+          if (team === 'boys') boysStatus.textContent = '⛔ Other team was first';
+          else girlsStatus.textContent = '⛔ Other team was first';
+        }
       } else {
         btnEl.classList.add('wrong-reveal');
         playSound('wrong');
-        // wrong answer: team cannot roll, but other team may still answer if not locked
-        state.lock = true; // but not answered correctly
-        // check if other team already correct? if not, they can still answer
-        if (!teams[other].answered) {
-          // other team can still try
-          if (other === 'boys') boysStatus.textContent = '❌ wrong, other can answer';
-          else girlsStatus.textContent = '❌ wrong, other can answer';
-        } else {
-          // both wrong or other correct already
-        }
-        // if other team already answered correctly, they get roll
-        if (teams[other].answered && teams[other].lock) {
-          // enable roll for other
-          if (other === 'boys') { boysRollBtn.disabled = false; boysStatus.textContent = '🎯 opponent correct! roll'; }
-          else { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎯 opponent correct! roll'; }
+        if (team === 'boys') boysStatus.textContent = '❌ Wrong!';
+        else girlsStatus.textContent = '❌ Wrong!';
+        
+        // Check if other team already answered correctly
+        const other = team === 'boys' ? 'girls' : 'boys';
+        if (teams[other].answered && teams[other].locked) {
+          // Other team got it right, enable their roll
+          if (other === 'boys') {
+            boysRollBtn.disabled = false;
+            boysStatus.textContent = '🎯 Opponent correct! Roll!';
+          } else {
+            girlsRollBtn.disabled = false;
+            girlsStatus.textContent = '🎯 Opponent correct! Roll!';
+          }
         }
       }
     }
@@ -538,16 +616,21 @@
       const display = team === 'boys' ? boysRollDisplay : girlsRollDisplay;
       const btn = team === 'boys' ? boysRollBtn : girlsRollBtn;
       btn.disabled = true;
-      // possible scores (including bias 50000 for difficult)
-      const pool = [1000,2000,3000,4000,5000,-1000,-2000,-3000,-5000,10000,20000,50000];
+      
+      const pool = [1000, 2000, 3000, 4000, 5000, -1000, -2000, -3000, -5000, 10000, 20000, 50000];
+      // Add 50000 bias for difficult questions (time >= 30)
+      if (questions[currentIndex].time >= 30) {
+        pool.push(50000);
+      }
+      
       let interval = setInterval(() => {
         const val = pool[Math.floor(Math.random() * pool.length)];
         display.textContent = val;
         state.rollValue = val;
         playSound('tick');
-      }, 120);
+      }, 80);
       state.rollInterval = interval;
-      // click again to stop
+      
       btn.textContent = '⏹️ STOP';
       btn.disabled = false;
       btn.onclick = function stopRoll() {
@@ -555,88 +638,85 @@
         clearInterval(state.rollInterval);
         state.rollActive = false;
         const finalVal = parseInt(display.textContent) || 0;
-        // add to score
-        if (team === 'boys') { boysTotal += finalVal; boysTotalSpan.textContent = boysTotal; }
-        else { girlsTotal += finalVal; girlsTotalSpan.textContent = girlsTotal; }
+        
+        // Add to score
+        if (team === 'boys') {
+          teams.boys.score += finalVal;
+          boysTotalSpan.textContent = teams.boys.score;
+        } else {
+          teams.girls.score += finalVal;
+          girlsTotalSpan.textContent = teams.girls.score;
+        }
+        
         playSound('roll stop');
-        // update status
-        if (team === 'boys') { boysStatus.textContent = `➕ ${finalVal} added`; boysRollBtn.disabled = true; }
-        else { girlsStatus.textContent = `➕ ${finalVal} added`; girlsRollBtn.disabled = true; }
-        btn.textContent = '🎲 ROLL SCORE';
+        if (team === 'boys') {
+          boysStatus.textContent = `➕ ${finalVal} added!`;
+          boysRollBtn.disabled = true;
+        } else {
+          girlsStatus.textContent = `➕ ${finalVal} added!`;
+          girlsRollBtn.disabled = true;
+        }
+        btn.textContent = '🎲 ROLL';
         btn.onclick = null;
-        // enable next for both
+        
+        // Enable Next for both
         boysNextBtn.disabled = false;
         girlsNextBtn.disabled = false;
-        // if other team hasn't rolled yet, they can still roll if correct
-        const other = team === 'boys' ? 'girls' : 'boys';
-        if (teams[other].answered && teams[other].lock && !teams[other].rollActive) {
-          // other team correct but not rolled? enable their roll
-          if (other === 'boys' && boysRollBtn.disabled) { boysRollBtn.disabled = false; boysStatus.textContent = '🎲 roll now!'; }
-          else if (other === 'girls' && girlsRollBtn.disabled) { girlsRollBtn.disabled = false; girlsStatus.textContent = '🎲 roll now!'; }
-        }
-        // reset button text
-        if (team === 'boys') boysRollBtn.textContent = '🎲 ROLL SCORE';
-        else girlsRollBtn.textContent = '🎲 ROLL SCORE';
+        
+        // Clear timer
+        if (timerInterval) clearInterval(timerInterval);
+        timerDisplay.textContent = '✅ Done';
       };
     }
 
-    // attach roll events
-    boysRollBtn.addEventListener('click', function(e) {
-      if (teams.boys.rollActive) {
-        // stop already handled by onclick override
-        return;
-      }
-      if (!teams.boys.answered || teams.boys.lock === false) return;
+    // Roll button events
+    boysRollBtn.addEventListener('click', function() {
+      if (teams.boys.rollActive) return;
+      if (!teams.boys.answered || teams.boys.locked === false) return;
       initRoll('boys');
     });
-    girlsRollBtn.addEventListener('click', function(e) {
+    
+    girlsRollBtn.addEventListener('click', function() {
       if (teams.girls.rollActive) return;
-      if (!teams.girls.answered || teams.girls.lock === false) return;
+      if (!teams.girls.answered || teams.girls.locked === false) return;
       initRoll('girls');
     });
 
-    // next button logic
+    // ---------- NEXT ----------
     function goNext() {
       if (currentIndex < questions.length - 1) {
         currentIndex++;
         renderQuestion(currentIndex);
-        // enable choices
-        boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
-        girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
-        boysRollBtn.disabled = true;
-        girlsRollBtn.disabled = true;
-        boysNextBtn.disabled = true;
-        girlsNextBtn.disabled = true;
-        boysStatus.textContent = '⏳ tap answer';
-        girlsStatus.textContent = '⏳ tap answer';
-        // reset roll display
-        boysRollDisplay.textContent = '0';
-        girlsRollDisplay.textContent = '0';
       } else {
-        // game over
-        boysStatus.textContent = '🏁 GAME OVER';
-        girlsStatus.textContent = '🏁 GAME OVER';
+        boysStatus.textContent = '🏆 GAME OVER!';
+        girlsStatus.textContent = '🏆 GAME OVER!';
         boysNextBtn.disabled = true;
         girlsNextBtn.disabled = true;
         playSound('victory');
+        timerDisplay.textContent = '🎉 FINISH';
       }
     }
+    
     boysNextBtn.addEventListener('click', goNext);
     girlsNextBtn.addEventListener('click', goNext);
 
+    // ---------- RESET (optional) ----------
+    // Press R to reset game
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'r' || e.key === 'R') {
+        teams.boys.score = 0;
+        teams.girls.score = 0;
+        boysTotalSpan.textContent = '0';
+        girlsTotalSpan.textContent = '0';
+        currentIndex = 0;
+        renderQuestion(0);
+        timerDisplay.textContent = '⏳ Reset';
+        playSound('tick');
+      }
+    });
+
     // ---------- INIT ----------
     renderQuestion(0);
-    // enable choices initially
-    boysChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
-    girlsChoices.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('disabled'));
-    boysNextBtn.disabled = true;
-    girlsNextBtn.disabled = true;
-    boysRollBtn.disabled = true;
-    girlsRollBtn.disabled = true;
-
-    // extra: if other team correct and roll not used, enable roll after first roll
-    // already handled in stopRoll
-
   })();
 </script>
 </body>
