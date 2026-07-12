@@ -1,723 +1,916 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Angle Arena · Boys vs Girls</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background: linear-gradient(145deg, #0b1a2e 0%, #1b2f47 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-    }
-    .game-wrapper {
-      max-width: 1400px;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(4px);
-      border-radius: 60px 60px 40px 40px;
-      padding: 20px 25px 30px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 1px 3px rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,215,0,0.2);
-    }
-    /* scoreboard row */
-    .scoreboard {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 80px;
-      padding: 8px 25px 8px 25px;
-      backdrop-filter: blur(6px);
-      border: 1px solid #f7d44a;
-      box-shadow: 0 0 15px #f7b32b55;
-    }
-    .team-score {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      font-weight: 700;
-    }
-    .team-badge {
-      background: #202f44;
-      padding: 6px 24px 6px 18px;
-      border-radius: 40px;
-      font-size: 1.2rem;
-      letter-spacing: 1px;
-      color: #ffd966;
-      box-shadow: inset 0 -2px 0 #f0b54a;
-    }
-    .team-badge.boys {
-      background: #1b3b6b;
-      border-left: 6px solid #3d9eff;
-    }
-    .team-badge.girls {
-      background: #6b2f5c;
-      border-left: 6px solid #ff7eb3;
-    }
-    .score-value {
-      font-size: 2.3rem;
-      font-family: 'Fredoka One', cursive;
-      background: #0a141f;
-      padding: 0 25px;
-      border-radius: 50px;
-      color: #fae67a;
-      text-shadow: 0 0 10px #fabc2c;
-      min-width: 110px;
-      text-align: center;
-      letter-spacing: 2px;
-    }
-    .score-value.boys-score { color: #7bb3ff; text-shadow: 0 0 12px #3d9eff; }
-    .score-value.girls-score { color: #ff8ec4; text-shadow: 0 0 12px #ff4f9e; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angle Arena · Boys vs Girls</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(145deg, #0b1a2e 0%, #1b2f47 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .game-wrapper {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+            border-radius: 60px 60px 40px 40px;
+            padding: 20px 25px 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 1px 3px rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,215,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        /* Gamified background music visualizer */
+        .game-wrapper::before {
+            content: "🎵 ♪ ♫ ♬";
+            position: absolute;
+            font-size: 80px;
+            opacity: 0.03;
+            top: 10%;
+            right: 5%;
+            transform: rotate(15deg);
+            pointer-events: none;
+            white-space: nowrap;
+            letter-spacing: 40px;
+            color: #ffd966;
+            z-index: 0;
+            animation: floatMusic 20s infinite linear;
+        }
+        .game-wrapper::after {
+            content: "♩ 🎵 ♪ 🎶";
+            position: absolute;
+            font-size: 60px;
+            opacity: 0.03;
+            bottom: 10%;
+            left: 5%;
+            transform: rotate(-10deg);
+            pointer-events: none;
+            white-space: nowrap;
+            letter-spacing: 30px;
+            color: #80cbc4;
+            z-index: 0;
+            animation: floatMusic 25s infinite linear reverse;
+        }
+        @keyframes floatMusic {
+            0% { transform: translateX(0) rotate(15deg); }
+            50% { transform: translateX(-50px) rotate(10deg); }
+            100% { transform: translateX(0) rotate(15deg); }
+        }
 
-    /* main grid */
-    .game-grid {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-    .team-zone {
-      flex: 1 1 280px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 40px;
-      padding: 18px 12px 20px;
-      backdrop-filter: blur(2px);
-      border: 1px solid #566b84;
-      transition: all 0.2s;
-      box-shadow: 0 8px 0 #111d2b;
-    }
-    .team-zone.boys-zone { border-top: 6px solid #3d9eff; }
-    .team-zone.girls-zone { border-top: 6px solid #ff7eb3; }
-    .zone-title {
-      font-size: 1.6rem;
-      font-weight: 700;
-      text-align: center;
-      color: #e0eefe;
-      letter-spacing: 2px;
-      padding-bottom: 6px;
-      border-bottom: 2px dashed #456a8f;
-      margin-bottom: 15px;
-    }
-    .zone-title.boys-title { color: #9ac7ff; }
-    .zone-title.girls-title { color: #ffb3d1; }
+        .scoreboard {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 80px;
+            padding: 8px 25px 8px 25px;
+            backdrop-filter: blur(6px);
+            border: 1px solid #f7d44a;
+            box-shadow: 0 0 15px #f7b32b55;
+            position: relative;
+            z-index: 1;
+        }
+        .team-score {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 700;
+        }
+        .team-badge {
+            background: #202f44;
+            padding: 6px 24px 6px 18px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: #ffd966;
+            box-shadow: inset 0 -2px 0 #f0b54a;
+        }
+        .team-badge.boys {
+            background: #1b3b6b;
+            border-left: 6px solid #3d9eff;
+        }
+        .team-badge.girls {
+            background: #6b2f5c;
+            border-left: 6px solid #ff7eb3;
+        }
+        .score-value {
+            font-size: 2.3rem;
+            font-family: 'Fredoka One', cursive;
+            background: #0a141f;
+            padding: 0 25px;
+            border-radius: 50px;
+            color: #fae67a;
+            text-shadow: 0 0 10px #fabc2c;
+            min-width: 110px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .score-value.boys-score { color: #7bb3ff; text-shadow: 0 0 12px #3d9eff; }
+        .score-value.girls-score { color: #ff8ec4; text-shadow: 0 0 12px #ff4f9e; }
 
-    /* question & diagram */
-    .question-area {
-      background: #1c2a3b;
-      border-radius: 28px;
-      padding: 18px 12px 12px;
-      margin-bottom: 20px;
-      box-shadow: inset 0 -4px 0 #0e1a26;
-    }
-    .q-text {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #f0f7ff;
-      background: #14212f;
-      padding: 12px 14px;
-      border-radius: 40px;
-      text-align: center;
-      margin-bottom: 12px;
-      border: 1px solid #4b6f8f;
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .diagram-container {
-      background: #f2f6fc;
-      border-radius: 24px;
-      padding: 12px 6px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 120px;
-      border: 2px solid #b9cfec;
-    }
-    .diagram-container img {
-      max-width: 100%;
-      max-height: 170px;
-      object-fit: contain;
-      border-radius: 16px;
-      background: white;
-      padding: 6px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-    .diagram-placeholder {
-      font-size: 1.2rem;
-      color: #2b4a6b;
-      font-weight: 600;
-      padding: 10px;
-    }
+        .game-grid {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        .team-zone {
+            flex: 1 1 280px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 40px;
+            padding: 18px 12px 20px;
+            backdrop-filter: blur(2px);
+            border: 1px solid #566b84;
+            transition: all 0.2s;
+            box-shadow: 0 8px 0 #111d2b;
+        }
+        .team-zone.boys-zone { border-top: 6px solid #3d9eff; }
+        .team-zone.girls-zone { border-top: 6px solid #ff7eb3; }
+        .zone-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: center;
+            color: #e0eefe;
+            letter-spacing: 2px;
+            padding-bottom: 6px;
+            border-bottom: 2px dashed #456a8f;
+            margin-bottom: 15px;
+        }
+        .zone-title.boys-title { color: #9ac7ff; }
+        .zone-title.girls-title { color: #ffb3d1; }
 
-    /* choices */
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 16px 0 12px;
-    }
-    .choice-btn {
-      background: #2f4057;
-      border: none;
-      border-radius: 50px;
-      padding: 14px 8px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #f0faff;
-      text-align: center;
-      box-shadow: 0 5px 0 #121e2b;
-      transition: all 0.08s linear;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-      border: 1px solid #6f8aa8;
-    }
-    .choice-btn:active {
-      transform: translateY(4px);
-      box-shadow: 0 1px 0 #121e2b;
-    }
-    .choice-btn.disabled {
-      opacity: 0.5;
-      pointer-events: none;
-      filter: grayscale(0.6);
-    }
-    .choice-btn.correct-reveal {
-      background: #2a9d8f;
-      border-color: #b8f2e6;
-      box-shadow: 0 0 20px #2a9d8faa;
-    }
-    .choice-btn.wrong-reveal {
-      background: #b13e4b;
-      border-color: #ffb3b3;
-    }
+        .question-area {
+            background: #1c2a3b;
+            border-radius: 28px;
+            padding: 18px 12px 12px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 -4px 0 #0e1a26;
+        }
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f0f7ff;
+            background: #14212f;
+            padding: 12px 14px;
+            border-radius: 40px;
+            text-align: center;
+            margin-bottom: 12px;
+            border: 1px solid #4b6f8f;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .diagram-container {
+            background: #f2f6fc;
+            border-radius: 24px;
+            padding: 12px 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 120px;
+            border: 2px solid #b9cfec;
+        }
+        .diagram-container img {
+            max-width: 100%;
+            max-height: 170px;
+            object-fit: contain;
+            border-radius: 16px;
+            background: white;
+            padding: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .diagram-placeholder {
+            font-size: 1.2rem;
+            color: #2b4a6b;
+            font-weight: 600;
+            padding: 10px;
+        }
 
-    .action-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .roll-score-btn {
-      background: #f5b042;
-      border: none;
-      border-radius: 40px;
-      padding: 12px 18px;
-      font-weight: 800;
-      font-size: 1.2rem;
-      color: #1a1f2b;
-      box-shadow: 0 5px 0 #9e6d28;
-      flex: 1;
-      transition: 0.06s linear;
-      cursor: pointer;
-      text-shadow: 0 1px 0 #ffe18f;
-      border: 1px solid #ffe28b;
-    }
-    .roll-score-btn:active {
-      transform: translateY(5px);
-      box-shadow: 0 0 0 #9e6d28;
-    }
-    .roll-score-btn:disabled {
-      opacity: 0.5;
-      transform: translateY(3px);
-      box-shadow: 0 2px 0 #6e4d1e;
-      pointer-events: none;
-    }
-    .next-btn {
-      background: #48a0d6;
-      border: none;
-      border-radius: 40px;
-      padding: 12px 22px;
-      font-weight: 800;
-      font-size: 1.1rem;
-      color: #0d1f2e;
-      box-shadow: 0 5px 0 #1f5a7a;
-      cursor: pointer;
-      transition: 0.06s linear;
-      border: 1px solid #8fcbff;
-      flex: 1;
-    }
-    .next-btn:active {
-      transform: translateY(5px);
-      box-shadow: 0 0 0 #1f5a7a;
-    }
-    .next-btn:disabled {
-      opacity: 0.4;
-      pointer-events: none;
-    }
-    .roll-display {
-      background: #0b1a28;
-      border-radius: 40px;
-      padding: 6px 20px;
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #ffd966;
-      min-width: 110px;
-      text-align: center;
-      border: 1px solid #f7c948;
-      font-family: 'Fredoka One', cursive;
-    }
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 16px 0 12px;
+        }
+        .choice-btn {
+            background: #2f4057;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #f0faff;
+            text-align: center;
+            box-shadow: 0 5px 0 #121e2b;
+            transition: all 0.08s linear;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            border: 1px solid #6f8aa8;
+        }
+        .choice-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #121e2b;
+        }
+        .choice-btn.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(0.6);
+        }
+        .choice-btn.correct-reveal {
+            background: #2a9d8f;
+            border-color: #b8f2e6;
+            box-shadow: 0 0 20px #2a9d8faa;
+            animation: pulseGlow 0.5s ease-in-out 2;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px #2a9d8faa; }
+            50% { box-shadow: 0 0 40px #2a9d8f, 0 0 60px #2a9d8f66; }
+        }
+        .choice-btn.wrong-reveal {
+            background: #b13e4b;
+            border-color: #ffb3b3;
+            animation: shake 0.3s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
 
-    /* status */
-    .turn-indicator {
-      text-align: center;
-      margin-top: 8px;
-      font-weight: 600;
-      color: #bdd4f0;
-      background: #142433;
-      border-radius: 40px;
-      padding: 6px;
-      font-size: 0.9rem;
-    }
-    .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .roll-score-btn {
+            background: #f5b042;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 18px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #1a1f2b;
+            box-shadow: 0 5px 0 #9e6d28;
+            flex: 1;
+            transition: 0.06s linear;
+            cursor: pointer;
+            text-shadow: 0 1px 0 #ffe18f;
+            border: 1px solid #ffe28b;
+        }
+        .roll-score-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 0 0 #9e6d28;
+        }
+        .roll-score-btn:disabled {
+            opacity: 0.5;
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #6e4d1e;
+            pointer-events: none;
+        }
+        .next-btn {
+            background: #48a0d6;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 22px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #0d1f2e;
+            box-shadow: 0 5px 0 #1f5a7a;
+            cursor: pointer;
+            transition: 0.06s linear;
+            border: 1px solid #8fcbff;
+            flex: 1;
+        }
+        .next-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 0 0 #1f5a7a;
+        }
+        .next-btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .roll-display {
+            background: #0b1a28;
+            border-radius: 40px;
+            padding: 6px 20px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffd966;
+            min-width: 110px;
+            text-align: center;
+            border: 1px solid #f7c948;
+            font-family: 'Fredoka One', cursive;
+        }
 
-    /* Timer display in scoreboard */
-    .timer-display {
-      font-size: 1.1rem;
-      color: #b9d0f0;
-      background: #0e1d2b;
-      padding: 4px 20px;
-      border-radius: 40px;
-      font-weight: 700;
-      min-width: 80px;
-      text-align: center;
-    }
+        .turn-indicator {
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 600;
+            color: #bdd4f0;
+            background: #142433;
+            border-radius: 40px;
+            padding: 6px;
+            font-size: 0.9rem;
+        }
 
-    @media (max-width: 850px) {
-      .scoreboard { flex-direction: column; align-items: stretch; gap: 10px; }
-      .team-score { justify-content: center; }
-      .game-grid { flex-direction: column; }
-      .team-zone { flex: 1 1 auto; }
-    }
-  </style>
+        .timer-display {
+            font-size: 1.1rem;
+            color: #b9d0f0;
+            background: #0e1d2b;
+            padding: 4px 20px;
+            border-radius: 40px;
+            font-weight: 700;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #f7d44a;
+            border-radius: 50px;
+            padding: 10px 18px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 999;
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+        .music-control:hover {
+            background: rgba(255,215,0,0.2);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 850px) {
+            .scoreboard { flex-direction: column; align-items: stretch; gap: 10px; }
+            .team-score { justify-content: center; }
+            .game-grid { flex-direction: column; }
+            .team-zone { flex: 1 1 auto; }
+        }
+    </style>
 </head>
 <body>
 <div class="game-wrapper" id="app">
-  <!-- Scoreboard -->
-  <div class="scoreboard">
-    <div class="team-score"><span class="team-badge boys">⚔️ BOYS</span><span class="score-value boys-score" id="boysTotal">0</span></div>
-    <div class="timer-display" id="timerDisplay">⏳ 20s</div>
-    <div class="team-score"><span class="team-badge girls">🌸 GIRLS</span><span class="score-value girls-score" id="girlsTotal">0</span></div>
-  </div>
-
-  <div class="game-grid">
-    <!-- BOYS ZONE -->
-    <div class="team-zone boys-zone" id="boysZone">
-      <div class="zone-title boys-title">⚡ BOYS</div>
-      <div class="question-area" id="boysQuestionArea">
-        <div class="q-text" id="boysQtext">Question loads here</div>
-        <div class="diagram-container" id="boysDiagram"><div class="diagram-placeholder">📐 Diagram</div></div>
-      </div>
-      <div class="choices" id="boysChoices"></div>
-      <div class="action-row">
-        <button class="roll-score-btn" id="boysRollBtn">🎲 ROLL</button>
-        <span class="roll-display" id="boysRollDisplay">0</span>
-        <button class="next-btn" id="boysNextBtn">⏩ NEXT</button>
-      </div>
-      <div class="turn-indicator" id="boysStatus">✅ ready</div>
+    <!-- Scoreboard -->
+    <div class="scoreboard">
+        <div class="team-score"><span class="team-badge boys">⚔️ BOYS</span><span class="score-value boys-score" id="boysTotal">0</span></div>
+        <div class="timer-display" id="timerDisplay">⏳ 20s</div>
+        <div class="team-score"><span class="team-badge girls">🌸 GIRLS</span><span class="score-value girls-score" id="girlsTotal">0</span></div>
     </div>
 
-    <!-- GIRLS ZONE -->
-    <div class="team-zone girls-zone" id="girlsZone">
-      <div class="zone-title girls-title">🌸 GIRLS</div>
-      <div class="question-area" id="girlsQuestionArea">
-        <div class="q-text" id="girlsQtext">Question loads here</div>
-        <div class="diagram-container" id="girlsDiagram"><div class="diagram-placeholder">📐 Diagram</div></div>
-      </div>
-      <div class="choices" id="girlsChoices"></div>
-      <div class="action-row">
-        <button class="roll-score-btn" id="girlsRollBtn">🎲 ROLL</button>
-        <span class="roll-display" id="girlsRollDisplay">0</span>
-        <button class="next-btn" id="girlsNextBtn">⏩ NEXT</button>
-      </div>
-      <div class="turn-indicator" id="girlsStatus">✅ ready</div>
+    <div class="game-grid">
+        <!-- BOYS ZONE -->
+        <div class="team-zone boys-zone" id="boysZone">
+            <div class="zone-title boys-title">⚡ BOYS</div>
+            <div class="question-area" id="boysQuestionArea">
+                <div class="q-text" id="boysQtext">Question loads here</div>
+                <div class="diagram-container" id="boysDiagram"><div class="diagram-placeholder">📐 Diagram</div></div>
+            </div>
+            <div class="choices" id="boysChoices"></div>
+            <div class="action-row">
+                <button class="roll-score-btn" id="boysRollBtn">🎲 ROLL</button>
+                <span class="roll-display" id="boysRollDisplay">0</span>
+                <button class="next-btn" id="boysNextBtn">⏩ NEXT</button>
+            </div>
+            <div class="turn-indicator" id="boysStatus">✅ ready</div>
+        </div>
+
+        <!-- GIRLS ZONE -->
+        <div class="team-zone girls-zone" id="girlsZone">
+            <div class="zone-title girls-title">🌸 GIRLS</div>
+            <div class="question-area" id="girlsQuestionArea">
+                <div class="q-text" id="girlsQtext">Question loads here</div>
+                <div class="diagram-container" id="girlsDiagram"><div class="diagram-placeholder">📐 Diagram</div></div>
+            </div>
+            <div class="choices" id="girlsChoices"></div>
+            <div class="action-row">
+                <button class="roll-score-btn" id="girlsRollBtn">🎲 ROLL</button>
+                <span class="roll-display" id="girlsRollDisplay">0</span>
+                <button class="next-btn" id="girlsNextBtn">⏩ NEXT</button>
+            </div>
+            <div class="turn-indicator" id="girlsStatus">✅ ready</div>
+        </div>
     </div>
-  </div>
 </div>
 
+<!-- Music Control Button -->
+<button class="music-control" id="musicToggle">🎵 Music: ON</button>
+
 <script>
-  (function() {
-    // ---------- QUESTIONS DATA (all 15) ----------
-    const questions = [
-      { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
-      { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 15 },
-      { q: "3) Name the part of protractor indicated by the arrow.", img: "Q3.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 2, time: 15 },
-      { q: "4) Name the angle.", img: "Q4.jpg", choices: ["a) ∠PQR", "b) ∠RPQ", "c) ∠QRP"], correct: 0, time: 15 },
-      { q: "5) Name the vertex.", img: "Q5.jpg", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], correct: 2, time: 15 },
-      { q: "6) Name the arms.", img: "Q6.jpg", choices: ["a) segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 15 },
-      { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", img: null, choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 15 },
-      { q: "8) What type of angle is 90°?", img: "Q8.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 1, time: 15 },
-      { q: "9) What type of angle is ∠SUN = 150° ?", img: "Q9.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 2, time: 20 },
-      { q: "10) ……. is an angle measures exactly 180°.", img: null, choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 20 },
-      { q: "11) Look at the figure. How many acute angles?", img: "Q11.jpg", choices: ["a) 1", "b) 2", "c) 3"], correct: 1, time: 20 },
-      { q: "12) Look at the figure. How many right angles?", img: "Q12.jpg", choices: ["a) 3", "b) 12", "c) 14"], correct: 1, time: 20 },
-      { q: "13) Measure and read the angle shown.", img: "Q13.jpg", choices: ["a) 50°", "b) 105°", "c) 165°"], correct: 1, time: 30 },
-      { q: "14) Find angle b̂.", img: "Q14.jpg", choices: ["a) 30°", "b) 42°", "c) 52°"], correct: 1, time: 30 },
-      { q: "15) Find angle â.", img: "Q15.jpg", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 30 }
-    ];
+    (function() {
+        // ---------- BACKGROUND MUSIC (Web Audio) ----------
+        let musicCtx = null;
+        let musicGain = null;
+        let musicOsc1 = null;
+        let musicOsc2 = null;
+        let musicInterval = null;
+        let musicEnabled = true;
+        let musicNotes = [523.25, 587.33, 659.25, 783.99, 880.00, 987.77, 1046.50];
+        let noteIndex = 0;
 
-    // ---------- GAME STATE ----------
-    let currentIndex = 0;
-    let timerInterval = null;
-    let timeLeft = 20;
-    let questionLocked = false; // global lock when any team answers correctly
+        function startBackgroundMusic() {
+            try {
+                if (musicCtx && musicCtx.state === 'running') return;
+                musicCtx = new (window.AudioContext || window.webkitAudioContext)();
+                musicGain = musicCtx.createGain();
+                musicGain.gain.value = 0.08;
+                musicGain.connect(musicCtx.destination);
 
-    const teams = {
-      boys: { score: 0, answered: false, locked: false, rollActive: false, rollInterval: null, rollValue: 0 },
-      girls: { score: 0, answered: false, locked: false, rollActive: false, rollInterval: null, rollValue: 0 }
-    };
-
-    // DOM refs
-    const boysQtext = document.getElementById('boysQtext');
-    const girlsQtext = document.getElementById('girlsQtext');
-    const boysDiagram = document.getElementById('boysDiagram');
-    const girlsDiagram = document.getElementById('girlsDiagram');
-    const boysChoices = document.getElementById('boysChoices');
-    const girlsChoices = document.getElementById('girlsChoices');
-    const boysStatus = document.getElementById('boysStatus');
-    const girlsStatus = document.getElementById('girlsStatus');
-    const boysRollBtn = document.getElementById('boysRollBtn');
-    const girlsRollBtn = document.getElementById('girlsRollBtn');
-    const boysRollDisplay = document.getElementById('boysRollDisplay');
-    const girlsRollDisplay = document.getElementById('girlsRollDisplay');
-    const boysNextBtn = document.getElementById('boysNextBtn');
-    const girlsNextBtn = document.getElementById('girlsNextBtn');
-    const boysTotalSpan = document.getElementById('boysTotal');
-    const girlsTotalSpan = document.getElementById('girlsTotal');
-    const timerDisplay = document.getElementById('timerDisplay');
-
-    // Sound effects
-    function playSound(type) {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        if (type === 'correct') {
-          osc.frequency.value = 880;
-          gain.gain.value = 0.15;
-          osc.start();
-          setTimeout(() => { osc.frequency.value = 1100; }, 100);
-          setTimeout(() => { osc.stop(); }, 300);
-        } else if (type === 'wrong') {
-          osc.frequency.value = 300;
-          gain.gain.value = 0.2;
-          osc.start();
-          setTimeout(() => { osc.frequency.value = 200; }, 150);
-          setTimeout(() => { osc.stop(); }, 400);
-        } else if (type === 'tick') {
-          osc.frequency.value = 700;
-          gain.gain.value = 0.08;
-          osc.start();
-          setTimeout(() => { osc.stop(); }, 60);
-        } else if (type === 'victory') {
-          osc.frequency.value = 523;
-          gain.gain.value = 0.12;
-          osc.start();
-          setTimeout(() => { osc.frequency.value = 659; }, 120);
-          setTimeout(() => { osc.frequency.value = 784; }, 240);
-          setTimeout(() => { osc.stop(); }, 400);
-        } else {
-          osc.frequency.value = 440;
-          gain.gain.value = 0.1;
-          osc.start();
-          setTimeout(() => { osc.stop(); }, 150);
+                playMusicNote();
+                musicInterval = setInterval(() => {
+                    if (musicEnabled && musicCtx && musicCtx.state === 'running') {
+                        playMusicNote();
+                    }
+                }, 400);
+            } catch(e) {
+                console.log('Music not supported');
+            }
         }
-      } catch(e) {}
-    }
 
-    // ---------- TIMER ----------
-    function startTimer(seconds) {
-      if (timerInterval) clearInterval(timerInterval);
-      timeLeft = seconds;
-      timerDisplay.textContent = `⏳ ${timeLeft}s`;
-      timerInterval = setInterval(() => {
-        timeLeft -= 1;
-        timerDisplay.textContent = `⏳ ${timeLeft}s`;
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          timerDisplay.textContent = '⏰ 0s';
-          // Time's up - reveal correct answer for both teams
-          if (!questionLocked) {
-            questionLocked = true;
-            revealCorrectForBoth();
-            playSound('wrong');
-          }
+        function playMusicNote() {
+            try {
+                if (!musicCtx || musicCtx.state !== 'running') return;
+                // Create a pleasant arpeggio
+                const osc = musicCtx.createOscillator();
+                const gain = musicCtx.createGain();
+                osc.connect(gain);
+                gain.connect(musicGain);
+                
+                const note = musicNotes[noteIndex % musicNotes.length];
+                osc.frequency.value = note;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.15, musicCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, musicCtx.currentTime + 0.35);
+                osc.start(musicCtx.currentTime);
+                osc.stop(musicCtx.currentTime + 0.35);
+                
+                // Add a harmony note
+                const osc2 = musicCtx.createOscillator();
+                const gain2 = musicCtx.createGain();
+                osc2.connect(gain2);
+                gain2.connect(musicGain);
+                osc2.frequency.value = note * 1.25;
+                osc2.type = 'sine';
+                gain2.gain.setValueAtTime(0.08, musicCtx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, musicCtx.currentTime + 0.3);
+                osc2.start(musicCtx.currentTime + 0.05);
+                osc2.stop(musicCtx.currentTime + 0.35);
+                
+                noteIndex++;
+            } catch(e) {}
         }
-      }, 1000);
-    }
 
-    function revealCorrectForBoth() {
-      const q = questions[currentIndex];
-      const correctIdx = q.correct;
-      // Disable all choices and show correct
-      document.querySelectorAll('.choice-btn').forEach(btn => {
-        btn.classList.add('disabled');
-        const idx = parseInt(btn.dataset.idx);
-        if (idx === correctIdx) {
-          btn.classList.add('correct-reveal');
+        function stopBackgroundMusic() {
+            if (musicInterval) {
+                clearInterval(musicInterval);
+                musicInterval = null;
+            }
+            if (musicCtx) {
+                try {
+                    musicCtx.close();
+                } catch(e) {}
+                musicCtx = null;
+            }
         }
-      });
-      boysStatus.textContent = '⏰ Time up!';
-      girlsStatus.textContent = '⏰ Time up!';
-      // Enable Next only, no roll
-      boysRollBtn.disabled = true;
-      girlsRollBtn.disabled = true;
-      boysNextBtn.disabled = false;
-      girlsNextBtn.disabled = false;
-    }
 
-    // ---------- RENDER QUESTION ----------
-    function renderQuestion(index) {
-      const q = questions[index];
-      if (!q) return;
-      
-      // Reset team states
-      teams.boys.answered = false;
-      teams.boys.locked = false;
-      teams.boys.rollActive = false;
-      teams.girls.answered = false;
-      teams.girls.locked = false;
-      teams.girls.rollActive = false;
-      questionLocked = false;
-      
-      if (teams.boys.rollInterval) clearInterval(teams.boys.rollInterval);
-      if (teams.girls.rollInterval) clearInterval(teams.girls.rollInterval);
-
-      // Update text
-      boysQtext.textContent = q.q;
-      girlsQtext.textContent = q.q;
-
-      // Diagram
-      const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:170px;">` : `<div class="diagram-placeholder">📐 No diagram</div>`;
-      boysDiagram.innerHTML = imgHtml;
-      girlsDiagram.innerHTML = imgHtml;
-
-      // Choices
-      renderChoices('boys', q.choices, q.correct);
-      renderChoices('girls', q.choices, q.correct);
-
-      // Reset UI
-      boysRollBtn.disabled = true;
-      girlsRollBtn.disabled = true;
-      boysRollBtn.textContent = '🎲 ROLL';
-      girlsRollBtn.textContent = '🎲 ROLL';
-      boysRollDisplay.textContent = '0';
-      girlsRollDisplay.textContent = '0';
-      boysNextBtn.disabled = true;
-      girlsNextBtn.disabled = true;
-      boysStatus.textContent = '⏳ Tap answer!';
-      girlsStatus.textContent = '⏳ Tap answer!';
-
-      // Start timer
-      startTimer(q.time);
-    }
-
-    function renderChoices(team, choiceTexts, correctIdx) {
-      const container = team === 'boys' ? boysChoices : girlsChoices;
-      container.innerHTML = '';
-      choiceTexts.forEach((text, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'choice-btn';
-        btn.textContent = text;
-        btn.dataset.idx = idx;
-        btn.dataset.correct = correctIdx;
-        btn.addEventListener('click', (e) => handleChoice(team, idx, correctIdx, btn));
-        container.appendChild(btn);
-      });
-    }
-
-    // ---------- HANDLE CHOICE ----------
-    function handleChoice(team, idx, correctIdx, btnEl) {
-      if (questionLocked) return;
-      const state = teams[team];
-      if (state.locked || state.answered) return;
-
-      // Lock this team's answer
-      state.locked = true;
-      state.answered = true;
-      const isCorrect = (idx === correctIdx);
-
-      // Disable all choices for this team
-      const container = team === 'boys' ? boysChoices : girlsChoices;
-      container.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
-
-      if (isCorrect) {
-        btnEl.classList.add('correct-reveal');
-        playSound('correct');
-        // Check if other team already answered correctly
-        const other = team === 'boys' ? 'girls' : 'boys';
-        if (!teams[other].answered || !teams[other].locked) {
-          // This team got it first!
-          questionLocked = true;
-          // Lock other team's choices
-          const otherContainer = other === 'boys' ? boysChoices : girlsChoices;
-          otherContainer.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
-          teams[other].locked = true;
-          teams[other].answered = true;
-          if (other === 'boys') boysStatus.textContent = '⛔ Opponent answered first';
-          else girlsStatus.textContent = '⛔ Opponent answered first';
-          
-          // Enable roll for this team
-          if (team === 'boys') {
-            boysRollBtn.disabled = false;
-            boysStatus.textContent = '🎯 Correct! Roll score!';
-          } else {
-            girlsRollBtn.disabled = false;
-            girlsStatus.textContent = '🎯 Correct! Roll score!';
-          }
-          playSound('victory');
-        } else {
-          // Other team already answered correctly
-          if (team === 'boys') boysStatus.textContent = '⛔ Other team was first';
-          else girlsStatus.textContent = '⛔ Other team was first';
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            const btn = document.getElementById('musicToggle');
+            if (musicEnabled) {
+                btn.textContent = '🎵 Music: ON';
+                if (!musicCtx || musicCtx.state !== 'running') {
+                    startBackgroundMusic();
+                }
+            } else {
+                btn.textContent = '🔇 Music: OFF';
+                stopBackgroundMusic();
+            }
         }
-      } else {
-        btnEl.classList.add('wrong-reveal');
-        playSound('wrong');
-        if (team === 'boys') boysStatus.textContent = '❌ Wrong!';
-        else girlsStatus.textContent = '❌ Wrong!';
+
+        // Music toggle button
+        document.getElementById('musicToggle').addEventListener('click', toggleMusic);
+
+        // Start music on first user interaction
+        document.addEventListener('click', function initMusic() {
+            if (!musicCtx || musicCtx.state !== 'running') {
+                startBackgroundMusic();
+            }
+            document.removeEventListener('click', initMusic);
+        }, { once: true });
+
+        // ---------- QUESTIONS DATA ----------
+        const questions = [
+            { q: "1) Name the part of protractor indicated by the arrow.", img: "Q1.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 0, time: 15 },
+            { q: "2) Name the part of protractor indicated by the arrow.", img: "Q2.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 1, time: 15 },
+            { q: "3) Name the part of protractor indicated by the arrow.", img: "Q3.jpg", choices: ["a) center mark", "b) degree mark", "c) zero edges"], correct: 2, time: 15 },
+            { q: "4) Name the angle.", img: "Q4.jpg", choices: ["a) ∠PQR", "b) ∠RPQ", "c) ∠QRP"], correct: 0, time: 15 },
+            { q: "5) Name the vertex.", img: "Q5.jpg", choices: ["a) Dot N", "b) Angle N", "c) Point N or .N"], correct: 2, time: 15 },
+            { q: "6) Name the arms.", img: "Q6.jpg", choices: ["a) segment CH and CK", "b) line HC and KC", "c) ray CH and CK"], correct: 2, time: 15 },
+            { q: "7) ……. is an angle measures bigger than 0° but smaller than 90°", img: null, choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 0, time: 15 },
+            { q: "8) What type of angle is shown in the diagram?", img: "Q8.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 1, time: 15 },
+            { q: "9) What type of angle is ∠SUN = 150° ?", img: "Q9.jpg", choices: ["a) Acute", "b) Right", "c) Obtuse"], correct: 2, time: 20 },
+            { q: "10) ……. is an angle measures exactly 180°.", img: null, choices: ["a) Right", "b) Obtuse", "c) Straight"], correct: 2, time: 20 },
+            { q: "11) Look at the figure. How many acute angles?", img: "Q11.jpg", choices: ["a) 1", "b) 2", "c) 3"], correct: 1, time: 20 },
+            { q: "12) Look at the figure. How many right angles?", img: "Q12.jpg", choices: ["a) 3", "b) 12", "c) 14"], correct: 1, time: 20 },
+            { q: "13) Measure and read the angle shown.", img: "Q13.jpg", choices: ["a) 50°", "b) 105°", "c) 165°"], correct: 1, time: 30 },
+            { q: "14) Find angle b̂.", img: "Q14.jpg", choices: ["a) 30°", "b) 42°", "c) 52°"], correct: 1, time: 30 },
+            { q: "15) Find angle â.", img: "Q15.jpg", choices: ["a) 144°", "b) 180°", "c) 324°"], correct: 0, time: 30 }
+        ];
+
+        // ---------- GAME STATE ----------
+        let currentIndex = 0;
+        let timerInterval = null;
+        let timeLeft = 20;
+        let questionLocked = false;
+        let roundWinner = null; // 'boys' or 'girls' or null
+
+        const teams = {
+            boys: { score: 0, answered: false, locked: false, rollActive: false, rollInterval: null, rollValue: 0 },
+            girls: { score: 0, answered: false, locked: false, rollActive: false, rollInterval: null, rollValue: 0 }
+        };
+
+        // DOM refs
+        const boysQtext = document.getElementById('boysQtext');
+        const girlsQtext = document.getElementById('girlsQtext');
+        const boysDiagram = document.getElementById('boysDiagram');
+        const girlsDiagram = document.getElementById('girlsDiagram');
+        const boysChoices = document.getElementById('boysChoices');
+        const girlsChoices = document.getElementById('girlsChoices');
+        const boysStatus = document.getElementById('boysStatus');
+        const girlsStatus = document.getElementById('girlsStatus');
+        const boysRollBtn = document.getElementById('boysRollBtn');
+        const girlsRollBtn = document.getElementById('girlsRollBtn');
+        const boysRollDisplay = document.getElementById('boysRollDisplay');
+        const girlsRollDisplay = document.getElementById('girlsRollDisplay');
+        const boysNextBtn = document.getElementById('boysNextBtn');
+        const girlsNextBtn = document.getElementById('girlsNextBtn');
+        const boysTotalSpan = document.getElementById('boysTotal');
+        const girlsTotalSpan = document.getElementById('girlsTotal');
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        // Sound effects
+        function playSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                if (type === 'correct') {
+                    osc.frequency.value = 880;
+                    gain.gain.value = 0.15;
+                    osc.start();
+                    setTimeout(() => { osc.frequency.value = 1100; }, 100);
+                    setTimeout(() => { osc.frequency.value = 1320; }, 200);
+                    setTimeout(() => { osc.stop(); }, 350);
+                } else if (type === 'wrong') {
+                    osc.frequency.value = 300;
+                    gain.gain.value = 0.2;
+                    osc.start();
+                    setTimeout(() => { osc.frequency.value = 200; }, 150);
+                    setTimeout(() => { osc.stop(); }, 400);
+                } else if (type === 'tick') {
+                    osc.frequency.value = 700;
+                    gain.gain.value = 0.08;
+                    osc.start();
+                    setTimeout(() => { osc.stop(); }, 60);
+                } else if (type === 'victory') {
+                    osc.frequency.value = 523;
+                    gain.gain.value = 0.12;
+                    osc.start();
+                    setTimeout(() => { osc.frequency.value = 659; }, 120);
+                    setTimeout(() => { osc.frequency.value = 784; }, 240);
+                    setTimeout(() => { osc.frequency.value = 1047; }, 360);
+                    setTimeout(() => { osc.stop(); }, 500);
+                } else {
+                    osc.frequency.value = 440;
+                    gain.gain.value = 0.1;
+                    osc.start();
+                    setTimeout(() => { osc.stop(); }, 150);
+                }
+            } catch(e) {}
+        }
+
+        // ---------- TIMER ----------
+        function startTimer(seconds) {
+            if (timerInterval) clearInterval(timerInterval);
+            timeLeft = seconds;
+            timerDisplay.textContent = `⏳ ${timeLeft}s`;
+            timerInterval = setInterval(() => {
+                timeLeft -= 1;
+                timerDisplay.textContent = `⏳ ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = '⏰ 0s';
+                    if (!questionLocked) {
+                        questionLocked = true;
+                        revealCorrectForBoth();
+                        playSound('wrong');
+                    }
+                }
+            }, 1000);
+        }
+
+        function revealCorrectForBoth() {
+            const q = questions[currentIndex];
+            const correctIdx = q.correct;
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.classList.add('disabled');
+                const idx = parseInt(btn.dataset.idx);
+                if (idx === correctIdx) {
+                    btn.classList.add('correct-reveal');
+                }
+            });
+            boysStatus.textContent = '⏰ Time up!';
+            girlsStatus.textContent = '⏰ Time up!';
+            boysRollBtn.disabled = true;
+            girlsRollBtn.disabled = true;
+            boysNextBtn.disabled = false;
+            girlsNextBtn.disabled = false;
+        }
+
+        // ---------- RENDER QUESTION ----------
+        function renderQuestion(index) {
+            const q = questions[index];
+            if (!q) return;
+            
+            teams.boys.answered = false;
+            teams.boys.locked = false;
+            teams.boys.rollActive = false;
+            teams.girls.answered = false;
+            teams.girls.locked = false;
+            teams.girls.rollActive = false;
+            questionLocked = false;
+            roundWinner = null;
+            
+            if (teams.boys.rollInterval) clearInterval(teams.boys.rollInterval);
+            if (teams.girls.rollInterval) clearInterval(teams.girls.rollInterval);
+
+            boysQtext.textContent = q.q;
+            girlsQtext.textContent = q.q;
+
+            const imgHtml = q.img ? `<img src="${q.img}" alt="diagram" style="max-width:100%;max-height:170px;">` : `<div class="diagram-placeholder">📐 No diagram</div>`;
+            boysDiagram.innerHTML = imgHtml;
+            girlsDiagram.innerHTML = imgHtml;
+
+            renderChoices('boys', q.choices, q.correct);
+            renderChoices('girls', q.choices, q.correct);
+
+            boysRollBtn.disabled = true;
+            girlsRollBtn.disabled = true;
+            boysRollBtn.textContent = '🎲 ROLL';
+            girlsRollBtn.textContent = '🎲 ROLL';
+            boysRollDisplay.textContent = '0';
+            girlsRollDisplay.textContent = '0';
+            boysNextBtn.disabled = true;
+            girlsNextBtn.disabled = true;
+            boysStatus.textContent = '⏳ Tap answer!';
+            girlsStatus.textContent = '⏳ Tap answer!';
+
+            startTimer(q.time);
+        }
+
+        function renderChoices(team, choiceTexts, correctIdx) {
+            const container = team === 'boys' ? boysChoices : girlsChoices;
+            container.innerHTML = '';
+            choiceTexts.forEach((text, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = text;
+                btn.dataset.idx = idx;
+                btn.dataset.correct = correctIdx;
+                btn.addEventListener('click', (e) => handleChoice(team, idx, correctIdx, btn));
+                container.appendChild(btn);
+            });
+        }
+
+        // ---------- HANDLE CHOICE ----------
+        function handleChoice(team, idx, correctIdx, btnEl) {
+            if (questionLocked) return;
+            const state = teams[team];
+            if (state.locked || state.answered) return;
+
+            state.locked = true;
+            state.answered = true;
+            const isCorrect = (idx === correctIdx);
+
+            // Disable choices for this team
+            const container = team === 'boys' ? boysChoices : girlsChoices;
+            container.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+
+            if (isCorrect) {
+                btnEl.classList.add('correct-reveal');
+                playSound('correct');
+                
+                // Check if other team already answered correctly
+                const other = team === 'boys' ? 'girls' : 'boys';
+                if (!teams[other].answered || !teams[other].locked) {
+                    // This team got it first!
+                    questionLocked = true;
+                    roundWinner = team;
+                    
+                    // Lock other team's choices
+                    const otherContainer = other === 'boys' ? boysChoices : girlsChoices;
+                    otherContainer.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+                    teams[other].locked = true;
+                    teams[other].answered = true;
+                    
+                    if (other === 'boys') boysStatus.textContent = '⛔ Opponent answered first';
+                    else girlsStatus.textContent = '⛔ Opponent answered first';
+                    
+                    // Enable roll for this team
+                    if (team === 'boys') {
+                        boysRollBtn.disabled = false;
+                        boysStatus.textContent = '🎯 Correct! Roll score!';
+                    } else {
+                        girlsRollBtn.disabled = false;
+                        girlsStatus.textContent = '🎯 Correct! Roll score!';
+                    }
+                    playSound('victory');
+                } else {
+                    // Other team already answered correctly
+                    if (team === 'boys') boysStatus.textContent = '⛔ Other team was first';
+                    else girlsStatus.textContent = '⛔ Other team was first';
+                }
+            } else {
+                btnEl.classList.add('wrong-reveal');
+                playSound('wrong');
+                
+                // Check if other team already answered
+                const other = team === 'boys' ? 'girls' : 'boys';
+                if (!teams[other].answered) {
+                    // Other team still has a chance!
+                    if (team === 'boys') {
+                        boysStatus.textContent = '❌ Wrong! Girls can answer!';
+                        girlsStatus.textContent = '🎯 Girls, your turn!';
+                    } else {
+                        girlsStatus.textContent = '❌ Wrong! Boys can answer!';
+                        boysStatus.textContent = '🎯 Boys, your turn!';
+                    }
+                    // Unlock other team's choices (they were disabled? no, they are still active)
+                    // But we need to make sure other team's choices are enabled
+                    const otherContainer = other === 'boys' ? boysChoices : girlsChoices;
+                    otherContainer.querySelectorAll('.choice-btn').forEach(b => {
+                        if (!b.classList.contains('disabled')) {
+                            // Keep them enabled
+                        }
+                    });
+                    // Enable other team to answer
+                } else {
+                    // Other team already answered (maybe wrong too)
+                    if (team === 'boys') boysStatus.textContent = '❌ Wrong!';
+                    else girlsStatus.textContent = '❌ Wrong!';
+                    
+                    // If other team answered correctly, enable their roll
+                    if (teams[other].answered && teams[other].locked) {
+                        if (other === 'boys') {
+                            boysRollBtn.disabled = false;
+                            boysStatus.textContent = '🎯 Opponent correct! Roll!';
+                        } else {
+                            girlsRollBtn.disabled = false;
+                            girlsStatus.textContent = '🎯 Opponent correct! Roll!';
+                        }
+                    } else {
+                        // Both wrong - reveal correct
+                        questionLocked = true;
+                        revealCorrectForBoth();
+                        boysStatus.textContent = '❌ Both wrong!';
+                        girlsStatus.textContent = '❌ Both wrong!';
+                    }
+                }
+            }
+        }
+
+        // ---------- ROLL SCORE ----------
+        function initRoll(team) {
+            const state = teams[team];
+            if (state.rollActive) return;
+            state.rollActive = true;
+            const display = team === 'boys' ? boysRollDisplay : girlsRollDisplay;
+            const btn = team === 'boys' ? boysRollBtn : girlsRollBtn;
+            btn.disabled = true;
+            
+            const pool = [1000, 2000, 3000, 4000, 5000, -1000, -2000, -3000, -5000, 10000, 20000, 50000];
+            if (questions[currentIndex].time >= 30) {
+                pool.push(50000);
+            }
+            
+            let interval = setInterval(() => {
+                const val = pool[Math.floor(Math.random() * pool.length)];
+                display.textContent = val;
+                state.rollValue = val;
+                playSound('tick');
+            }, 80);
+            state.rollInterval = interval;
+            
+            btn.textContent = '⏹️ STOP';
+            btn.disabled = false;
+            btn.onclick = function stopRoll() {
+                if (!state.rollActive) return;
+                clearInterval(state.rollInterval);
+                state.rollActive = false;
+                const finalVal = parseInt(display.textContent) || 0;
+                
+                if (team === 'boys') {
+                    teams.boys.score += finalVal;
+                    boysTotalSpan.textContent = teams.boys.score;
+                } else {
+                    teams.girls.score += finalVal;
+                    girlsTotalSpan.textContent = teams.girls.score;
+                }
+                
+                playSound('roll stop');
+                if (team === 'boys') {
+                    boysStatus.textContent = `➕ ${finalVal} added!`;
+                    boysRollBtn.disabled = true;
+                } else {
+                    girlsStatus.textContent = `➕ ${finalVal} added!`;
+                    girlsRollBtn.disabled = true;
+                }
+                btn.textContent = '🎲 ROLL';
+                btn.onclick = null;
+                
+                boysNextBtn.disabled = false;
+                girlsNextBtn.disabled = false;
+                
+                if (timerInterval) clearInterval(timerInterval);
+                timerDisplay.textContent = '✅ Done';
+            };
+        }
+
+        boysRollBtn.addEventListener('click', function() {
+            if (teams.boys.rollActive) return;
+            if (!teams.boys.answered || teams.boys.locked === false) return;
+            if (roundWinner !== 'boys' && roundWinner !== null) return;
+            initRoll('boys');
+        });
         
-        // Check if other team already answered correctly
-        const other = team === 'boys' ? 'girls' : 'boys';
-        if (teams[other].answered && teams[other].locked) {
-          // Other team got it right, enable their roll
-          if (other === 'boys') {
-            boysRollBtn.disabled = false;
-            boysStatus.textContent = '🎯 Opponent correct! Roll!';
-          } else {
-            girlsRollBtn.disabled = false;
-            girlsStatus.textContent = '🎯 Opponent correct! Roll!';
-          }
-        }
-      }
-    }
+        girlsRollBtn.addEventListener('click', function() {
+            if (teams.girls.rollActive) return;
+            if (!teams.girls.answered || teams.girls.locked === false) return;
+            if (roundWinner !== 'girls' && roundWinner !== null) return;
+            initRoll('girls');
+        });
 
-    // ---------- ROLL SCORE (slot machine) ----------
-    function initRoll(team) {
-      const state = teams[team];
-      if (state.rollActive) return;
-      state.rollActive = true;
-      const display = team === 'boys' ? boysRollDisplay : girlsRollDisplay;
-      const btn = team === 'boys' ? boysRollBtn : girlsRollBtn;
-      btn.disabled = true;
-      
-      const pool = [1000, 2000, 3000, 4000, 5000, -1000, -2000, -3000, -5000, 10000, 20000, 50000];
-      // Add 50000 bias for difficult questions (time >= 30)
-      if (questions[currentIndex].time >= 30) {
-        pool.push(50000);
-      }
-      
-      let interval = setInterval(() => {
-        const val = pool[Math.floor(Math.random() * pool.length)];
-        display.textContent = val;
-        state.rollValue = val;
-        playSound('tick');
-      }, 80);
-      state.rollInterval = interval;
-      
-      btn.textContent = '⏹️ STOP';
-      btn.disabled = false;
-      btn.onclick = function stopRoll() {
-        if (!state.rollActive) return;
-        clearInterval(state.rollInterval);
-        state.rollActive = false;
-        const finalVal = parseInt(display.textContent) || 0;
-        
-        // Add to score
-        if (team === 'boys') {
-          teams.boys.score += finalVal;
-          boysTotalSpan.textContent = teams.boys.score;
-        } else {
-          teams.girls.score += finalVal;
-          girlsTotalSpan.textContent = teams.girls.score;
+        // ---------- NEXT ----------
+        function goNext() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion(currentIndex);
+            } else {
+                boysStatus.textContent = '🏆 GAME OVER!';
+                girlsStatus.textContent = '🏆 GAME OVER!';
+                boysNextBtn.disabled = true;
+                girlsNextBtn.disabled = true;
+                playSound('victory');
+                timerDisplay.textContent = '🎉 FINISH';
+            }
         }
         
-        playSound('roll stop');
-        if (team === 'boys') {
-          boysStatus.textContent = `➕ ${finalVal} added!`;
-          boysRollBtn.disabled = true;
-        } else {
-          girlsStatus.textContent = `➕ ${finalVal} added!`;
-          girlsRollBtn.disabled = true;
-        }
-        btn.textContent = '🎲 ROLL';
-        btn.onclick = null;
-        
-        // Enable Next for both
-        boysNextBtn.disabled = false;
-        girlsNextBtn.disabled = false;
-        
-        // Clear timer
-        if (timerInterval) clearInterval(timerInterval);
-        timerDisplay.textContent = '✅ Done';
-      };
-    }
+        boysNextBtn.addEventListener('click', goNext);
+        girlsNextBtn.addEventListener('click', goNext);
 
-    // Roll button events
-    boysRollBtn.addEventListener('click', function() {
-      if (teams.boys.rollActive) return;
-      if (!teams.boys.answered || teams.boys.locked === false) return;
-      initRoll('boys');
-    });
-    
-    girlsRollBtn.addEventListener('click', function() {
-      if (teams.girls.rollActive) return;
-      if (!teams.girls.answered || teams.girls.locked === false) return;
-      initRoll('girls');
-    });
+        // ---------- RESET (Press R) ----------
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' || e.key === 'R') {
+                teams.boys.score = 0;
+                teams.girls.score = 0;
+                boysTotalSpan.textContent = '0';
+                girlsTotalSpan.textContent = '0';
+                currentIndex = 0;
+                renderQuestion(0);
+                timerDisplay.textContent = '⏳ Reset';
+                playSound('tick');
+            }
+        });
 
-    // ---------- NEXT ----------
-    function goNext() {
-      if (currentIndex < questions.length - 1) {
-        currentIndex++;
-        renderQuestion(currentIndex);
-      } else {
-        boysStatus.textContent = '🏆 GAME OVER!';
-        girlsStatus.textContent = '🏆 GAME OVER!';
-        boysNextBtn.disabled = true;
-        girlsNextBtn.disabled = true;
-        playSound('victory');
-        timerDisplay.textContent = '🎉 FINISH';
-      }
-    }
-    
-    boysNextBtn.addEventListener('click', goNext);
-    girlsNextBtn.addEventListener('click', goNext);
-
-    // ---------- RESET (optional) ----------
-    // Press R to reset game
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'r' || e.key === 'R') {
-        teams.boys.score = 0;
-        teams.girls.score = 0;
-        boysTotalSpan.textContent = '0';
-        girlsTotalSpan.textContent = '0';
-        currentIndex = 0;
+        // ---------- INIT ----------
         renderQuestion(0);
-        timerDisplay.textContent = '⏳ Reset';
-        playSound('tick');
-      }
-    });
-
-    // ---------- INIT ----------
-    renderQuestion(0);
-  })();
+    })();
 </script>
 </body>
 </html>
